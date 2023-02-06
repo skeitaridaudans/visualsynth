@@ -1,0 +1,10 @@
+List of variables by priority
+
+1. Frequency - freq long()
+2. Amplitude - amp long()
+3. Modulator - operator_id int
+4. AmpEnv -
+	4.1. Attack  - amp long()
+	4.2  Decay   - amp long()
+	4.3  release - amp long()
+ 

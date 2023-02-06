@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<FbItem>("fbitem", 1, 0, "FbItem");
 
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/QtQuickTest/main.qml"_qs);
+    const QUrl url(u"qrc:/QtQuickTest/src/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
