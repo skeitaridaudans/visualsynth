@@ -15,12 +15,15 @@ public:
     void draw();
 private:
     void drawOuter();
-    void drawInner();
     QPointF widgetCoordsToGl(const QPointF& coords);
     bool isInsideBox(const QPointF& coords);
+    float randomColor();
 
     double boxPosX_ = 0.0;
     double boxPosY_ = 0.0;
+    double colorRed_ = 0.0;
+    double colorGreen_ = 0.0;
+    double colorBlue_ = 0.0;
     BoxView *boxView_;
 };
 

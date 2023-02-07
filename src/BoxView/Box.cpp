@@ -10,7 +10,11 @@
 const double kBorderWidth = 0.02;
 const double kBoxSize = 0.1;
 
-Box::Box(BoxView *boxView, double x, double y) : boxView_(boxView), boxPosX_(x), boxPosY_(y) {}
+Box::Box(BoxView *boxView, double x, double y) : boxView_(boxView), boxPosX_(x), boxPosY_(y) {
+    colorRed_ = randomColor();
+    colorGreen_ = randomColor();
+    colorBlue_ = randomColor();
+}
 
 void Box::update() {
     const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
@@ -27,28 +31,12 @@ void Box::draw() {
     glScaled(kBoxSize, kBoxSize, 1.0);
 
     drawOuter();
-    drawInner();
 
     glPopMatrix();
 }
 
 void Box::drawOuter() {
-    glColor3d(1.0, 1.0, 1.0);
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.0, 0.0);
-    glVertex2d(1.0, 0.0);
-    glVertex2d(0.0, 1.0);
-    glVertex2d(1.0, 1.0);
-    glEnd();
-}
-
-void Box::drawInner() {
-    const double innerBoxSize = 1.0 - (kBorderWidth * 2);
-
-    glColor3d(0.0, 0.0, 0.0);
-    glTranslated(kBorderWidth, kBorderWidth, 0.0);
-    glScaled(innerBoxSize, innerBoxSize, 1.0);
+    glColor3d(colorRed_, colorGreen_, colorBlue_);
 
     glBegin(GL_TRIANGLE_STRIP);
     glVertex2d(0.0, 0.0);
@@ -64,6 +52,10 @@ QPointF Box::widgetCoordsToGl(const QPointF &coords) {
 
 bool Box::isInsideBox(const QPointF &coords) {
     return coords.x() >= boxPosX_ && coords.x() < boxPosX_ + kBoxSize && coords.y() >= boxPosY_ && coords.y() < boxPosY_ + kBoxSize;
+}
+
+float Box::randomColor() {
+    return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 }
 
 
