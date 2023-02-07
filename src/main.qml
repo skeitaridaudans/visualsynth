@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
-import fbitem
+import SinViewItem
+import BoxView
 
 Window {
     id: window
-    width: 640
-    height: 480
+    width: 1920
+    height: 1080
     visible: true
     title: qsTr("Hello World")
     color: "#000000"
@@ -16,13 +17,14 @@ Window {
 
     Rectangle {
         id: rectangle
-        y: 357
+        y: 957
         width: 351
         height: 123
         color: "#000000"
+        anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.leftMargin: 177
         anchors.bottomMargin: 0
-        anchors.horizontalCenter: parent.horizontalCenter
 
         Label {
             id: label
@@ -109,70 +111,25 @@ Window {
         }
     }
 
-    Button {
-        id: button
-        text: qsTr("Starting points")
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.leftMargin: 90
-        anchors.topMargin: 15
-    }
 
-    Button {
-        id: button1
-        x: 399
-        text: qsTr("Drum mode")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.rightMargin: 90
-        anchors.topMargin: 15
-    }
-
-    Button {
-        id: button2
-        width: 57
-        height: 57
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.leftMargin: 200
-        anchors.topMargin: 69
-        background: Rectangle {
-            color: "#ff0000"
-        }
-    }
-
-    Button {
-        id: button3
-        x: 338
-        width: 57
-        height: 57
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.rightMargin: 200
-        anchors.topMargin: 69
-        background: Rectangle {
-            color: "#ff80ff"
-        }
-    }
-
-    Button {
-        id: button4
-        width: 57
-        height: 57
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 127
-        background: Rectangle {
-            color: "#fff200"
-        }
-    }
-
-
-    FbItem {
+    SinWaveItem {
         id: waveView
-        anchors.centerIn: parent
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 177
+        anchors.bottomMargin: 10
         width: 500
         height: 100
+    }
+
+    BoxView {
+        id: boxes
+        anchors.left: parent.left
+        anchors.leftMargin: 50
+        anchors.top: parent.top
+        anchors.topMargin: 50
+        width: 900
+        height: 800
     }
 
 }
