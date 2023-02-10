@@ -1,8 +1,10 @@
 #ifndef QTQUICKTEST_CONTROLLER_H
 #define QTQUICKTEST_CONTROLLER_H
 
-#include "controller.h"
-
 class Controller {
+public:
+    static Controller instance;
+    void SendNote(int note);
+};
 
-}
+#endif
