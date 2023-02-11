@@ -40,7 +40,7 @@ void Controller::changeFrequency(int operatorId, long frequency) {
 }
 
 void Controller::changeAmplitude(int operatorId, long amplitude) {
-    operators_[operatorId]->frequency = frequency;
+    operators_[operatorId]->amplitude = amplitude;
     sendOperator(operatorId);
 }
 
