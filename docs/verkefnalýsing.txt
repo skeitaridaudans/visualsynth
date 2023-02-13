@@ -1,0 +1,75 @@
+
+
+
+
+                             Verkefnalýsing fyrir
+                                  VisualSynth
+                              LOVE Synthesizers 
+
+
+
+                             Breki Steinn Mánason
+                         Guðmundur Óli Halldórsson
+                           Sigurður Detlef Jónsson
+                          Þorgils Árni Hjálmarsson
+
+
+                          Tengiliður hjá fyrirtæki
+                             Kári Halldórsson 
+                                 kaha@ru.is 
+                                  864 6347 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Markmið verkefnis 
+Markmið verkefnisins er að búa til grafískt viðmót fyrir snjalltæki eða tölvu sem getur tengst þráðlaust við stafrænan hljóðgervil, vélbúnað sem skapar hljóð fyrir tónlist. Í viðmótinu verður hægt að stýra breytingum með þægilegum hreyfingum á snertiskjá eða með innbyggðum nemum og skynjurum snjalltækisins. 
+
+Ítarlegri lýsing 
+Í verkefninu verður notaður API sem gerir það kleift  að senda gildi á milli snjalltækis/tölvu og hljóðgervilsins og stjórna þannig honum yfir bluetooth eða wifi. Það mun annar lokaverkefnishópur sjá um að skrifa þennan API. Hann verður skrifaður í C.
+
+Það er ennþá frekar opið hvernig viðmótið verður á snjalltækinu til að stýra breytunum. Hér væri hægt að vinna með grafísk viðmót, hreyfimyndir og snertiskjá eða með hefðbundnari stýringar hljóðgervla eða blöndu af báðu. Eins mætti setja upp eins konar stýritungumál þar sem hægt er að forrita tilteknar samsetningar og senda yfir á hljóðgervilinn. Einnig væri hægt að gera tvö misflókin viðmót sem henta annars vegar þeim sem eru lengra komnir í hljóðhönnun og hinsvegar þeim sem eru að stíga sín fyrstu skref. Einhverskonar "simple mode" og "complex mode" sem hægt væri að velja á milli. 
+
+Hljóðgervillinn sem um er verið að ræða er í þróun hjá LOVE Synthesizers og frumgerðir eru nú þegar tilbúnar. Frumgerðirnar keyra á vélbúnaði sem hægt er að ná sambandi við, þá bæði gegnum bluetooth og wifi. Það er því allt tilbúið sem þarf að gera til að hefja verkefnið, en hljóðgervillinn sjálfur verður engu að síður í áframhaldandi þróun á meðan þessu verkefni stendur. Þetta lokaverkefni er því ákveðið hliðarverkefni í þessari þróun og ætti þar af leiðandi ekki að hafa áhrif  á hitt verkefnið  sem fer í að vinna í þróun hljóðgervilsins og öfugt. Engu að síður geta verkefnið haft hvetjandi áhrif í báðar áttir þegar góður árangur næst. 
+
+Á meðan þróun stendur eru Notendur búnaðarins fyrst og fremst tónlistarfólk, 
+sér í lagi starfandi tónlistarfólk sem eru í samstarfi og eru að prófa hljóðgervilinn í núverandi mynd. 
+
+Afurð verkefnis 
+Nýstárlegt viðmót til þess að stýra hljóðgervlinum gegnum snjalltækið/tölvuna, jafnvel prófanir á fleiri en einu viðmóti til samanburðar. 
+
+Umfang verkefnisins 
+Verkefnið getur hentað allt frá tveimur til fjórum nemendum og er reiknað með u.þ.b. 300-360 klst vinnuframlagi hvers nemanda. 
+Núverandi hópur:
+
+Breki Steinn Mánason
+Guðmundur Óli Halldórsson
+Sigurður Detlef Jónsson
+Þorgils Árni Hjálmarsson
+
+
+Þróunarumhverfi og tækni 
+Viðmótið verður skrifað í c++ í QT framework-inu með sum grafísk element gerð í OpenGL. API-ið er í raun module sem verður importað í c++ kóðann fyrir viðmótið. 
+
+Aðstaða nemenda 
+Aðstaða verður aðgengileg hvenær sem er og verður á skrifstofu inni í stærra húsnæði þar sem mörg start-up fyrirtæki hafa einnig aðstöðu.
+
+Hæfniskröfur 
+Gott væri að a.m.k. einn nemenda í hópnum hafi náð góðum árangri í Tölvugrafík eða grafík-, hreyfimynda- eða leikjatengdum áfanga og eins væri einhver reynsla af þróun smáforrita og tölvusamskiptum æskileg en að öðru leyti eru gerðar sérstakar hæfniskröfur umfram það sem eðlilegt má teljast meðal nemenda á lokaári náms í tölvunarfræði eða hugbúnaðarverkfræði. 
+
+Um fyrirtækið 
+Fyrirtækið hefur enn sem komið er einn starfsmann og er önnur vinna hönnunar- og þróunarteymis aðkeypt. Sem fyrr segir er þróun hljóðgervilsins sjálfs aðalverkefni fyrirtækisins um þessar mundir.
+
