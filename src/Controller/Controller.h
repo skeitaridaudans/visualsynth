@@ -1,7 +1,9 @@
 #ifndef QTQUICKTEST_CONTROLLER_H
 #define QTQUICKTEST_CONTROLLER_H
 
-#include <QMap>
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <QSet>
 #include "Operator.h"
 #include "Api.h"
@@ -18,14 +20,14 @@ public:
     void removeModulator(int operatorId, int modulatorId);
     void noteOn(int note);
     void noteOff(int note);
-    QMap<int, std::unique_ptr<Operator>>& operators();
+    std::unordered_map<int, std::unique_ptr<Operator>>& operators();
 
 private:
     Controller();
     void sendOperator(int operatorId);
 
-    QMap<int, std::unique_ptr<Operator>> operators_;
-    QSet<int> availableOperatorIds_;
+    std::unordered_map<int, std::unique_ptr<Operator>> operators_;
+    std::unordered_set<int> availableOperatorIds_;
     Api api;
 };
 

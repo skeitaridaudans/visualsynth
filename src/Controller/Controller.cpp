@@ -8,20 +8,20 @@ Controller::Controller() {
 
 void Controller::addOperator() {
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
-    availableOperatorIds_.remove(id);
+    availableOperatorIds_.erase(id);
 
     auto op = std::make_unique<Operator>(id);
-    operators_.insert(id, op);
+    operators_.insert(std::make_pair<int, std::unique_ptr<Operator>>((int)id, std::move(op)));
 }
 
 void Controller::removeOperator(int operatorId) {
-    operators_.remove(operatorId);
+    operators_.erase(operatorId);
     availableOperatorIds_.insert(operatorId);
 
     // Remove operator from all modulatedBy lists
     for (const auto& op : operators_) {
-        if (std::find(op->modulatedBy.begin(), op->modulatedBy.end(), operatorId) == op->modulatedBy.end()) {
-            op->modulatedBy.erase(std::remove(op->modulatedBy.begin(), op->modulatedBy.end(), operatorId),op->modulatedBy.end());
+        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) == op.second->modulatedBy.end()) {
+            op.second->modulatedBy.erase(std::remove(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId),op.second->modulatedBy.end());
         }
     }
 }
@@ -40,7 +40,7 @@ void Controller::changeFrequency(int operatorId, long frequency) {
 }
 
 void Controller::changeAmplitude(int operatorId, long amplitude) {
-    operators_[operatorId]->frequency = frequency;
+    operators_[operatorId]->amplitude = amplitude;
     sendOperator(operatorId);
 }
 
@@ -60,7 +60,7 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
 
     // Check if modulator is modulating any other operator before setting isModulator to false
     for (const auto& op_ : operators_) {
-        if (std::find(op_->modulatedBy.begin(), op_->modulatedBy.end(), modulatorId) == op_->modulatedBy.end()) {
+        if (std::find(op_.second->modulatedBy.begin(), op_.second->modulatedBy.end(), modulatorId) == op_.second->modulatedBy.end()) {
             return;
         }
     }
@@ -72,7 +72,6 @@ void Controller::sendOperator(int operatorId) {
     api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
 }
 
-QMap<int, std::unique_ptr<Operator>> &Controller::operators() {
+std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
     return operators_;
 }
-
