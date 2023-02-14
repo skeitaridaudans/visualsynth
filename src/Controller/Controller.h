@@ -4,26 +4,29 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <QSet>
+#include <QObject>
+#include <iostream>
 #include "Operator.h"
 #include "Api.h"
 
-class Controller {
+class Controller : public QObject {
+    Q_OBJECT
 public:
-    static Controller instance;
+    static std::unique_ptr<Controller> instance;
+    Controller (QObject* parent = 0);
 
-    void addOperator();
-    void removeOperator(int operatorId);
-    void changeFrequency(int operatorId, long frequency);
-    void changeAmplitude(int operatorId, long amplitude);
-    void addModulator(int operatorId, int modulatorId);
-    void removeModulator(int operatorId, int modulatorId);
-    void noteOn(int note);
-    void noteOff(int note);
+    Q_INVOKABLE void addOperator();
+    Q_INVOKABLE void removeOperator(int operatorId);
+    Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
+    Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
+    Q_INVOKABLE void addModulator(int operatorId, int modulatorId);
+    Q_INVOKABLE void removeModulator(int operatorId, int modulatorId);
+    Q_INVOKABLE void noteOn(int note);
+    Q_INVOKABLE void noteOff(int note);
+    Q_INVOKABLE void test() { std::cout << "Test" << std::endl; }
     std::unordered_map<int, std::unique_ptr<Operator>>& operators();
 
 private:
-    Controller();
     void sendOperator(int operatorId);
 
     std::unordered_map<int, std::unique_ptr<Operator>> operators_;

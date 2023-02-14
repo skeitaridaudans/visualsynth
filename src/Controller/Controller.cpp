@@ -1,6 +1,8 @@
 #include "Controller.h"
 
-Controller::Controller() {
+std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
+
+Controller::Controller(QObject *parent) : QObject(parent) {
     for (int i = 0; i < 8; i++) {
         availableOperatorIds_.insert(i);
     }

@@ -1,6 +1,8 @@
 #include "main.h"
 #include "src/SinWaveView/SinWaveItem.h"
 #include "src/BoxView/BoxView.h"
+#include <QQmlContext>
+#include "Controller/Controller.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +19,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+    engine.rootContext()->setContextProperty("controller", Controller::instance.get());
 
     return app.exec();
 }

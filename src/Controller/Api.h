@@ -11,8 +11,8 @@ public:
     Api();
 
     void sendOperatorValue(bool attack, int envelopeId, int operatorId, float frequency, float amplitude);
-    void noteOn(int midiNote);
-    void noteOff(int midiNote);
+    void noteOn(unsigned char key);
+    void noteOff(unsigned char key);
 };
 
 

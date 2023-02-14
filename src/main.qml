@@ -132,4 +132,23 @@ Window {
         height: 800
     }
 
+    Button {
+        id: button
+        x: 1616
+        width: 224
+        height: 96
+        text: qsTr("Send note")
+        anchors.right: parent.right
+        anchors.top: parent.top
+        font.pointSize: 16
+        anchors.rightMargin: 80
+        anchors.topMargin: 70
+        onPressed: {
+            controller.noteOn(60)
+        }
+        onReleased: {
+            controller.noteOff(60)
+        }
+    }
+
 }
