@@ -1,13 +1,20 @@
 List of variables by priority
 
 1. Operators
-	1.1 Frequency    - freq long(), operator_id int()
-	1.2 Amplitude    - amp long(), operator_id int()
-	1.3 addModulator - operator_id int, operator_id int
+	1.1 (
+		1.1.1 Frequency    - freq long(), operator_id int()
+		1.1.2 Amplitude    - amp long(), operator_id int()
+		1.1.2 Envelope     - ?
+	)
+	1.3 addModulator - operator_id int,  modulator_id int
 	1.4 addCarrier   - operator_id int
-4. AmpEnv -
-	4.1. Attack  - amp long()
-	4.2  Sustain - amp long()
-	4.3  Decay   - amp long()
-	4.4  release - amp long()
- 
+	1.5 removeCarrier - operator_id int,
+	1.6 removeModulator - operator_id int, modulator_id int
+2. AmpEnv -
+	2.1. Attack  - amp long()
+	2.2  Sustain - amp long()
+	2.3  Decay   - amp long()
+	2.4  release - amp long()
+3. MIDI -
+	3.1 noteOn  - midi value uint() 
+	3.2 noteOff - midi value uint()
