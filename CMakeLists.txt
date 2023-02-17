@@ -4,33 +4,44 @@ project(QtQuickTest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "/home/gilli/Qt/6.4.2/gcc_64")
 
-# To build with inetersynth
-set(CMAKE_PREFIX_PATH "/opt/Qt/6.4.2/gcc_64")
-SET(GCC_COVERAGE_LINK_FLAGS    "-lrtmidi")
+set(ENABLE_INTERSYNTH FALSE)
+
+if (ENABLE_INTERSYNTH)
+	add_definitions(-DUSE_INTERSYNTH)
+endif()
+
 
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
 	message(STATUS ">>> Linux")
 
-	# To build with intersynth
-	set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-	set(CMAKE_HAVE_THREADS_LIBRARY 1)
-	set(CMAKE_USE_WIN32_THREADS_INIT 0)
-	set(CMAKE_USE_PTHREADS_INIT 1)
-	set(THREADS_PREFER_PTHREAD_FLAG ON)
+	if (EXISTS /home/gilli/Qt)
+		set(CMAKE_PREFIX_PATH "/home/gilli/Qt/6.4.2/gcc_64")
 
-	# Previous build config
-	#set(dir ${CMAKE_CURRENT_SOURCE_DIR}/../build/)
-	#set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
-	#set(LIBRARY_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
-	#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${dir})
-	#set(CMAKE_BUILD_FILES_DIRECTORY ${dir})
-	#set(CMAKE_BUILD_DIRECTORY ${dir})
-	#set(CMAKE_BINARY_DIR  ${dir})
-	#SET(EXECUTABLE_OUTPUT_PATH ${dir})
-	#SET(LIBRARY_OUTPUT_PATH ${dir}lib)
-	#SET(CMAKE_CACHEFILE_DIR ${dir})
+		set(dir ${CMAKE_CURRENT_SOURCE_DIR}/../build/)
+		set(EXECUTABLE_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
+		set(LIBRARY_OUTPUT_PATH ${dir} CACHE PATH "Build directory" FORCE)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${dir})
+		set(CMAKE_BUILD_FILES_DIRECTORY ${dir})
+		set(CMAKE_BUILD_DIRECTORY ${dir})
+		set(CMAKE_BINARY_DIR  ${dir})
+		SET(EXECUTABLE_OUTPUT_PATH ${dir})
+		SET(LIBRARY_OUTPUT_PATH ${dir}lib)
+		SET(CMAKE_CACHEFILE_DIR ${dir})
+	else()
+		set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+
+		set(CMAKE_PREFIX_PATH "/opt/Qt/6.4.2/gcc_64")
+	endif()
+
+	# To build with intersynth
+	if (ENABLE_INTERSYNTH)
+		SET(GCC_COVERAGE_LINK_FLAGS    "-lrtmidi")
+		set(CMAKE_HAVE_THREADS_LIBRARY 1)
+		set(CMAKE_USE_WIN32_THREADS_INIT 0)
+		set(CMAKE_USE_PTHREADS_INIT 1)
+		set(THREADS_PREFER_PTHREAD_FLAG ON)
+	endif()
 else()
 	set(CMAKE_PREFIX_PATH "C:\\Qt\\6.4.2\\mingw_64")
 endif()
