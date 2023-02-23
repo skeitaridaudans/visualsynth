@@ -44,8 +44,21 @@ void BoxViewRenderer::render() {
 
 void BoxViewRenderer::addOperator(double x, double y) {
     const auto& controller = Controller::instance;
+
+    // TODO: Remove this when selecting modulator has been implemented
+    // If there is another operator, make it a modulator of the new operator
+    std::optional<int> modulatedBy = std::nullopt;
+    if (!controller->operators().empty()) {
+        const auto& first = *controller->operators().begin();
+        modulatedBy = std::make_optional<int>(first.first);
+    }
+
     auto id = controller->addOperator();
     const auto& operator_ = controller->getOperatorById(id);
+
+    if (modulatedBy.has_value()) {
+        operator_->modulatedBy.push_back(modulatedBy.value());
+    }
 
     operator_->position = QPointF(x, y);
 }

@@ -6,6 +6,8 @@
 #include <QOpenGLFunctions>
 #include <QCursor>
 #include <QGuiApplication>
+#include "src/Controller/Controller.h"
+#include "src/GlUtils/Utils.h"
 
 const double kBorderWidth = 0.02;
 const double kBoxSize = 0.1;
@@ -36,6 +38,14 @@ void OperatorDrawer::draw(Operator* operator_) {
     drawBox(operator_);
 
     glPopMatrix();
+
+    // Draw modulator lines
+    auto const& controller = Controller::instance;
+    for (const auto opId : operator_->modulatedBy) {
+        const auto& position = controller->getOperatorById(opId)->position;
+
+        drawLine(position, operator_->position);
+    }
 }
 
 void OperatorDrawer::drawBox(Operator* operator_) {
