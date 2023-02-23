@@ -2,6 +2,8 @@
 // Created by star on 9.2.2023.
 //
 
+#ifdef USE_INTERSYNTH
+
 #ifndef MIDI_SYNTH_INTERSYNTH_H
 #define MIDI_SYNTH_INTERSYNTH_H
 
@@ -25,3 +27,5 @@ bool intersynth_change_operator_values(unsigned char operator_, unsigned char al
 bool intersynth_add_modulator(int operator_id, int modulator_id);
 
 #endif //MIDI_SYNTH_INTERSYNTH_H
+
+#endif

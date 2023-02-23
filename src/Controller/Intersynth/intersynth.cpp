@@ -2,6 +2,8 @@
 // Created by star on 9.2.2023.
 //
 
+#ifdef USE_INTERSYNTH
+
 #include <cstring>
 #include "intersynth.h"
 struct RtMidiWrapper* midiout = {0};
@@ -125,3 +127,4 @@ bool intersynth_add_modulator(int operator_id, int modulator_id)
 }
 
 
+#endif

@@ -73,7 +73,10 @@ target_link_libraries(appQtQuickTest
 
 target_link_libraries(appQtQuickTest PRIVATE OpenGL::GL)
 target_link_libraries(appQtQuickTest PRIVATE OpenGL::GLU)
+
+if(ENABLE_INTERSYNTH)
 target_link_libraries(appQtQuickTest PRIVATE rtmidi)
+endif()
 
 install(TARGETS appQtQuickTest
     BUNDLE DESTINATION ${dir}
