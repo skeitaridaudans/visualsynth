@@ -19,9 +19,15 @@ Box::Box(BoxView *boxView, double x, double y) : boxView_(boxView), boxPosX_(x),
 void Box::update() {
     const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
 
-    if (isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
+    if (!isDragging_ && isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
+        isDragging_ = true;
+    }
+    if (isDragging_ && QGuiApplication::mouseButtons() == Qt::LeftButton) {
         boxPosX_ = pos.x() - kBoxSize / 2.0;
         boxPosY_ = pos.y() - kBoxSize / 2.0;
+    }
+    else if (isDragging_) {
+        isDragging_ = false;
     }
 }
 

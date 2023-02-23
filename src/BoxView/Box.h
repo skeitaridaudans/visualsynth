@@ -25,6 +25,7 @@ private:
     double colorGreen_ = 0.0;
     double colorBlue_ = 0.0;
     BoxView *boxView_;
+    bool isDragging_ = false;
 };
 
 
