@@ -15,7 +15,7 @@ public:
     static std::unique_ptr<Controller> instance;
     Controller (QObject* parent = 0);
 
-    Q_INVOKABLE void addOperator();
+    Q_INVOKABLE int addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
     Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
     Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
@@ -24,7 +24,8 @@ public:
     Q_INVOKABLE void noteOn(int note);
     Q_INVOKABLE void noteOff(int note);
     Q_INVOKABLE void test() { std::cout << "Test" << std::endl; }
-    std::unordered_map<int, std::unique_ptr<Operator>>& operators();
+    const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
+    const std::unique_ptr<Operator> &getOperatorById(int id);
 
 private:
     void sendOperator(int operatorId);

@@ -8,12 +8,14 @@ Controller::Controller(QObject *parent) : QObject(parent) {
     }
 }
 
-void Controller::addOperator() {
+int Controller::addOperator() {
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
 
     auto op = std::make_unique<Operator>(id);
     operators_.insert(std::make_pair<int, std::unique_ptr<Operator>>((int)id, std::move(op)));
+
+    return id;
 }
 
 void Controller::removeOperator(int operatorId) {
@@ -74,6 +76,10 @@ void Controller::sendOperator(int operatorId) {
     api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
 }
 
-std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
+const std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
     return operators_;
+}
+
+const std::unique_ptr<Operator> &Controller::getOperatorById(int id) {
+    return operators_[id];
 }

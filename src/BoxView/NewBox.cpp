@@ -16,7 +16,7 @@ void NewBox::update() {
     const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
 
     if (isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton && !boxCreated_) {
-        boxViewRenderer_->addBox(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
+        boxViewRenderer_->addOperator(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
         boxCreated_ = true;
     }
     else if (!isInsideBox(pos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {

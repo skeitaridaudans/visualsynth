@@ -17,6 +17,7 @@ struct Operator {
     bool isCarrier;
     std::vector<int> modulatedBy;
     QPointF position;
+    bool isBeingDragged;
 };
 
 

@@ -9,7 +9,7 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include "BoxView.h"
-#include "Box.h"
+#include "OperatorDrawer.h"
 #include "NewBox.h"
 
 class NewBox;
@@ -21,11 +21,11 @@ public:
     QOpenGLFramebufferObject *createFramebufferObject(const QSize &size) override;
 
     void render() override;
-    void addBox(double x, double y);
+    void addOperator(double x, double y);
 protected:
     QOpenGLContext *m_context;
 private:
-    std::vector<std::unique_ptr<Box>> boxes_;
+    std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<NewBox> newBox_;
 };
 
