@@ -19,7 +19,7 @@ void NewBox::update() {
         boxViewRenderer_->addBox(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
         boxCreated_ = true;
     }
-    else {
+    else if (!isInsideBox(pos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
         boxCreated_ = false;
     }
 }
