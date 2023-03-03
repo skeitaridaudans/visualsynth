@@ -132,32 +132,32 @@ Window {
         height: 800
     }
 
-    Button {
-        id: button
-        x: 717
-        width: 224
-        height: 96
-        text: qsTr("Send note")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        font.pointSize: 16
-        anchors.rightMargin: 979
-        anchors.topMargin: 957
-        onPressed: {
-            controller.noteOn(60)
-        }
-        onReleased: {
-            controller.noteOff(60)
-        }
-    }
+//    Button {
+//        id: button
+//        x: 717
+//        width: 224
+//        height: 96
+//        text: qsTr("Send note")
+//        anchors.right: parent.right
+//        anchors.top: parent.top
+//        font.pointSize: 16
+//        anchors.rightMargin: 979
+//        anchors.topMargin: 957
+//        onPressed: {
+//            controller.noteOn(60)
+//        }
+//        onReleased: {
+//            controller.noteOff(60)
+//        }
+//    }
 
     Rectangle {
         // Operator info box
         id: operatorInfo
-        x: 1163
-        y: 45
-        width: 712
-        height: 361
+        x: 1212
+        y: 100
+        width: 608
+        height: 277
         color: "#000000"
         // Temporary border boundsof box
         border.color: "#aa3232"
@@ -178,7 +178,7 @@ Window {
         Text {
             id: freqText
             x: 12
-            y: 121
+            y: 79
             width: 80
             height: 49
             color: "#f0f0f0"
@@ -191,7 +191,7 @@ Window {
         Rectangle {
             id: freqValueBox
             x: 98
-            y: 105
+            y: 79
             width: 219
             height: 65
             color: "#222222"
@@ -215,24 +215,24 @@ Window {
         Text {
             id: ampText
             x: 12
-            y: 214
+            y: 163
             width: 80
             height: 43
             text: qsTr("Amp:")
             font.pixelSize: 32
             color: "#f0f0f0"
         }
-
+        // Amp value box
         Rectangle {
             id: ampValueBox
             x: 98
-            y: 208
+            y: 158
             width: 219
             height: 65
             color: "#222222"
             border.color: "#f0f0f0"
             border.width: 3
-
+            // Amp value text
             Text {
                 id: ampValueText
                 x: 8
@@ -244,37 +244,49 @@ Window {
                 color: "#f0f0f0"
             }
         }
-
+        // Operator box
         Rectangle {
             id: opDrag
-            x: 438
+            x: 359
             y: 38
             width: 200
             height: 200
-
-            MouseArea {
-                id: dragger
-                anchors.fill: parent
-                drag {
-                    target: opDrag
-                    axis: Drag.YAxis
-                }
-
-                property bool dragActive: drag.active
-
-
-                onDragActiveChanged: {
-                    if(drag.active){
-                        console.log("HEHE")
-                    } else {
-                        console.log("HEHE3")
-                    }
-                }
-            }
-
             // TODO: get color of operator
             // TODO: Change color on drag
             color: "#ff961d"
+            // Make it respond to geastures
+            MultiPointTouchArea{
+                anchors.fill: parent
+                anchors.rightMargin: 0
+                anchors.bottomMargin: 0
+                anchors.leftMargin: 0
+                anchors.topMargin: 0
+                property var drag: parent
+                property var offset : null
+
+                function dragMove(holder, point){
+                    if (point && drag) {
+                        consnole.log("oh we be draggin");
+                    }
+                }
+
+                onPressed: {
+                    var point = touchPoints[0];
+                    console.log("Oh we be pressin")
+                    parent.width = 250;
+
+                    offset = Qt.point(point.x, point.y);
+                }
+
+                onReleased: {
+                    parent.width = 200;
+                    console.log("Oh we be releasing")
+                }
+
+
+            }
+
+
         }
 
 
