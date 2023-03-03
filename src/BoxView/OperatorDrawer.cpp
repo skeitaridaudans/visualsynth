@@ -8,6 +8,7 @@
 #include <QGuiApplication>
 #include "src/Controller/Controller.h"
 #include "src/GlUtils/Utils.h"
+#include "src/Utils/Utils.h"
 
 const double kBorderWidth = 0.02;
 const double kBoxSize = 0.1;
@@ -42,9 +43,10 @@ void OperatorDrawer::draw(Operator* operator_) {
     // Draw modulator lines
     auto const& controller = Controller::instance;
     for (const auto opId : operator_->modulatedBy) {
-        const auto& position = controller->getOperatorById(opId)->position;
+        const auto modulatorPosition = closestPointInBox(controller->getOperatorById(opId)->position, operator_->position, kBoxSize, kBoxSize);
+        const auto modulatedPosition = closestPointInBox(operator_->position, controller->getOperatorById(opId)->position, kBoxSize, kBoxSize);
 
-        drawLine(position, operator_->position);
+        drawLine(modulatorPosition, modulatedPosition, getColorForOperator(controller->getOperatorById(opId).get()));
     }
 }
 
