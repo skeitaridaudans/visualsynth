@@ -15,6 +15,7 @@ public:
     static std::unique_ptr<Controller> instance;
     Controller (QObject* parent = 0);
 
+    Q_INVOKABLE bool isConnected();     //Breki - checks if connection to the synth is working
     Q_INVOKABLE int addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
     Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
