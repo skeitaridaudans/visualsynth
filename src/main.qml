@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import SinViewItem
 import BoxView
-
+// This does not work
 Window {
     id: window
     width: 1920
@@ -134,21 +134,150 @@ Window {
 
     Button {
         id: button
-        x: 1616
+        x: 717
         width: 224
         height: 96
         text: qsTr("Send note")
         anchors.right: parent.right
         anchors.top: parent.top
         font.pointSize: 16
-        anchors.rightMargin: 80
-        anchors.topMargin: 70
+        anchors.rightMargin: 979
+        anchors.topMargin: 957
         onPressed: {
             controller.noteOn(60)
         }
         onReleased: {
             controller.noteOff(60)
         }
+    }
+
+    Rectangle {
+        // Operator info box
+        id: operatorInfo
+        x: 1163
+        y: 45
+        width: 712
+        height: 361
+        color: "#000000"
+        // Temporary border boundsof box
+        border.color: "#aa3232"
+        border.width: 5
+        // Box title
+        Text {
+            id: operatorName
+            x: 27
+            y: 14
+            //TODO: get ID of operator and add to it!
+            text: qsTr("Operator: ")
+            color: "#f0f0f0"
+            font.pixelSize: 32
+        }
+
+
+        // Frequency text
+        Text {
+            id: freqText
+            x: 12
+            y: 121
+            width: 80
+            height: 49
+            color: "#f0f0f0"
+            text: qsTr("Freq: ")
+            font.family: "Noto Sans"
+            font.pixelSize: 32
+
+        }
+        // Frequency amount
+        Rectangle {
+            id: freqValueBox
+            x: 98
+            y: 105
+            width: 219
+            height: 65
+            color: "#222222"
+            border.color: "#f0f0f0"
+            border.width: 3
+
+            Text {
+                //TODO: get value from operator and update text
+                id: freqValueText
+                x: 8
+                y: 8
+                width: 203
+                height: 49
+                text: qsTr("1337 " + "Hz")
+                font.pixelSize: 32
+                color: "#f0f0f0"
+            }
+        }
+
+        // Amplitude text
+        Text {
+            id: ampText
+            x: 12
+            y: 214
+            width: 80
+            height: 43
+            text: qsTr("Amp:")
+            font.pixelSize: 32
+            color: "#f0f0f0"
+        }
+
+        Rectangle {
+            id: ampValueBox
+            x: 98
+            y: 208
+            width: 219
+            height: 65
+            color: "#222222"
+            border.color: "#f0f0f0"
+            border.width: 3
+
+            Text {
+                id: ampValueText
+                x: 8
+                y: 8
+                width: 203
+                height: 49
+                text: qsTr("420 " + "Db")
+                font.pixelSize: 32
+                color: "#f0f0f0"
+            }
+        }
+
+        Rectangle {
+            id: opDrag
+            x: 438
+            y: 38
+            width: 200
+            height: 200
+
+            MouseArea {
+                id: dragger
+                anchors.fill: parent
+                drag {
+                    target: opDrag
+                    axis: Drag.YAxis
+                }
+
+                property bool dragActive: drag.active
+
+
+                onDragActiveChanged: {
+                    if(drag.active){
+                        console.log("HEHE")
+                    } else {
+                        console.log("HEHE3")
+                    }
+                }
+            }
+
+            // TODO: get color of operator
+            // TODO: Change color on drag
+            color: "#ff961d"
+        }
+
+
     }
 
 }
