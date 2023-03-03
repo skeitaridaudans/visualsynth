@@ -23,15 +23,19 @@ public:
     Q_INVOKABLE void removeModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void noteOn(int note);
     Q_INVOKABLE void noteOff(int note);
-    Q_INVOKABLE void test() { std::cout << "Test" << std::endl; }
+    Q_INVOKABLE void selectOperator(int operatorId);
+    Q_INVOKABLE void deselectOperator();
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
+    std::optional<int> selectedOperatorId();
+    std::optional<std::reference_wrapper<std::unique_ptr<Operator>>>  selectedOperator();
 
 private:
     void sendOperator(int operatorId);
 
     std::unordered_map<int, std::unique_ptr<Operator>> operators_;
     std::unordered_set<int> availableOperatorIds_;
+    std::optional<int> selectedOperatorId_;
     Api api;
 };
 

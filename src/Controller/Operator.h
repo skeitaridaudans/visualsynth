@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <QPoint>
+#include <chrono>
 
 struct Operator {
     Operator(int id);
@@ -18,6 +19,7 @@ struct Operator {
     std::vector<int> modulatedBy;
     QPointF position;
     bool isBeingDragged;
+    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
 };
 
 
