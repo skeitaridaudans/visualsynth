@@ -8,6 +8,11 @@ Controller::Controller(QObject *parent) : QObject(parent) {
     }
 }
 
+bool Controller::isConnected(){
+    //Breki - checks if connection to the synth is working
+    return true;
+}
+
 int Controller::addOperator() {
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
