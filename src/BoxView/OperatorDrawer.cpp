@@ -19,9 +19,36 @@ OperatorDrawer::OperatorDrawer(BoxView *boxView) : boxView_(boxView) {
 void OperatorDrawer::update(Operator* operator_) {
     const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
 
+    const auto& controller = Controller::instance;
     if (!operator_->isBeingDragged && isInsideBox(operator_, pos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        operator_->isBeingDragged = true;
+        if (!operator_->timeSinceClick.has_value()) {
+            operator_->timeSinceClick = std::chrono::high_resolution_clock::now();
+        }
+        else {
+            const auto endTime = std::chrono::high_resolution_clock::now();
+            const auto timeElapsed = std::chrono::duration<double, std::milli>(endTime-operator_->timeSinceClick.value()).count();
+
+            // Start dragging
+            if (timeElapsed >= 200) {
+                operator_->isBeingDragged = true;
+                operator_->timeSinceClick = std::nullopt;
+                controller->deselectOperator();
+            }
+        }
     }
+    // Click
+    else if (!operator_->isBeingDragged && isInsideBox(operator_, pos) && operator_->timeSinceClick.has_value()) {
+        const auto selectedOperatorId = controller->selectedOperatorId();
+
+        if (selectedOperatorId.has_value()) {
+            controller->addModulator(operator_->id, selectedOperatorId.value());
+        }
+        else {
+            controller->selectOperator(operator_->id);
+        }
+    }
+
+
     if (operator_->isBeingDragged && QGuiApplication::mouseButtons() == Qt::LeftButton) {
         operator_->position.setX(pos.x() - kBoxSize / 2.0);
         operator_->position.setY(pos.y() - kBoxSize / 2.0);
