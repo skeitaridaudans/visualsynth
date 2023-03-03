@@ -8,6 +8,11 @@ Controller::Controller(QObject *parent) : QObject(parent) {
     }
 }
 
+bool Controller::isConnected(){
+    //Breki - checks if connection to the synth is working
+    return true;
+}
+
 int Controller::addOperator() {
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
@@ -76,10 +81,32 @@ void Controller::sendOperator(int operatorId) {
     api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
 }
 
+void Controller::selectOperator(int id) {
+    selectedOperatorId_ = {id};
+}
+
+void Controller::deselectOperator() {
+    selectedOperatorId_ = std::nullopt;
+}
+
 const std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
     return operators_;
 }
 
 const std::unique_ptr<Operator> &Controller::getOperatorById(int id) {
     return operators_[id];
+}
+
+std::optional<int> Controller::selectedOperatorId() {
+    return selectedOperatorId_;
+}
+
+std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::selectedOperator() {
+    if (selectedOperatorId_.has_value()) {
+        auto& operator_ = operators_[selectedOperatorId_.value()];
+        return  { operator_ };
+    }
+    else {
+        return std::nullopt;
+    }
 }

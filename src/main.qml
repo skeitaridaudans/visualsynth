@@ -17,14 +17,17 @@ Window {
 
     Rectangle {
         id: rectangle
-        y: 957
+        y: 745
         width: 351
         height: 123
         color: "#000000"
+            border.color: "gray"
+            border.width: 3
+            radius: 3
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 177
-        anchors.bottomMargin: 0
+        anchors.leftMargin: 1489
+        anchors.bottomMargin: 212
 
         Label {
             id: label
@@ -130,7 +133,9 @@ Window {
         anchors.topMargin: 50
         width: 900
         height: 800
+
     }
+
 
 //    Button {
 //        id: button
@@ -171,8 +176,6 @@ Window {
             text: qsTr("Operator: ")
             color: "#f0f0f0"
             font.pixelSize: 32
-        }
-
 
         // Frequency text
         Text {
@@ -292,4 +295,11 @@ Window {
 
     }
 
+    RadioButton {
+        id: radioButton
+        checked: controller.isConnected()
+        x: 64
+        y: 938
+        text: qsTr("CONNECTED")
+    }
 }
