@@ -272,7 +272,7 @@ Window {
 
                 onPressed: {
                     var point = touchPoints[0];
-                    console.log("Oh we be pressin")
+                    console.log("Oh we be pressin");
                     parent.width = 250;
 
                     offset = Qt.point(point.x, point.y);
@@ -280,7 +280,7 @@ Window {
 
                 onReleased: {
                     parent.width = 200;
-                    console.log("Oh we be releasing")
+                    console.log("Oh we be releasing");
                 }
 
 
