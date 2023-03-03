@@ -46,7 +46,7 @@ void OperatorDrawer::draw(Operator* operator_) {
         const auto modulatorPosition = closestPointInBox(controller->getOperatorById(opId)->position, operator_->position, kBoxSize, kBoxSize);
         const auto modulatedPosition = closestPointInBox(operator_->position, controller->getOperatorById(opId)->position, kBoxSize, kBoxSize);
 
-        drawLine(modulatorPosition, modulatedPosition);
+        drawLine(modulatorPosition, modulatedPosition, getColorForOperator(controller->getOperatorById(opId).get()));
     }
 }
 

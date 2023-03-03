@@ -3,13 +3,15 @@
 //
 
 #include <QOpenGLFunctions>
-#include <iostream>
+#include <QColor>
 #include "Utils.h"
 
-void drawLine(const QPointF& from, const QPointF& to) {
+void drawLine(const QPointF& from, const QPointF& to, const QColor& color) {
     const auto between = (to - from);
     const auto distance = sqrt(QPointF::dotProduct(between, between));
     const auto angle = between.x() >= 0 ? atan(between.y() / between.x()) : atan(between.y() / between.x()) - M_PI;
+
+    glColor3d(color.redF(), color.greenF(), color.blueF());
 
     glPushMatrix();
     glTranslated(from.x(), from.y(), 0);

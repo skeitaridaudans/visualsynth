@@ -8,7 +8,7 @@
 
 #include <QPointF>
 
-void drawLine(const QPointF& from, const QPointF& to);
+void drawLine(const QPointF& from, const QPointF& to, const QColor& color);
 
 
 #endif //QTQUICKTEST_GLUTILS_H
