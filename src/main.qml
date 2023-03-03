@@ -303,3 +303,5 @@ Window {
         text: qsTr("CONNECTED")
     }
 }
+}
+
