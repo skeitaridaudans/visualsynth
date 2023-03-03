@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import SinViewItem
 import BoxView
-
+// This does not work
 Window {
     id: window
     width: 1920
@@ -136,23 +136,163 @@ Window {
 
     }
 
-    Button {
-        id: button
-        x: 788
-        width: 224
-        height: 96
-        text: qsTr("Send note")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        font.pointSize: 16
-        anchors.rightMargin: 908
-        anchors.topMargin: 890
-        onPressed: {
-            controller.noteOn(60)
+
+//    Button {
+//        id: button
+//        x: 717
+//        width: 224
+//        height: 96
+//        text: qsTr("Send note")
+//        anchors.right: parent.right
+//        anchors.top: parent.top
+//        font.pointSize: 16
+//        anchors.rightMargin: 979
+//        anchors.topMargin: 957
+//        onPressed: {
+//            controller.noteOn(60)
+//        }
+//        onReleased: {
+//            controller.noteOff(60)
+//        }
+//    }
+
+    Rectangle {
+        // Operator info box
+        id: operatorInfo
+        x: 1212
+        y: 100
+        width: 608
+        height: 277
+        color: "#000000"
+        // Temporary border boundsof box
+        border.color: "#aa3232"
+        border.width: 5
+        // Box title
+        Text {
+            id: operatorName
+            x: 27
+            y: 14
+            //TODO: get ID of operator and add to it!
+            text: qsTr("Operator: ")
+            color: "#f0f0f0"
+            font.pixelSize: 32
+
+        // Frequency text
+        Text {
+            id: freqText
+            x: 12
+            y: 79
+            width: 80
+            height: 49
+            color: "#f0f0f0"
+            text: qsTr("Freq: ")
+            font.family: "Noto Sans"
+            font.pixelSize: 32
+
         }
-        onReleased: {
-            controller.noteOff(60)
+        // Frequency amount
+        Rectangle {
+            id: freqValueBox
+            x: 98
+            y: 79
+            width: 219
+            height: 65
+            color: "#222222"
+            border.color: "#f0f0f0"
+            border.width: 3
+
+            Text {
+                //TODO: get value from operator and update text
+                id: freqValueText
+                x: 8
+                y: 8
+                width: 203
+                height: 49
+                text: qsTr("1337 " + "Hz")
+                font.pixelSize: 32
+                color: "#f0f0f0"
+            }
         }
+
+        // Amplitude text
+        Text {
+            id: ampText
+            x: 12
+            y: 163
+            width: 80
+            height: 43
+            text: qsTr("Amp:")
+            font.pixelSize: 32
+            color: "#f0f0f0"
+        }
+        // Amp value box
+        Rectangle {
+            id: ampValueBox
+            x: 98
+            y: 158
+            width: 219
+            height: 65
+            color: "#222222"
+            border.color: "#f0f0f0"
+            border.width: 3
+            // Amp value text
+            Text {
+                id: ampValueText
+                x: 8
+                y: 8
+                width: 203
+                height: 49
+                text: qsTr("420 " + "Db")
+                font.pixelSize: 32
+                color: "#f0f0f0"
+            }
+        }
+        // Operator box
+        Rectangle {
+            id: opDrag
+            x: 359
+            y: 38
+            width: 200
+            height: 200
+            // TODO: get color of operator
+            // TODO: Change color on drag
+            color: "#ff961d"
+            // Make it respond to geastures
+            MultiPointTouchArea{
+                anchors.fill: parent
+                anchors.rightMargin: 0
+                anchors.bottomMargin: 0
+                anchors.leftMargin: 0
+                anchors.topMargin: 0
+                property var drag: parent
+                property var offset : null
+
+                function dragMove(holder, point){
+                    if (point && drag) {
+                        consnole.log("oh we be draggin");
+                    }
+                }
+
+                onPressed: {
+                    var point = touchPoints[0];
+                    console.log("Oh we be pressin");
+                    parent.width = 250;
+
+                    offset = Qt.point(point.x, point.y);
+                }
+
+                onReleased: {
+                    parent.width = 200;
+                    console.log("Oh we be releasing");
+                }
+
+
+            }
+
+
+        }
+
+
     }
 
     RadioButton {
