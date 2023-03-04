@@ -7,26 +7,20 @@
 
 
 #include "BoxView.h"
-#include "BoxViewRenderer.h"
 
-class BoxViewRenderer;
+class BoxView;
 
 class NewBox {
 public:
-    NewBox(BoxView *boxView, BoxViewRenderer *boxViewRenderer);
+    NewBox(BoxView *boxView);
     void update();
-    void draw();
+    void draw(QPainter* qPainter);
 private:
-    void drawOuter();
-    void drawInner();
-    void drawPlus();
     QPointF widgetCoordsToGl(const QPointF& coords);
     bool isInsideBox(const QPointF& coords);
 
-    double boxPosX_ = 0.85;
-    double boxPosY_ = -0.8;
+    QPoint boxPos_;
     BoxView *boxView_;
-    BoxViewRenderer *boxViewRenderer_;
     bool boxCreated_ = false;
 };
 

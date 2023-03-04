@@ -17,7 +17,7 @@ struct Operator {
     bool isModulator;
     bool isCarrier;
     std::vector<int> modulatedBy;
-    QPointF position;
+    QPoint position;
     bool isBeingDragged;
     std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
 };
