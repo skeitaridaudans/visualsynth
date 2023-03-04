@@ -3,13 +3,25 @@
 //
 
 #include "SinWaveItem.h"
-#include "SinWaveRenderer.h"
 
-QQuickFramebufferObject::Renderer *SinWaveItem::createRenderer() const
-{
-    window()->setPersistentGraphics(true);
-    return new SinWaveRenderer(const_cast<SinWaveItem *>(this));
+SinWaveItem::SinWaveItem(QQuickItem *parent) : QQuickPaintedItem(parent) {
+
 }
+
+void SinWaveItem::paint(QPainter *painter) {
+    painter->setPen(QColor(0, 0, 255));
+
+    const auto incrementStep = 0.001;
+    for (float p = 0.0; p < 1.0; p += incrementStep) {
+        const auto x = p * width();
+        const auto nextX = (p + incrementStep) * width();
+        painter->drawLine(QPoint(x, qSin(sinStartX_ + p * frequency()) * amplitude() * 40 + 40), QPoint(nextX, qSin(sinStartX_ + (p + incrementStep) * frequency()) * amplitude() * 40 + 40));
+    }
+    sinStartX_ += 0.1;
+
+    update();
+}
+
 qreal SinWaveItem::frequency() {
     return frequency_;
 }
@@ -18,10 +30,10 @@ void SinWaveItem::setFrequency(qreal frequency)  {
     frequency_ = frequency;
 }
 
-void SinWaveItem::setHeight(qreal height) {
-    height_ = height;
+void SinWaveItem::setAmplitude(qreal amplitude) {
+    amplitude_ = amplitude;
 }
 
-qreal SinWaveItem::height() {
-    return height_;
+qreal SinWaveItem::amplitude() {
+    return amplitude_;
 }

@@ -6,20 +6,23 @@
 #define QTQUICKTEST_SINWAVEITEM_H
 
 #include <QQuickWindow>
-#include <QQuickFramebufferObject>
+#include <QQuickPaintedItem>
+#include <QPainter>
 
-class SinWaveItem : public QQuickFramebufferObject
+class SinWaveItem : public QQuickPaintedItem
 {
     Q_OBJECT
 public:
-    QQuickFramebufferObject::Renderer *createRenderer() const;
+    explicit SinWaveItem(QQuickItem *parent = nullptr);
+    void paint(QPainter *painter) override;
     qreal frequency();
-    qreal height();
+    qreal amplitude();
     Q_INVOKABLE void setFrequency(qreal frequency);
-    Q_INVOKABLE void setHeight(qreal height);
+    Q_INVOKABLE void setAmplitude(qreal amplitude);
 private:
     qreal frequency_ = 15.0;
-    qreal height_ = 0.9;
+    qreal amplitude_ = 0.9;
+    float sinStartX_ = 0.0;
 };
 
 
