@@ -52,7 +52,7 @@ find_package(OpenGL REQUIRED)
 
 qt_add_executable(appQtQuickTest
 		src/main.cpp
-		src/main.h src/SinWaveView/SinWaveRenderer.cpp src/SinWaveView/SinWaveRenderer.h src/SinWaveView/SinWaveItem.cpp src/SinWaveView/SinWaveItem.h src/BoxView/BoxView.cpp src/BoxView/BoxView.h src/BoxView/OperatorDrawer.cpp src/BoxView/OperatorDrawer.h src/BoxView/NewBox.h src/BoxView/NewBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/GlUtils/Utils.cpp src/GlUtils/Utils.h src/Utils/Utils.cpp src/Utils/Utils.h)
+		src/main.h src/SinWaveView/SinWaveItem.cpp src/SinWaveView/SinWaveItem.h src/BoxView/BoxView.cpp src/BoxView/BoxView.h src/BoxView/OperatorDrawer.cpp src/BoxView/OperatorDrawer.h src/BoxView/NewBox.h src/BoxView/NewBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/GlUtils/Utils.cpp src/GlUtils/Utils.h src/Utils/Utils.cpp src/Utils/Utils.h)
 
 qt_add_qml_module(appQtQuickTest
     URI QtQuickTest

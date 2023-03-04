@@ -90,7 +90,7 @@ Window {
             from: 0.2
             to: 0.95
             value: 0.9
-            onMoved: waveView.setHeight(dial1.value)
+            onMoved: waveView.setAmplitude(dial1.value)
         }
 
         Dial {
