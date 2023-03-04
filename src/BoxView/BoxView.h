@@ -8,12 +8,24 @@
 
 #include <QtCore>
 #include <QQuickWindow>
-#include <QQuickFramebufferObject>
+#include <QPainter>
+#include <QQuickPaintedItem>
+#include "NewBox.h"
+#include "OperatorDrawer.h"
 
-class BoxView : public QQuickFramebufferObject {
+class NewBox;
+
+class OperatorDrawer;
+
+class BoxView : public QQuickPaintedItem {
     Q_OBJECT
 public:
-    QQuickFramebufferObject::Renderer *createRenderer() const override;
+    BoxView(QQuickItem *parent = nullptr);
+    void paint(QPainter *painter) override;
+    void addOperator(double x, double y);
+private:
+    std::unique_ptr<OperatorDrawer> operatorDrawer_;
+    std::unique_ptr<NewBox> newBox_;
 };
 
 

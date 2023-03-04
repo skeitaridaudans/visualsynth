@@ -8,15 +8,20 @@
 #include <QGuiApplication>
 
 const double kBorderWidth = 0.02;
-const double kBoxSize = 0.1;
+const double kBoxSize = 70.0;
+const double kRightAnchor = 20.0;
+const double kPositionY = 60.0;
 
-NewBox::NewBox(BoxView *boxView, BoxViewRenderer *boxViewRenderer) : boxView_(boxView), boxViewRenderer_(boxViewRenderer) {}
+NewBox::NewBox(BoxView *boxView) : boxView_(boxView) {}
 
 void NewBox::update() {
-    const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
+    boxPos_.setX(boxView_->width() - kBoxSize - kRightAnchor);
+    boxPos_.setY(kPositionY);
+
+    const auto pos = boxView_->mapFromGlobal(QCursor::pos());
 
     if (isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton && !boxCreated_) {
-        boxViewRenderer_->addOperator(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
+        boxView_->addOperator(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
         boxCreated_ = true;
     }
     else if (!isInsideBox(pos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
@@ -24,63 +29,19 @@ void NewBox::update() {
     }
 }
 
-void NewBox::draw() {
-    glPushMatrix();
-    glTranslated(boxPosX_, boxPosY_, 0.0);
-    glScaled(kBoxSize, kBoxSize, 1.0);
+void NewBox::draw(QPainter* painter) {
+    QBrush brush(QColor(0, 0, 0));
 
-    drawOuter();
-    drawInner();
-    drawPlus();
+    const auto rect = QRect(boxPos_, QSize(kBoxSize, kBoxSize));
 
-    glPopMatrix();
-}
+    painter->setBrush(brush);
+    painter->setPen(Qt::PenStyle::SolidLine);
+    painter->setPen(QColor(255, 255, 255));
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->drawRect(rect);
 
-void NewBox::drawOuter() {
-    glColor3d(1.0, 1.0, 1.0);
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.0, 0.0);
-    glVertex2d(1.0, 0.0);
-    glVertex2d(0.0, 1.0);
-    glVertex2d(1.0, 1.0);
-    glEnd();
-}
-
-void NewBox::drawInner() {
-    const double innerBoxSize = 1.0 - (kBorderWidth * 2);
-
-    glColor3d(0.0, 0.0, 0.0);
-    glTranslated(kBorderWidth, kBorderWidth, 0.0);
-    glScaled(innerBoxSize, innerBoxSize, 1.0);
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.0, 0.0);
-    glVertex2d(1.0, 0.0);
-    glVertex2d(0.0, 1.0);
-    glVertex2d(1.0, 1.0);
-    glEnd();
-}
-
-void NewBox::drawPlus() {
-    glColor3d(1.0, 1.0, 1.0);
-
-    glTranslated(0.25, 0.25, 0.0);
-    glScaled(0.5, 0.5, 1.0);
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.45, 0.0);
-    glVertex2d(0.55, 0.0);
-    glVertex2d(0.45, 1.0);
-    glVertex2d(0.55, 1.0);
-    glEnd();
-
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.0, 0.45);
-    glVertex2d(1.0, 0.45);
-    glVertex2d(0.0, 0.55);
-    glVertex2d(1.0, 0.55);
-    glEnd();
+    painter->setFont(QFont("Arial", 45));
+    painter->drawText(rect, Qt::AlignCenter, "+");
 }
 
 QPointF NewBox::widgetCoordsToGl(const QPointF &coords) {
@@ -88,6 +49,6 @@ QPointF NewBox::widgetCoordsToGl(const QPointF &coords) {
 }
 
 bool NewBox::isInsideBox(const QPointF &coords) {
-    return coords.x() >= boxPosX_ && coords.x() < boxPosX_ + kBoxSize && coords.y() >= boxPosY_ && coords.y() < boxPosY_ + kBoxSize;
+    return coords.x() >= boxPos_.x() && coords.x() < boxPos_.x() + kBoxSize && coords.y() >= boxPos_.y() && coords.y() < boxPos_.y() + kBoxSize;
 }
 

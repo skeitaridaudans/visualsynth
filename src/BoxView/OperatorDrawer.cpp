@@ -10,14 +10,13 @@
 #include "src/GlUtils/Utils.h"
 #include "src/Utils/Utils.h"
 
-const double kBorderWidth = 0.02;
-const double kBoxSize = 0.1;
+const double kBoxSize = 70.0;
 
 OperatorDrawer::OperatorDrawer(BoxView *boxView) : boxView_(boxView) {
 }
 
 void OperatorDrawer::update(Operator* operator_) {
-    const auto pos = widgetCoordsToGl(boxView_->mapFromGlobal(QCursor::pos()));
+    const auto pos = boxView_->mapFromGlobal(QCursor::pos());
 
     const auto& controller = Controller::instance;
     if (!operator_->isBeingDragged && isInsideBox(operator_, pos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
@@ -58,14 +57,8 @@ void OperatorDrawer::update(Operator* operator_) {
     }
 }
 
-void OperatorDrawer::draw(Operator* operator_) {
-    glPushMatrix();
-    glTranslated(operator_->position.x(), operator_->position.y(), 0.0);
-    glScaled(kBoxSize, kBoxSize, 1.0);
-
-    drawBox(operator_);
-
-    glPopMatrix();
+void OperatorDrawer::draw(QPainter *painter, Operator* operator_) {
+    drawBox(painter, operator_);
 
     // Draw modulator lines
     auto const& controller = Controller::instance;
@@ -73,24 +66,17 @@ void OperatorDrawer::draw(Operator* operator_) {
         const auto modulatorPosition = closestPointInBox(controller->getOperatorById(opId)->position, operator_->position, kBoxSize, kBoxSize);
         const auto modulatedPosition = closestPointInBox(operator_->position, controller->getOperatorById(opId)->position, kBoxSize, kBoxSize);
 
-        drawLine(modulatorPosition, modulatedPosition, getColorForOperator(controller->getOperatorById(opId).get()));
+        painter->setPen(getColorForOperator(controller->getOperatorById(opId).get()));
+        painter->drawLine(modulatorPosition, modulatedPosition);
     }
 }
 
-void OperatorDrawer::drawBox(Operator* operator_) {
+void OperatorDrawer::drawBox(QPainter *painter, Operator* operator_) {
     auto color = getColorForOperator(operator_);
-    glColor3d(color.redF(), color.greenF(), color.blueF());
 
-    glBegin(GL_TRIANGLE_STRIP);
-    glVertex2d(0.0, 0.0);
-    glVertex2d(1.0, 0.0);
-    glVertex2d(0.0, 1.0);
-    glVertex2d(1.0, 1.0);
-    glEnd();
-}
-
-QPointF OperatorDrawer::widgetCoordsToGl(const QPointF &coords) {
-    return QPointF(coords.x() / boxView_->width() * 2.0 - 1.0, coords.y() / boxView_->height() * 2.0 - 1.0);
+    painter->setBrush(QBrush(color));
+    painter->setPen(Qt::PenStyle::NoPen);
+    painter->drawRect(QRect(operator_->position, QSize(kBoxSize, kBoxSize)));
 }
 
 bool OperatorDrawer::isInsideBox(Operator* operator_, const QPointF &coords) {

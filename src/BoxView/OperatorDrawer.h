@@ -9,14 +9,15 @@
 #include "BoxView.h"
 #include "src/Controller/Operator.h"
 
+class BoxView;
+
 class OperatorDrawer {
 public:
     OperatorDrawer(BoxView *boxView);
     void update(Operator* operator_);
-    void draw(Operator* operator_);
+    void draw(QPainter *painter, Operator* operator_);
 private:
-    void drawBox(Operator *operator_);
-    QPointF widgetCoordsToGl(const QPointF& coords);
+    void drawBox(QPainter *painter, Operator *operator_);
     bool isInsideBox(Operator* operator_, const QPointF& coords);
     float randomColor();
     QColor getColorForOperator(Operator *operator_);
