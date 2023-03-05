@@ -2,7 +2,7 @@
 // Created by Guðmundur on 2/6/2023.
 //
 
-#include "BoxView.h"
+#include "OperatorView.h"
 #include "src/Controller/Controller.h"
 
 const int kCarrierLineTextLeftMargin = 20;
@@ -12,12 +12,12 @@ const int kCarrierLineBottomMargin = 40;
 const QString kCarrierText = "Carrier";
 const QFont kCarrierFont("Noto Sans", 25);
 
-BoxView::BoxView(QQuickItem *parent) : QQuickPaintedItem(parent),
-    newBox_(std::make_unique<NewBox>(const_cast<BoxView *>(this))),
-    operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<BoxView *>(this))) {
+OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
+                                                 newBox_(std::make_unique<AddOperatorBox>(const_cast<OperatorView *>(this))),
+                                                 operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<OperatorView *>(this))) {
 }
 
-void BoxView::paint(QPainter *painter) {
+void OperatorView::paint(QPainter *painter) {
     newBox_->update();
     const auto& controller = Controller::instance;
 
@@ -34,7 +34,7 @@ void BoxView::paint(QPainter *painter) {
     update();
 }
 
-void BoxView::drawCarrierLine(QPainter *painter) {
+void OperatorView::drawCarrierLine(QPainter *painter) {
     // Calculate positions
     const auto carrierLineTextStartPos = QPointF(kCarrierLineTextLeftMargin, (int) height() - 40);
 
@@ -49,7 +49,7 @@ void BoxView::drawCarrierLine(QPainter *painter) {
     painter->drawLine(carrierLineLeftPoint, carrierLineRightPoint);
 }
 
-void BoxView::addOperator(double x, double y) {
+void OperatorView::addOperator(double x, double y) {
     const auto& controller = Controller::instance;
 
     const auto id = controller->addOperator();
@@ -58,7 +58,7 @@ void BoxView::addOperator(double x, double y) {
     operator_->position = QPointF(x, y);
 }
 
-std::pair<QPointF, QPointF> BoxView::carrierLineEndPoints() {
+std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
     const QFontMetrics fm(kCarrierFont);
     const auto textWidth = fm.horizontalAdvance(kCarrierText);
     const auto textHeight = fm.height();

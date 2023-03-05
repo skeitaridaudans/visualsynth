@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(QtQuickTest VERSION 0.1 LANGUAGES CXX)
+project(VisualSynth VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,17 +50,17 @@ endif()
 find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
 find_package(OpenGL REQUIRED)
 
-qt_add_executable(appQtQuickTest
+qt_add_executable(appVisualSynth
 		src/main.cpp
-		src/main.h src/SinWaveView/SinWaveItem.cpp src/SinWaveView/SinWaveItem.h src/BoxView/BoxView.cpp src/BoxView/BoxView.h src/BoxView/OperatorDrawer.cpp src/BoxView/OperatorDrawer.h src/BoxView/NewBox.h src/BoxView/NewBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/GlUtils/Utils.cpp src/GlUtils/Utils.h src/Utils/Utils.cpp src/Utils/Utils.h)
+		src/main.h src/SinWaveView/SinWaveItem.cpp src/SinWaveView/SinWaveItem.h src/OperatorView/OperatorView.cpp src/OperatorView/OperatorView.h src/OperatorView/OperatorDrawer.cpp src/OperatorView/OperatorDrawer.h src/OperatorView/AddOperatorBox.h src/OperatorView/AddOperatorBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/GlUtils/Utils.cpp src/GlUtils/Utils.h src/Utils/Utils.cpp src/Utils/Utils.h)
 
-qt_add_qml_module(appQtQuickTest
-    URI QtQuickTest
+qt_add_qml_module(appVisualSynth
+    URI VisualSynth
     VERSION 1.0
     QML_FILES src/main.qml
 )
 
-set_target_properties(appQtQuickTest PROPERTIES
+set_target_properties(appVisualSynth PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -68,16 +68,16 @@ set_target_properties(appQtQuickTest PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appQtQuickTest
+target_link_libraries(appVisualSynth
     PRIVATE Qt6::Quick)
 
-target_link_libraries(appQtQuickTest PRIVATE OpenGL::GL)
-target_link_libraries(appQtQuickTest PRIVATE OpenGL::GLU)
+target_link_libraries(appVisualSynth PRIVATE OpenGL::GL)
+target_link_libraries(appVisualSynth PRIVATE OpenGL::GLU)
 
 if(ENABLE_INTERSYNTH)
-target_link_libraries(appQtQuickTest PRIVATE rtmidi)
+target_link_libraries(appVisualSynth PRIVATE rtmidi)
 endif()
 
-install(TARGETS appQtQuickTest
+install(TARGETS appVisualSynth
     BUNDLE DESTINATION ${dir}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

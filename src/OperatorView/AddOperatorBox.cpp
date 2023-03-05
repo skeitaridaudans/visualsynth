@@ -2,7 +2,7 @@
 // Created by Guðmundur on 2/6/2023.
 //
 
-#include "NewBox.h"
+#include "AddOperatorBox.h"
 #include <QOpenGLFunctions>
 #include <QCursor>
 #include <QGuiApplication>
@@ -12,9 +12,9 @@ const double kBoxSize = 70.0;
 const double kRightAnchor = 20.0;
 const double kPositionY = 60.0;
 
-NewBox::NewBox(BoxView *boxView) : boxView_(boxView) {}
+AddOperatorBox::AddOperatorBox(OperatorView *boxView) : boxView_(boxView) {}
 
-void NewBox::update() {
+void AddOperatorBox::update() {
     boxPos_.setX(boxView_->width() - kBoxSize - kRightAnchor);
     boxPos_.setY(kPositionY);
 
@@ -29,7 +29,7 @@ void NewBox::update() {
     }
 }
 
-void NewBox::draw(QPainter* painter) {
+void AddOperatorBox::draw(QPainter* painter) {
     QBrush brush(QColor(0, 0, 0));
 
     const auto rect = QRectF(boxPos_, QSize(kBoxSize, kBoxSize));
@@ -44,11 +44,11 @@ void NewBox::draw(QPainter* painter) {
     painter->drawText(rect, Qt::AlignCenter, "+");
 }
 
-QPointF NewBox::widgetCoordsToGl(const QPointF &coords) {
+QPointF AddOperatorBox::widgetCoordsToGl(const QPointF &coords) {
     return QPointF(coords.x() / boxView_->width() * 2.0 - 1.0, coords.y() / boxView_->height() * 2.0 - 1.0);
 }
 
-bool NewBox::isInsideBox(const QPointF &coords) {
+bool AddOperatorBox::isInsideBox(const QPointF &coords) {
     return coords.x() >= boxPos_.x() && coords.x() < boxPos_.x() + kBoxSize && coords.y() >= boxPos_.y() && coords.y() < boxPos_.y() + kBoxSize;
 }
 

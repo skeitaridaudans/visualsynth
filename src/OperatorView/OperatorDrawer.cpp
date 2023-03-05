@@ -12,7 +12,7 @@
 
 const double kBoxSize = 70.0;
 
-OperatorDrawer::OperatorDrawer(BoxView *boxView) : boxView_(boxView) {
+OperatorDrawer::OperatorDrawer(OperatorView *boxView) : boxView_(boxView) {
 }
 
 void OperatorDrawer::update(Operator* operator_) {

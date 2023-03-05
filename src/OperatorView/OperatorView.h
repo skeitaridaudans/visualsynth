@@ -10,23 +10,23 @@
 #include <QQuickWindow>
 #include <QPainter>
 #include <QQuickPaintedItem>
-#include "NewBox.h"
+#include "AddOperatorBox.h"
 #include "OperatorDrawer.h"
 
-class NewBox;
+class AddOperatorBox;
 
 class OperatorDrawer;
 
-class BoxView : public QQuickPaintedItem {
+class OperatorView : public QQuickPaintedItem {
     Q_OBJECT
 public:
-    BoxView(QQuickItem *parent = nullptr);
+    OperatorView(QQuickItem *parent = nullptr);
     void paint(QPainter *painter) override;
     void addOperator(double x, double y);
     std::pair<QPointF, QPointF> carrierLineEndPoints();
 private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
-    std::unique_ptr<NewBox> newBox_;
+    std::unique_ptr<AddOperatorBox> newBox_;
 
     void drawCarrierLine(QPainter *painter);
 };

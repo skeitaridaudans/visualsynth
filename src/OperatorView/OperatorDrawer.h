@@ -6,14 +6,14 @@
 #define QTQUICKTEST_OPERATORDRAWER_H
 
 
-#include "BoxView.h"
+#include "OperatorView.h"
 #include "src/Controller/Operator.h"
 
-class BoxView;
+class OperatorView;
 
 class OperatorDrawer {
 public:
-    OperatorDrawer(BoxView *boxView);
+    OperatorDrawer(OperatorView *boxView);
     void update(Operator* operator_);
     void draw(QPainter *painter, Operator* operator_);
 private:
@@ -22,7 +22,7 @@ private:
     float randomColor();
     QColor getColorForOperator(Operator *operator_);
 
-    BoxView *boxView_;
+    OperatorView *boxView_;
 };
 
 
