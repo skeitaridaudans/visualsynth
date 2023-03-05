@@ -15,7 +15,7 @@ void SinWaveItem::paint(QPainter *painter) {
     for (float p = 0.0; p < 1.0; p += incrementStep) {
         const auto x = p * width();
         const auto nextX = (p + incrementStep) * width();
-        painter->drawLine(QPoint(x, qSin(sinStartX_ + p * frequency()) * amplitude() * 40 + 40), QPoint(nextX, qSin(sinStartX_ + (p + incrementStep) * frequency()) * amplitude() * 40 + 40));
+        painter->drawLine(QPointF(x, qSin(sinStartX_ + p * frequency()) * amplitude() * 40 + 40), QPointF(nextX, qSin(sinStartX_ + (p + incrementStep) * frequency()) * amplitude() * 40 + 40));
     }
     sinStartX_ += 0.1;
 

@@ -12,7 +12,7 @@
 
 const double kBoxSize = 70.0;
 
-OperatorDrawer::OperatorDrawer(BoxView *boxView) : boxView_(boxView) {
+OperatorDrawer::OperatorDrawer(OperatorView *boxView) : boxView_(boxView) {
 }
 
 void OperatorDrawer::update(Operator* operator_) {
@@ -51,6 +51,16 @@ void OperatorDrawer::update(Operator* operator_) {
     if (operator_->isBeingDragged && QGuiApplication::mouseButtons() == Qt::LeftButton) {
         operator_->position.setX(pos.x() - kBoxSize / 2.0);
         operator_->position.setY(pos.y() - kBoxSize / 2.0);
+
+        const auto carrierLinePoints = boxView_->carrierLineEndPoints();
+        if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
+            qDebug() << "Stiky!!";
+            operator_->isCarrier = true;
+            operator_->position.setY(carrierLinePoints.first.y() - kBoxSize / 2.0);
+        }
+        else {
+            operator_->isCarrier = false;
+        }
     }
     else if (operator_->isBeingDragged) {
         operator_->isBeingDragged = false;
@@ -76,7 +86,7 @@ void OperatorDrawer::drawBox(QPainter *painter, Operator* operator_) {
 
     painter->setBrush(QBrush(color));
     painter->setPen(Qt::PenStyle::NoPen);
-    painter->drawRect(QRect(operator_->position, QSize(kBoxSize, kBoxSize)));
+    painter->drawRect(QRectF(operator_->position, QSize(kBoxSize, kBoxSize)));
 }
 
 bool OperatorDrawer::isInsideBox(Operator* operator_, const QPointF &coords) {

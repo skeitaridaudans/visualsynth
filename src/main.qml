@@ -2,14 +2,14 @@ import QtQuick
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import SinViewItem
-import BoxView
+import OperatorView
 // This does not work
 Window {
     id: window
     width: 1920
     height: 1080
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("VisualSynth")
     color: "#000000"
 
     Material.theme: Material.Dark
@@ -125,7 +125,7 @@ Window {
         height: 100
     }
 
-    BoxView {
+    OperatorView {
         id: boxes
         anchors.left: parent.left
         anchors.leftMargin: 50

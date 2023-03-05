@@ -6,21 +6,21 @@
 #define QTQUICKTEST_NEWBOX_H
 
 
-#include "BoxView.h"
+#include "OperatorView.h"
 
-class BoxView;
+class OperatorView;
 
-class NewBox {
+class AddOperatorBox {
 public:
-    NewBox(BoxView *boxView);
+    AddOperatorBox(OperatorView *boxView);
     void update();
     void draw(QPainter* qPainter);
 private:
     QPointF widgetCoordsToGl(const QPointF& coords);
     bool isInsideBox(const QPointF& coords);
 
-    QPoint boxPos_;
-    BoxView *boxView_;
+    QPointF boxPos_;
+    OperatorView *boxView_;
     bool boxCreated_ = false;
 };
 
