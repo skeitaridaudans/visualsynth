@@ -30,7 +30,7 @@ void AddOperatorBox::update() {
 }
 
 void AddOperatorBox::draw(QPainter* painter) {
-    QBrush brush(QColor(0, 0, 0));
+    QBrush brush(QColor(0x212121));
 
     const auto rect = QRectF(boxPos_, QSize(kBoxSize, kBoxSize));
 
