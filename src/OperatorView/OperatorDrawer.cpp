@@ -54,7 +54,6 @@ void OperatorDrawer::update(Operator* operator_) {
 
         const auto carrierLinePoints = boxView_->carrierLineEndPoints();
         if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
-            qDebug() << "Stiky!!";
             operator_->isCarrier = true;
             operator_->position.setY(carrierLinePoints.first.y() - kBoxSize / 2.0);
         }

@@ -10,7 +10,7 @@ Window {
     height: 1080
     visible: true
     title: qsTr("VisualSynth")
-    color: "#000000"
+    color: "#212121"
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
@@ -20,7 +20,7 @@ Window {
         y: 745
         width: 351
         height: 123
-        color: "#000000"
+        color: "#212121"
             border.color: "gray"
             border.width: 3
             radius: 3
@@ -163,7 +163,7 @@ Window {
         y: 100
         width: 608
         height: 277
-        color: "#000000"
+        color: "#212121"
         // Temporary border boundsof box
         border.color: "#aa3232"
         border.width: 5
