@@ -19,7 +19,7 @@ private:
     QPointF widgetCoordsToGl(const QPointF& coords);
     bool isInsideBox(const QPointF& coords);
 
-    QPoint boxPos_;
+    QPointF boxPos_;
     BoxView *boxView_;
     bool boxCreated_ = false;
 };

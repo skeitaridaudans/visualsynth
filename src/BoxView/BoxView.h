@@ -23,9 +23,12 @@ public:
     BoxView(QQuickItem *parent = nullptr);
     void paint(QPainter *painter) override;
     void addOperator(double x, double y);
+    std::pair<QPointF, QPointF> carrierLineEndPoints();
 private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<NewBox> newBox_;
+
+    void drawCarrierLine(QPainter *painter);
 };
 
 

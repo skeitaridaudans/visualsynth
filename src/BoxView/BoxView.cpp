@@ -5,6 +5,13 @@
 #include "BoxView.h"
 #include "src/Controller/Controller.h"
 
+const int kCarrierLineTextLeftMargin = 20;
+const int kCarrierLineLeftMargin = 10;
+const int kCarrierLineRightMargin = 20;
+const int kCarrierLineBottomMargin = 40;
+const QString kCarrierText = "Carrier";
+const QFont kCarrierFont("Noto Sans", 25);
+
 BoxView::BoxView(QQuickItem *parent) : QQuickPaintedItem(parent),
     newBox_(std::make_unique<NewBox>(const_cast<BoxView *>(this))),
     operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<BoxView *>(this))) {
@@ -19,6 +26,7 @@ void BoxView::paint(QPainter *painter) {
     }
 
     newBox_->draw(painter);
+    drawCarrierLine(painter);
     for (const auto& operator_: controller->operators()) {
         operatorDrawer_->draw(painter, operator_.second.get());
     }
@@ -26,11 +34,37 @@ void BoxView::paint(QPainter *painter) {
     update();
 }
 
+void BoxView::drawCarrierLine(QPainter *painter) {
+    // Calculate positions
+    const auto carrierLineTextStartPos = QPointF(kCarrierLineTextLeftMargin, (int) height() - 40);
+
+    const auto lineEndPoints = carrierLineEndPoints();
+    const auto& carrierLineLeftPoint = lineEndPoints.first;
+    const auto& carrierLineRightPoint = lineEndPoints.second;
+
+    // Draw carrier line
+    painter->setFont(kCarrierFont);
+    painter->setPen(QColor(255, 255, 255));
+    painter->drawText(carrierLineTextStartPos, kCarrierText);
+    painter->drawLine(carrierLineLeftPoint, carrierLineRightPoint);
+}
+
 void BoxView::addOperator(double x, double y) {
     const auto& controller = Controller::instance;
 
-    auto id = controller->addOperator();
+    const auto id = controller->addOperator();
     const auto& operator_ = controller->getOperatorById(id);
 
-    operator_->position = QPoint(x, y);
+    operator_->position = QPointF(x, y);
+}
+
+std::pair<QPointF, QPointF> BoxView::carrierLineEndPoints() {
+    const QFontMetrics fm(kCarrierFont);
+    const auto textWidth = fm.horizontalAdvance(kCarrierText);
+    const auto textHeight = fm.height();
+
+    const auto carrierLineLeftPoint = QPointF(kCarrierLineTextLeftMargin + textWidth + kCarrierLineLeftMargin, (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
+    const auto carrierLineRightPoint = QPointF((int) width() - kCarrierLineRightMargin, (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
+
+    return {carrierLineLeftPoint, carrierLineRightPoint};
 }

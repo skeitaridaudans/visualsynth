@@ -32,7 +32,7 @@ void NewBox::update() {
 void NewBox::draw(QPainter* painter) {
     QBrush brush(QColor(0, 0, 0));
 
-    const auto rect = QRect(boxPos_, QSize(kBoxSize, kBoxSize));
+    const auto rect = QRectF(boxPos_, QSize(kBoxSize, kBoxSize));
 
     painter->setBrush(brush);
     painter->setPen(Qt::PenStyle::SolidLine);

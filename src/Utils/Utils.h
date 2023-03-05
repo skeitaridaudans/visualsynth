@@ -7,8 +7,10 @@
 
 
 #include <QPointF>
+#include <QRect>
 
 QPointF closestPointInBox(const QPointF& point, const QPointF& boxPosition, double width, double height);
 
+bool isRectInsideLine(const QRectF& rect, const QPointF& lineStart, const QPointF& lineEnd);
 
 #endif //QTQUICKTEST_UTILS_H
