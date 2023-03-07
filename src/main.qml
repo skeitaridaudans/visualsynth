@@ -295,6 +295,7 @@ Window {
 
     }
 
+}
     RadioButton {
         id: radioButton
         checked: controller.isConnected()
@@ -302,6 +303,5 @@ Window {
         y: 938
         text: qsTr("CONNECTED")
     }
-}
 }
 
