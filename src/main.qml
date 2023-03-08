@@ -296,12 +296,52 @@ Window {
     }
 
 }
-    RadioButton {
-        id: radioButton
-        checked: controller.isConnected()
-        x: 64
-        y: 938
-        text: qsTr("CONNECTED")
-    }
-}
+    
+    Text {
+        id: connectedText
+        x: 128
+        y: 996
+        width: 141
+        height: 27
+        color: "#ffffff"
+        text: qsTr("Connected")
+        font.pixelSize: 18
 
+    }
+
+    RoundButton {
+        id: connectedRoundButton
+        //state: connected ? "Synth_connected" : "Synth_not_connected"    // trying to make color change
+        x: 88
+        y: 992
+        width: 34
+        height: 34
+        text: "" //
+        background: Rectangle {
+            radius: connectedRoundButton.radius
+            color: "#55ff00"
+        }
+
+    }
+    //Trying to make colour of CONNECTED change if synth is not connected
+//    states: [
+//        State {
+//            name: "Synth_connected"
+//            PropertyChanges {
+//                target: connectedRoundButton
+//                radius: myRoundButton.radius
+//                color: "blue" //"#55ff00"
+//
+//            }
+//        },
+//        State {
+//            name: "Synth_not_connected"
+//            PropertyChanges {
+//                target: connectedRoundButton
+//                radius: myRoundButton.radius
+//                color: "gray"
+//            }
+//        }
+//    ]
+
+}
