@@ -26,11 +26,15 @@ public:
     Q_INVOKABLE void noteOff(int note);
     Q_INVOKABLE void selectOperator(int operatorId);
     Q_INVOKABLE void deselectOperator();
+    Q_INVOKABLE void showAlert(const QString& text);
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
     std::optional<std::reference_wrapper<std::unique_ptr<Operator>>>  selectedOperator();
 
+    Q_PROPERTY(bool startMoveOutAnim)
+    Q_PROPERTY(bool startMoveInAnim)
+    Q_PROPERTY(QString alertText)
 private:
     void sendOperator(int operatorId);
 

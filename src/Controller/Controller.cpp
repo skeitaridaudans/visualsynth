@@ -116,3 +116,8 @@ std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::sel
         return std::nullopt;
     }
 }
+
+void Controller::showAlert(const QString &text) {
+    alertText = text;
+
+}
