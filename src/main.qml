@@ -296,7 +296,7 @@ Window {
     }
 
 }
-    
+
     Text {
         id: connectedText
         x: 128
@@ -307,6 +307,51 @@ Window {
         text: qsTr("Connected")
         font.pixelSize: 18
 
+    }
+
+    Rectangle {
+        id: rectangle1
+        y: 965
+        width: 279
+        height: 53
+        color: "#f44336"
+        radius: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        states: [
+            State {
+                name: "moveOut"; when: controller.startMoveOutAnim
+                PropertyChanges { target: main; x: width; y: 0 }
+            },
+            State {
+                name: "moveIn"; when: controller.startMoveOutAnim
+                PropertyChanges { target: main; x: 0; y: 0 }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                to: "moveOut"
+                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            },
+            Transition {
+                to: "moveIn"
+                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            }
+        ]
+
+        Text {
+            id: text1
+            x: 0
+            y: 0
+            width: 279
+            height: 53
+            color: "#ffffff"
+            text: qsTr(controller.alertText)
+            font.pixelSize: 26
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     RoundButton {

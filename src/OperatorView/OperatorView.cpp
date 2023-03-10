@@ -52,10 +52,14 @@ void OperatorView::drawCarrierLine(QPainter *painter) {
 void OperatorView::addOperator(double x, double y) {
     const auto& controller = Controller::instance;
 
-    const auto id = controller->addOperator();
-    const auto& operator_ = controller->getOperatorById(id);
+    if (const auto id = controller->addOperator()) {
+        const auto& operator_ = controller->getOperatorById(*id);
 
-    operator_->position = QPointF(x, y);
+        operator_->position = QPointF(x, y);
+    }
+    else {
+        // TODO: Show error message if operator could not be added (due to operator limit reached)
+    }
 }
 
 std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {

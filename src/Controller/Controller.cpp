@@ -1,5 +1,7 @@
 #include "Controller.h"
 
+const int kMaxNumberOfOperators = 8;
+
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
 Controller::Controller(QObject *parent) : QObject(parent) {
@@ -13,7 +15,11 @@ bool Controller::isConnected(){
     return true;
 }
 
-int Controller::addOperator() {
+std::optional<int> Controller::addOperator() {
+    if (operators_.size() >= kMaxNumberOfOperators) {
+        return std::nullopt;
+    }
+
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
 
@@ -109,4 +115,20 @@ std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::sel
     else {
         return std::nullopt;
     }
+}
+
+void Controller::showAlert(const QString &text) {
+    alertText_ = text;
+}
+
+bool Controller::startMoveOutAnim() {
+    return startMoveOutAnim_;
+}
+
+bool Controller::startMoveInAnim() {
+    return startMoveInAnim_;
+}
+
+QString Controller::alertText() {
+    return alertText_;
 }
