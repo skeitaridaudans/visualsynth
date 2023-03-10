@@ -154,8 +154,28 @@ Rectangle {
         anchors.topMargin: 50
         width: 900
         height: 800
-        }
     }
+
+    ComboBox {
+        id: presetDrawer
+        x: 412
+        y: 57
+        width: 262
+        height: 36
+    }
+
+    Text {
+        id: connectedText
+        x: 128
+        y: 996
+        width: 141
+        height: 27
+        color: "#ffffff"
+        text: qsTr("Connected")
+        font.pixelSize: 18
+    }
+
+ }
 
 
 //    Button {
@@ -317,13 +337,13 @@ Rectangle {
 }
     
     Text {
-        id: connectedText
-        x: 128
-        y: 996
-        width: 141
+        id: presetsText
+        x: 347
+        y: 62
+        width: 68
         height: 27
         color: "#ffffff"
-        text: qsTr("Connected")
+        text: qsTr("Presets")
         font.pixelSize: 18
 
     }
