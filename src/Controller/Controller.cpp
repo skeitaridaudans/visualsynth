@@ -1,4 +1,6 @@
 #include "Controller.h"
+#include <QDebug>
+#include <QTimer>
 
 const int kMaxNumberOfOperators = 8;
 
@@ -16,6 +18,9 @@ bool Controller::isConnected(){
 }
 
 std::optional<int> Controller::addOperator() {
+    showAlert("Error");
+    qDebug() << "Showing error";
+
     if (operators_.size() >= kMaxNumberOfOperators) {
         return std::nullopt;
     }
@@ -119,14 +124,13 @@ std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::sel
 
 void Controller::showAlert(const QString &text) {
     alertText_ = text;
+    alertTextChanged(text);
+    alertVisibleState_ = "visible";
+    alertVisibleStateChanged("visible");
 }
 
-bool Controller::startMoveOutAnim() {
-    return startMoveOutAnim_;
-}
-
-bool Controller::startMoveInAnim() {
-    return startMoveInAnim_;
+QString Controller::alertVisibleState() {
+    return alertVisibleState_;
 }
 
 QString Controller::alertText() {

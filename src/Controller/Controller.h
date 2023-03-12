@@ -32,22 +32,23 @@ public:
     std::optional<int> selectedOperatorId();
     std::optional<std::reference_wrapper<std::unique_ptr<Operator>>>  selectedOperator();
 
-    Q_PROPERTY(bool startMoveOutAnim READ startMoveOutAnim)
-    Q_PROPERTY(bool startMoveInAnim READ startMoveInAnim)
-    Q_PROPERTY(QString alertText READ alertText)
+    Q_PROPERTY(QString alertText READ alertText NOTIFY alertTextChanged)
+    Q_PROPERTY(QString alertVisibleState READ alertVisibleState NOTIFY alertVisibleStateChanged)
+
+    QString alertVisibleState();
+    QString alertText();
+signals:
+    void alertVisibleStateChanged(QString value);
+    void alertTextChanged(QString value);
 private:
     void sendOperator(int operatorId);
-    bool startMoveOutAnim();
-    bool startMoveInAnim();
-    QString alertText();
 
     std::unordered_map<int, std::unique_ptr<Operator>> operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     Api api;
 
-    bool startMoveOutAnim_;
-    bool startMoveInAnim_;
+    QString alertVisibleState_ = "invisible";
     QString alertText_;
 };
 

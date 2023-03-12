@@ -316,27 +316,30 @@ Window {
         height: 53
         color: "#f44336"
         radius: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 62
         anchors.horizontalCenter: parent.horizontalCenter
+        state: controller.alertVisibleState
 
         states: [
             State {
-                name: "moveOut"; when: controller.startMoveOutAnim
-                PropertyChanges { target: main; x: width; y: 0 }
+                name: "invisible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
             },
             State {
-                name: "moveIn"; when: controller.startMoveOutAnim
-                PropertyChanges { target: main; x: 0; y: 0 }
+                name: "visible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
             }
         ]
 
         transitions: [
             Transition {
-                to: "moveOut"
-                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+                to: "invisible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
             },
             Transition {
-                to: "moveIn"
-                NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+                to: "visible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
             }
         ]
 
@@ -347,7 +350,7 @@ Window {
             width: 279
             height: 53
             color: "#ffffff"
-            text: qsTr(controller.alertText)
+            text: controller.alertText
             font.pixelSize: 26
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
