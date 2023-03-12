@@ -15,6 +15,14 @@ Window {
     Material.theme: Material.Dark
     Material.accent: Material.Purple
 
+    Timer {
+        id: alertControllerUpdate
+        repeat: true
+        running: true
+        interval: 10
+        onTriggered: alertController.update()
+    }
+
     Rectangle {
         id: rectangle
         y: 745
@@ -312,14 +320,14 @@ Window {
     Rectangle {
         id: rectangle1
         y: 965
-        width: 279
+        width: 350
         height: 53
         color: "#f44336"
         radius: 10
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 62
         anchors.horizontalCenter: parent.horizontalCenter
-        state: controller.alertVisibleState
+        state: alertController.alertVisibleState
 
         states: [
             State {
@@ -347,11 +355,11 @@ Window {
             id: text1
             x: 0
             y: 0
-            width: 279
+            width: 350
             height: 53
             color: "#ffffff"
-            text: controller.alertText
-            font.pixelSize: 26
+            text: alertController.alertText
+            font.pixelSize: 22
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

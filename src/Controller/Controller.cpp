@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "src/Alert/AlertController.h"
 #include <QDebug>
 #include <QTimer>
 
@@ -18,10 +19,8 @@ bool Controller::isConnected(){
 }
 
 std::optional<int> Controller::addOperator() {
-    showAlert("Error");
-    qDebug() << "Showing error";
-
     if (operators_.size() >= kMaxNumberOfOperators) {
+        AlertController::instance->showAlert("Error: Only 8 operators allowed");
         return std::nullopt;
     }
 
@@ -122,17 +121,3 @@ std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::sel
     }
 }
 
-void Controller::showAlert(const QString &text) {
-    alertText_ = text;
-    alertTextChanged(text);
-    alertVisibleState_ = "visible";
-    alertVisibleStateChanged("visible");
-}
-
-QString Controller::alertVisibleState() {
-    return alertVisibleState_;
-}
-
-QString Controller::alertText() {
-    return alertText_;
-}

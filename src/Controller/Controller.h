@@ -26,20 +26,11 @@ public:
     Q_INVOKABLE void noteOff(int note);
     Q_INVOKABLE void selectOperator(int operatorId);
     Q_INVOKABLE void deselectOperator();
-    Q_INVOKABLE void showAlert(const QString& text);
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
     std::optional<std::reference_wrapper<std::unique_ptr<Operator>>>  selectedOperator();
 
-    Q_PROPERTY(QString alertText READ alertText NOTIFY alertTextChanged)
-    Q_PROPERTY(QString alertVisibleState READ alertVisibleState NOTIFY alertVisibleStateChanged)
-
-    QString alertVisibleState();
-    QString alertText();
-signals:
-    void alertVisibleStateChanged(QString value);
-    void alertTextChanged(QString value);
 private:
     void sendOperator(int operatorId);
 
@@ -47,9 +38,6 @@ private:
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     Api api;
-
-    QString alertVisibleState_ = "invisible";
-    QString alertText_;
 };
 
 #endif
