@@ -1,4 +1,9 @@
 #include "Controller.h"
+#include "src/Alert/AlertController.h"
+#include <QDebug>
+#include <QTimer>
+
+const int kMaxNumberOfOperators = 8;
 
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
@@ -13,7 +18,12 @@ bool Controller::isConnected(){
     return true;
 }
 
-int Controller::addOperator() {
+std::optional<int> Controller::addOperator() {
+    if (operators_.size() >= kMaxNumberOfOperators) {
+        AlertController::instance->showAlert("Error: Only 8 operators allowed");
+        return std::nullopt;
+    }
+
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
 
@@ -110,3 +120,4 @@ std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::sel
         return std::nullopt;
     }
 }
+

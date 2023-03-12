@@ -15,6 +15,14 @@ Window {
     Material.theme: Material.Dark
     Material.accent: Material.Purple
 
+    Timer {
+        id: alertControllerUpdate
+        repeat: true
+        running: true
+        interval: 10
+        onTriggered: alertController.update()
+    }
+
     Rectangle {
         id: rectangle
         y: 771
@@ -335,7 +343,7 @@ Rectangle {
     }
 
 }
-    
+
     Text {
         id: presetsText
         x: 347
@@ -346,6 +354,54 @@ Rectangle {
         text: qsTr("Presets")
         font.pixelSize: 18
 
+    }
+
+    Rectangle {
+        id: rectangle1
+        y: 965
+        width: 350
+        height: 53
+        color: "#f44336"
+        radius: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 62
+        anchors.horizontalCenter: parent.horizontalCenter
+        state: alertController.alertVisibleState
+
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
+            },
+            State {
+                name: "visible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                to: "invisible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            },
+            Transition {
+                to: "visible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            }
+        ]
+
+        Text {
+            id: text1
+            x: 0
+            y: 0
+            width: 350
+            height: 53
+            color: "#ffffff"
+            text: alertController.alertText
+            font.pixelSize: 22
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     RoundButton {
