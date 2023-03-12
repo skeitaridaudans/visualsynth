@@ -17,7 +17,7 @@ Window {
 
     Rectangle {
         id: rectangle
-        y: 745
+        y: 771
         width: 351
         height: 123
         color: "#212121"
@@ -26,8 +26,8 @@ Window {
             radius: 3
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 1489
-        anchors.bottomMargin: 212
+        anchors.leftMargin: 1321
+        anchors.bottomMargin: 186
 
         Label {
             id: label
@@ -114,7 +114,16 @@ Window {
         }
     }
 
-
+Rectangle {
+        id: sinewaverectangle
+        x: 0
+        y: 898
+        width: 1922
+        height: 185
+        color: "#212121"
+        border.color: "gray"
+            border.width: 3
+            radius: 3
     SinWaveItem {
         id: waveView
         anchors.right: parent.right
@@ -123,8 +132,20 @@ Window {
         anchors.bottomMargin: 10
         width: 500
         height: 100
+        }
+
     }
 
+ Rectangle {
+         id: operatorrectangle
+         x: 0
+         y: 0
+         width: 1065
+         height: 901
+         color: "#212121"
+         border.color: "gray"
+             border.width: 3
+             radius: 3
     OperatorView {
         id: boxes
         anchors.left: parent.left
@@ -133,8 +154,28 @@ Window {
         anchors.topMargin: 50
         width: 900
         height: 800
-
     }
+
+    ComboBox {
+        id: presetDrawer
+        x: 412
+        y: 57
+        width: 262
+        height: 36
+    }
+
+    Text {
+        id: connectedText
+        x: 128
+        y: 996
+        width: 141
+        height: 27
+        color: "#ffffff"
+        text: qsTr("Connected")
+        font.pixelSize: 18
+    }
+
+ }
 
 
 //    Button {
@@ -165,8 +206,9 @@ Window {
         height: 277
         color: "#212121"
         // Temporary border boundsof box
-        border.color: "#aa3232"
-        border.width: 5
+        border.color: "gray"
+            border.width: 3
+            radius: 3
         // Box title
         Text {
             id: operatorName
@@ -269,7 +311,7 @@ Window {
 
                 function dragMove(holder, point){
                     if (point && drag) {
-                        consnole.log("oh we be draggin");
+                        console.log("oh we be draggin");
                     }
                 }
 
@@ -286,25 +328,22 @@ Window {
                     console.log("Oh we be releasing");
                 }
 
-
             }
 
-
         }
-
 
     }
 
 }
     
     Text {
-        id: connectedText
-        x: 128
-        y: 996
-        width: 141
+        id: presetsText
+        x: 347
+        y: 62
+        width: 68
         height: 27
         color: "#ffffff"
-        text: qsTr("Connected")
+        text: qsTr("Presets")
         font.pixelSize: 18
 
     }
@@ -323,7 +362,7 @@ Window {
         }
 
     }
-    //Trying to make colour of CONNECTED change if synth is not connected
+    // TODO: make colour of CONNECTED change if synth is not connected
 //    states: [
 //        State {
 //            name: "Synth_connected"
