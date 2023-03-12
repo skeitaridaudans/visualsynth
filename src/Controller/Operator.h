@@ -9,6 +9,12 @@
 #include <QPoint>
 #include <chrono>
 
+enum class DraggingState {
+    None,
+    Holding,
+    Dragging
+};
+
 struct Operator {
     Operator(int id);
     int id;
@@ -18,8 +24,8 @@ struct Operator {
     bool isCarrier;
     std::vector<int> modulatedBy;
     QPointF position;
-    bool isBeingDragged;
-    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
+    DraggingState draggingState = DraggingState::None;
+    std::optional<QPointF> initialDragCursorPos;
 };
 
 
