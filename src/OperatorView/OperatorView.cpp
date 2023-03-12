@@ -14,21 +14,36 @@ const QFont kCarrierFont("Noto Sans", 25);
 
 OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
                                                  newBox_(std::make_unique<AddOperatorBox>(const_cast<OperatorView *>(this))),
+                                                 deleteOperatorBox_(std::make_unique<DeleteOperatorBox>(const_cast<OperatorView *>(this))),
                                                  operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<OperatorView *>(this))) {
 }
 
 void OperatorView::paint(QPainter *painter) {
-    newBox_->update();
     const auto& controller = Controller::instance;
 
+    newBox_->update();
+    deleteOperatorBox_->update();
     for (const auto& operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second.get());
     }
 
     newBox_->draw(painter);
+    deleteOperatorBox_->draw(painter);
     drawCarrierLine(painter);
     for (const auto& operator_: controller->operators()) {
         operatorDrawer_->draw(painter, operator_.second.get());
+    }
+
+    // Make a copy of all operator ids that should be deleted, then delete them in another loop.
+    // Since it's not possible to delete elements from unordered_map while iterating over it
+    std::vector<int> operatorToDelete;
+    for (const auto& operator_ : controller->operators()) {
+        if (operator_.second->scheduleForRemoval) {
+            operatorToDelete.push_back(operator_.first);
+        }
+    }
+    for (const auto& operatorId : operatorToDelete) {
+        controller->removeOperator(operatorId);
     }
 
     update();
@@ -71,4 +86,8 @@ std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
     const auto carrierLineRightPoint = QPointF((int) width() - kCarrierLineRightMargin, (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
 
     return {carrierLineLeftPoint, carrierLineRightPoint};
+}
+
+const std::unique_ptr<DeleteOperatorBox> &OperatorView::deleteOperatorBox() {
+    return deleteOperatorBox_;
 }

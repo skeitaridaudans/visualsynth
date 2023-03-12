@@ -13,7 +13,7 @@ class OperatorView;
 
 class OperatorDrawer {
 public:
-    OperatorDrawer(OperatorView *boxView);
+    OperatorDrawer(OperatorView *operatorView);
     void update(Operator* operator_);
     void draw(QPainter *painter, Operator* operator_);
 private:
@@ -22,7 +22,7 @@ private:
     float randomColor();
     QColor getColorForOperator(Operator *operator_);
 
-    OperatorView *boxView_;
+    OperatorView *operatorView_;
 };
 
 

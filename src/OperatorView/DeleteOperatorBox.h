@@ -2,21 +2,22 @@
 // Created by Guðmundur on 2/6/2023.
 //
 
-#ifndef QTQUICKTEST_NEWBOX_H
-#define QTQUICKTEST_NEWBOX_H
+#ifndef QTQUICKTEST_DELETEOPERATORBOX_H
+#define QTQUICKTEST_DELETEOPERATORBOX_H
 
 
 #include "OperatorView.h"
 
 class OperatorView;
 
-class AddOperatorBox {
+class DeleteOperatorBox {
 public:
-    AddOperatorBox(OperatorView *boxView);
+    DeleteOperatorBox(OperatorView *boxView);
     void update();
     void draw(QPainter* qPainter);
-private:
+
     bool isInsideBox(const QPointF& coords);
+private:
 
     QPointF boxPos_;
     OperatorView *boxView_;
@@ -24,4 +25,4 @@ private:
 };
 
 
-#endif //QTQUICKTEST_NEWBOX_H
+#endif //QTQUICKTEST_DELETEOPERATORBOX_H
