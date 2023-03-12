@@ -11,46 +11,49 @@
 #include "src/Utils/Utils.h"
 
 const double kBoxSize = 70.0;
+const double kDragSensitivity = 2.0;
 
 OperatorDrawer::OperatorDrawer(OperatorView *boxView) : boxView_(boxView) {
 }
 
 void OperatorDrawer::update(Operator* operator_) {
-    const auto pos = boxView_->mapFromGlobal(QCursor::pos());
+    const auto cursorPos = boxView_->mapFromGlobal(QCursor::pos());
 
     const auto& controller = Controller::instance;
-    if (!operator_->isBeingDragged && isInsideBox(operator_, pos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        if (!operator_->timeSinceClick.has_value()) {
-            operator_->timeSinceClick = std::chrono::high_resolution_clock::now();
-        }
-        else {
-            const auto endTime = std::chrono::high_resolution_clock::now();
-            const auto timeElapsed = std::chrono::duration<double, std::milli>(endTime-operator_->timeSinceClick.value()).count();
+    if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
+        operator_->initialDragCursorPos = cursorPos;
+        operator_->draggingState = DraggingState::Holding;
+    }
+    else if (operator_->draggingState == DraggingState::Holding) {
+        const auto moveVector = operator_->initialDragCursorPos.value() - cursorPos;
+        const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
 
-            // Start dragging
-            if (timeElapsed >= 200) {
-                operator_->isBeingDragged = true;
-                operator_->timeSinceClick = std::nullopt;
-                controller->deselectOperator();
+        // Start dragging
+        if (cursorMoveDistance >= kDragSensitivity) {
+            operator_->draggingState = DraggingState::Dragging;
+            operator_->initialDragCursorPos = std::nullopt;
+            controller->deselectOperator();
+        }
+
+        // Click
+        if (isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
+            const auto selectedOperatorId = controller->selectedOperatorId();
+
+            if (selectedOperatorId.has_value()) {
+                controller->addModulator(operator_->id, selectedOperatorId.value());
             }
-        }
-    }
-    // Click
-    else if (!operator_->isBeingDragged && isInsideBox(operator_, pos) && operator_->timeSinceClick.has_value()) {
-        const auto selectedOperatorId = controller->selectedOperatorId();
+            else {
+                controller->selectOperator(operator_->id);
+            }
 
-        if (selectedOperatorId.has_value()) {
-            controller->addModulator(operator_->id, selectedOperatorId.value());
-        }
-        else {
-            controller->selectOperator(operator_->id);
+            operator_->draggingState = DraggingState::None;
         }
     }
 
 
-    if (operator_->isBeingDragged && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        operator_->position.setX(pos.x() - kBoxSize / 2.0);
-        operator_->position.setY(pos.y() - kBoxSize / 2.0);
+    if (operator_->draggingState == DraggingState::Dragging && QGuiApplication::mouseButtons() == Qt::LeftButton) {
+        operator_->position.setX(cursorPos.x() - kBoxSize / 2.0);
+        operator_->position.setY(cursorPos.y() - kBoxSize / 2.0);
 
         const auto carrierLinePoints = boxView_->carrierLineEndPoints();
         if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
@@ -61,8 +64,8 @@ void OperatorDrawer::update(Operator* operator_) {
             operator_->isCarrier = false;
         }
     }
-    else if (operator_->isBeingDragged) {
-        operator_->isBeingDragged = false;
+    else if (operator_->draggingState == DraggingState::Dragging) {
+        operator_->draggingState = DraggingState::None;
     }
 }
 
