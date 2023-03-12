@@ -12,8 +12,11 @@
 #include <QQuickPaintedItem>
 #include "AddOperatorBox.h"
 #include "OperatorDrawer.h"
+#include "DeleteOperatorBox.h"
 
 class AddOperatorBox;
+
+class DeleteOperatorBox;
 
 class OperatorDrawer;
 
@@ -24,9 +27,12 @@ public:
     void paint(QPainter *painter) override;
     void addOperator(double x, double y);
     std::pair<QPointF, QPointF> carrierLineEndPoints();
+
+    const std::unique_ptr<DeleteOperatorBox>& deleteOperatorBox();
 private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<AddOperatorBox> newBox_;
+    std::unique_ptr<DeleteOperatorBox> deleteOperatorBox_;
 
     void drawCarrierLine(QPainter *painter);
 };
