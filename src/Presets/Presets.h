@@ -6,11 +6,9 @@
 #define MAIN_QML_PRESETS_H
 
 
-#include <unordered_map>
-
-private:
-std::unordered_set<int> presets_;
-
-};
+//#include <unordered_map>
+//private:
+//std::unordered_set<int> presets_;
+//};
 
 #endif //MAIN_QML_PRESETS_H
