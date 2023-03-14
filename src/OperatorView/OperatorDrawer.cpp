@@ -13,11 +13,11 @@
 const double kBoxSize = 70.0;
 const double kDragSensitivity = 2.0;
 
-OperatorDrawer::OperatorDrawer(OperatorView *boxView) : boxView_(boxView) {
+OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(operatorView) {
 }
 
 void OperatorDrawer::update(Operator* operator_) {
-    const auto cursorPos = boxView_->mapFromGlobal(QCursor::pos());
+    const auto cursorPos = operatorView_->mapFromGlobal(QCursor::pos());
 
     const auto& controller = Controller::instance;
     if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
@@ -55,7 +55,7 @@ void OperatorDrawer::update(Operator* operator_) {
         operator_->position.setX(cursorPos.x() - kBoxSize / 2.0);
         operator_->position.setY(cursorPos.y() - kBoxSize / 2.0);
 
-        const auto carrierLinePoints = boxView_->carrierLineEndPoints();
+        const auto carrierLinePoints = operatorView_->carrierLineEndPoints();
         if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
             operator_->isCarrier = true;
             operator_->position.setY(carrierLinePoints.first.y() - kBoxSize / 2.0);
@@ -66,6 +66,11 @@ void OperatorDrawer::update(Operator* operator_) {
     }
     else if (operator_->draggingState == DraggingState::Dragging) {
         operator_->draggingState = DraggingState::None;
+
+        // If cursor is inside delete box
+        if (operatorView_->deleteOperatorBox()->isInsideBox(cursorPos)) {
+            operator_->scheduleForRemoval = true;
+        }
     }
 }
 

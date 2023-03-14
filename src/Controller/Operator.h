@@ -26,6 +26,9 @@ struct Operator {
     QPointF position;
     DraggingState draggingState = DraggingState::None;
     std::optional<QPointF> initialDragCursorPos;
+
+    // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
+    bool scheduleForRemoval = false;
 };
 
 
