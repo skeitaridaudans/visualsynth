@@ -8,9 +8,12 @@
 #include <vector>
 #include <QPoint>
 #include <chrono>
+#include <QObject>
 
-struct Operator {
-    Operator(int id);
+struct Operator:public QObject {
+    Q_OBJECT
+public:
+    Operator(int id, QObject* parent=0);
     int id;
     long frequency;
     long amplitude;
@@ -20,7 +23,13 @@ struct Operator {
     QPointF position;
     bool isBeingDragged;
     std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
+    Q_PROPERTY(int idProp MEMBER id)
+    Q_PROPERTY(long freqProp MEMBER frequency)
+    Q_PROPERTY(long ampProp MEMBER amplitude)
+    Q_INVOKABLE long getFreq();
+    Q_INVOKABLE long getAmp();
+    Q_INVOKABLE void setFrequency(long step);
+    Q_INVOKABLE void setAmplitude(long step);
 };
-
 
 #endif //QTQUICKTEST_OPERATOR_H
