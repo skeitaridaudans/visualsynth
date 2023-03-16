@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions>
 #include <QCursor>
 #include <QGuiApplication>
+#include "src/FontAwesome.h"
 
 const double kBorderWidth = 0.02;
 const double kBoxSize = 70.0;
@@ -40,12 +41,8 @@ void AddOperatorBox::draw(QPainter* painter) {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->drawRect(rect);
 
-    painter->setFont(QFont("Arial", 45));
-    painter->drawText(rect, Qt::AlignCenter, "+");
-}
-
-QPointF AddOperatorBox::widgetCoordsToGl(const QPointF &coords) {
-    return QPointF(coords.x() / boxView_->width() * 2.0 - 1.0, coords.y() / boxView_->height() * 2.0 - 1.0);
+    painter->setFont(fontAwesome()->font(fa::fa_solid, 45));
+    painter->drawText(rect, Qt::AlignCenter, QString(fa::fa_plus));
 }
 
 bool AddOperatorBox::isInsideBox(const QPointF &coords) {

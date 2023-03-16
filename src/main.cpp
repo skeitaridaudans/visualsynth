@@ -3,6 +3,7 @@
 #include "src/OperatorView/OperatorView.h"
 #include <QQmlContext>
 #include "Controller/Controller.h"
+#include "src/Alert/AlertController.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,8 +19,9 @@ int main(int argc, char *argv[])
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
-    engine.load(url);
+    engine.rootContext()->setContextProperty("alertController", AlertController::instance.get());
     engine.rootContext()->setContextProperty("controller", Controller::instance.get());
+    engine.load(url);
 
     return app.exec();
 }
