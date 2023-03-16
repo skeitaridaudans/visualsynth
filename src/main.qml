@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import SinViewItem
 import OperatorView
 // This does not work
+
 Window {
     id: window
     width: 1920
@@ -11,6 +12,13 @@ Window {
     visible: true
     title: qsTr("VisualSynth")
     color: "#212121"
+
+//    #property var currentOp
+//    #currentOp: controller.getSelectedOperator()u
+
+//    function onChangeCurrentOp() {
+//        console.log("changed")
+//    }
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
@@ -92,7 +100,7 @@ Window {
             x: 95
             y: 9
             width: 72
-            height: 71
+            height: 714
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 38
             from: 0.2
@@ -198,8 +206,9 @@ Rectangle {
 //        anchors.rightMargin: 979
 //        anchors.topMargin: 957
 //        onPressed: {
+//            console.log(currentOp.freqProp)
 //            controller.noteOn(60)
-//        }
+ //       }
 //        onReleased: {
 //            controller.noteOff(60)
 //        }
@@ -292,7 +301,7 @@ Rectangle {
                 y: 8
                 width: 203
                 height: 49
-                text: qsTr("420 " + "Db")
+                text: qsTr(currentOp.ampProp + "Db")
                 font.pixelSize: 32
                 color: "#f0f0f0"
             }
@@ -316,19 +325,41 @@ Rectangle {
                 anchors.topMargin: 0
                 property var drag: parent
                 property var offset : null
+//                property var currentOp: null
+                touchPoints: [
+                    TouchPoint {id: touch1}
+                ]
 
-                function dragMove(holder, point){
-                    if (point && drag) {
-                        console.log("oh we be draggin");
+            
+
+                onTouchUpdated: {
+                    var currentOp = controller.getSelectedOperator();
+                    var freq = currentOp.getFreq();
+                    console.log("Current frequency: ", freq);
+                    if (touchPoints[0].x > offset.x){
+                        currentOp.setFrequency(1)
+                        controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                    } else if (touchPoints[0].x < offset.x){
+                        currentOp.setFrequency(-1)
+                        controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                    } else if (touchPoints[0].y > offset.y) {
+                        currentOp.setAmplitude(1)
+                        controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                    } else if (touchPoints[0].y < offset.y){
+                        currentOp.setAmplitude(-1)
+                        controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
                     }
                 }
 
                 onPressed: {
+//                    currentOp: controller.getSelectedOperator();
                     var point = touchPoints[0];
-                    console.log("Oh we be pressin");
-                    parent.width = 250;
-
+//                    var operator = controller.getSelectedOperator();
+//                    console.log(operator.freqProp);
+//                    console.log(operator);
+                    parent.width = parent.width+10;
                     offset = Qt.point(point.x, point.y);
+//                    dragMove(offset, point)
                 }
 
                 onReleased: {
