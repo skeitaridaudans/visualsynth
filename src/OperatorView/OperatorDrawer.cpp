@@ -12,6 +12,7 @@
 
 const double kBoxSize = 70.0;
 const double kDragSensitivity = 2.0;
+const double kCornerRadius = 5.0;
 
 OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(operatorView) {
 }
@@ -39,8 +40,12 @@ void OperatorDrawer::update(Operator* operator_) {
         if (isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
             const auto selectedOperatorId = controller->selectedOperatorId();
 
-            if (selectedOperatorId.has_value()) {
+            if (selectedOperatorId.has_value() && selectedOperatorId.value() == operator_->id) {
+                controller->deselectOperator();
+            }
+            else if (selectedOperatorId.has_value()) {
                 controller->addModulator(operator_->id, selectedOperatorId.value());
+                controller->deselectOperator();
             }
             else {
                 controller->selectOperator(operator_->id);
@@ -92,8 +97,16 @@ void OperatorDrawer::drawBox(QPainter *painter, Operator* operator_) {
     auto color = getColorForOperator(operator_);
 
     painter->setBrush(QBrush(color));
-    painter->setPen(Qt::PenStyle::NoPen);
-    painter->drawRect(QRectF(operator_->position, QSize(kBoxSize, kBoxSize)));
+
+    const auto& controller = Controller::instance;
+    if (controller->selectedOperatorId().has_value() && controller->selectedOperatorId().value() == operator_->id) {
+        painter->setPen(QPen(QColor(255, 255, 255), 1));
+    }
+    else {
+        painter->setPen(Qt::PenStyle::NoPen);
+    }
+
+    painter->drawRoundedRect(QRectF(operator_->position, QSize(kBoxSize, kBoxSize)), kCornerRadius, kCornerRadius);
 }
 
 bool OperatorDrawer::isInsideBox(Operator* operator_, const QPointF &coords) {
@@ -104,6 +117,5 @@ bool OperatorDrawer::isInsideBox(Operator* operator_, const QPointF &coords) {
 }
 
 QColor OperatorDrawer::getColorForOperator(Operator *operator_) {
-    // TODO: Calculate color from operator frequency/amplitude
-    return QColor(255, 0, 0);
+    return QColor((int) ((log10((double) operator_->frequency) / 4.38) * 255.0), 20, (int) ((log10((double) operator_->amplitude) / 4.38) * 255.0));
 }
