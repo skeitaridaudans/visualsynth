@@ -89,6 +89,7 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
 
 void Controller::sendOperator(int operatorId) {
     const auto& op = operators_[operatorId];
+    std::cout << op->amplitude << std::endl;
     api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
 }
 

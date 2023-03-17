@@ -361,20 +361,25 @@ Window {
 
                     onTouchUpdated: {
                         var currentOp = controller.getSelectedOperator();
-                        var freq = currentOp.getFreq();
-                        console.log("Current frequency: ", freq);
-                        if (touchPoints[0].x > offset.x){
-                            currentOp.setFrequency(1)
-                            controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
-                        } else if (touchPoints[0].x < offset.x){
-                            currentOp.setFrequency(-1)
-                            controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
-                        } else if (touchPoints[0].y > offset.y) {
-                            currentOp.setAmplitude(1)
-                            controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
-                        } else if (touchPoints[0].y < offset.y){
-                            currentOp.setAmplitude(-1)
-                            controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                        if (currentOp) {
+                            var freq = currentOp.getFreq();
+                            var amp = currentOp.getAmp();
+                            console.log("Current frequency: ", freq);
+                            console.log("Current amplitude: ", amp);
+                            if (touchPoints[0].x > offset.x){
+                                currentOp.setFrequency(1)
+                                controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                            } else if (touchPoints[0].x < offset.x){
+                                currentOp.setFrequency(-1)
+                                controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                            }
+                            if (touchPoints[0].y < offset.y) {
+                                currentOp.setAmplitude(1)
+                                controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                            } else if (touchPoints[0].y > offset.y){
+                                currentOp.setAmplitude(-1)
+                                controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                            }
                         }
                     }
 
@@ -391,6 +396,10 @@ Window {
 
                     onReleased: {
                         parent.width = 200;
+//                        var currentOp = controller.getSelectedOperator();
+//                        if (currentOp) {
+//                        controller.sendOperator(currentOp.idProp);
+//                        }
                         console.log("Oh we be releasing");
                     }
 
