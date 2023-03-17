@@ -10,10 +10,17 @@
 #include <chrono>
 #include <QObject>
 
+enum class DraggingState {
+    None,
+    Holding,
+    Dragging
+};
+
 struct Operator:public QObject {
     Q_OBJECT
 public:
     Operator(int id, QObject* parent=0);
+
     int id;
     long frequency;
     long amplitude;
@@ -30,6 +37,11 @@ public:
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(long step);
     Q_INVOKABLE void setAmplitude(long step);
+    DraggingState draggingState = DraggingState::None;
+    std::optional<QPointF> initialDragCursorPos;
+
+    // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
+    bool scheduleForRemoval = false;
 };
 
 #endif //QTQUICKTEST_OPERATOR_H

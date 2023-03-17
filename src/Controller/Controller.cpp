@@ -1,5 +1,10 @@
 #include "Controller.h"
 #include <iostream>
+#include "src/Alert/AlertController.h"
+#include <QDebug>
+#include <QTimer>
+
+const int kMaxNumberOfOperators = 8;
 
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
@@ -14,7 +19,12 @@ bool Controller::isConnected(){
     return true;
 }
 
-int Controller::addOperator() {
+std::optional<int> Controller::addOperator() {
+    if (operators_.size() >= kMaxNumberOfOperators) {
+        AlertController::instance->showAlert("Error: Only 8 operators allowed");
+        return std::nullopt;
+    }
+
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
 
@@ -30,7 +40,7 @@ void Controller::removeOperator(int operatorId) {
 
     // Remove operator from all modulatedBy lists
     for (const auto& op : operators_) {
-        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) == op.second->modulatedBy.end()) {
+        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) != op.second->modulatedBy.end()) {
             op.second->modulatedBy.erase(std::remove(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId),op.second->modulatedBy.end());
         }
     }
@@ -110,4 +120,4 @@ Operator* Controller::getSelectedOperator() {
     else {
         return nullptr;
     }
-}{
+}

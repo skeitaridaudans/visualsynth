@@ -23,9 +23,17 @@ Window {
     Material.theme: Material.Dark
     Material.accent: Material.Purple
 
+    Timer {
+        id: alertControllerUpdate
+        repeat: true
+        running: true
+        interval: 10
+        onTriggered: alertController.update()
+    }
+
     Rectangle {
         id: rectangle
-        y: 745
+        y: 771
         width: 351
         height: 123
         color: "#212121"
@@ -34,8 +42,8 @@ Window {
             radius: 3
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 1489
-        anchors.bottomMargin: 212
+        anchors.leftMargin: 1321
+        anchors.bottomMargin: 186
 
         Label {
             id: label
@@ -122,7 +130,16 @@ Window {
         }
     }
 
-
+Rectangle {
+        id: sinewaverectangle
+        x: 0
+        y: 898
+        width: 1922
+        height: 185
+        color: "#212121"
+        border.color: "gray"
+            border.width: 3
+            radius: 3
     SinWaveItem {
         id: waveView
         anchors.right: parent.right
@@ -131,8 +148,20 @@ Window {
         anchors.bottomMargin: 10
         width: 500
         height: 100
+        }
+
     }
 
+ Rectangle {
+         id: operatorrectangle
+         x: 0
+         y: 0
+         width: 1065
+         height: 901
+         color: "#212121"
+         border.color: "gray"
+             border.width: 3
+             radius: 3
     OperatorView {
         id: boxes
         anchors.left: parent.left
@@ -141,29 +170,49 @@ Window {
         anchors.topMargin: 50
         width: 900
         height: 800
-
     }
 
-
-    Button {
-        id: button
-        x: 717
-        width: 224
-        height: 96
-        text: qsTr("Send note")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        font.pointSize: 16
-        anchors.rightMargin: 979
-        anchors.topMargin: 957
-        onPressed: {
-            console.log(currentOp.freqProp)
-            controller.noteOn(60)
-        }
-        onReleased: {
-            controller.noteOff(60)
-        }
+    ComboBox {
+        id: presetDrawer
+        x: 412
+        y: 57
+        width: 262
+        height: 36
     }
+
+    Text {
+        id: connectedText
+        x: 128
+        y: 996
+        width: 141
+        height: 27
+        color: "#ffffff"
+        text: qsTr("Connected")
+        font.pixelSize: 18
+    }
+
+ }
+
+
+//    Button {
+//        id: button
+//        x: 717
+//        width: 224
+//        height: 96
+//        text: qsTr("Send note")
+//        anchors.right: parent.right
+//        anchors.top: parent.top
+//        font.pointSize: 16
+//        anchors.rightMargin: 979
+//        anchors.topMargin: 957
+//        onPressed: {
+//            console.log(currentOp.freqProp)
+//            controller.noteOn(60)
+ //       }
+//        onReleased: {
+//            controller.noteOff(60)
+//        }
+//    }
 
     Rectangle {
         // Operator info box
@@ -173,10 +222,10 @@ Window {
         width: 608
         height: 277
         color: "#212121"
-        // Temporary border bounds of box
-        border.color: "#aa3232"
-        border.width: 5
-
+        // Temporary border boundsof box
+        border.color: "gray"
+            border.width: 3
+            radius: 3
         // Box title
         Text {
             id: operatorName
@@ -281,12 +330,7 @@ Window {
                     TouchPoint {id: touch1}
                 ]
 
-                function dragMove(holder, point){
-                    if (point && drag) {
-                        console.log(drag.data)
-                        console.log("oh we be draggin");
-                    }
-                }
+            
 
                 onTouchUpdated: {
                     var currentOp = controller.getSelectedOperator();
@@ -323,27 +367,72 @@ Window {
                     console.log("Oh we be releasing");
                 }
 
-
             }
 
-
         }
-
 
     }
 
 }
-    
+
     Text {
-        id: connectedText
-        x: 128
-        y: 996
-        width: 141
+        id: presetsText
+        x: 347
+        y: 62
+        width: 68
         height: 27
         color: "#ffffff"
-        text: qsTr("Connected")
+        text: qsTr("Presets")
         font.pixelSize: 18
 
+    }
+
+    Rectangle {
+        id: rectangle1
+        y: 965
+        width: 350
+        height: 53
+        color: "#f44336"
+        radius: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 62
+        anchors.horizontalCenter: parent.horizontalCenter
+        state: alertController.alertVisibleState
+
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
+            },
+            State {
+                name: "visible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                to: "invisible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            },
+            Transition {
+                to: "visible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            }
+        ]
+
+        Text {
+            id: text1
+            x: 0
+            y: 0
+            width: 350
+            height: 53
+            color: "#ffffff"
+            text: alertController.alertText
+            font.pixelSize: 22
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     RoundButton {
@@ -360,7 +449,7 @@ Window {
         }
 
     }
-    //Trying to make colour of CONNECTED change if synth is not connected
+    // TODO: make colour of CONNECTED change if synth is not connected
 //    states: [
 //        State {
 //            name: "Synth_connected"
