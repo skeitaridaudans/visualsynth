@@ -39,7 +39,7 @@ void Controller::removeOperator(int operatorId) {
 
     // Remove operator from all modulatedBy lists
     for (const auto& op : operators_) {
-        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) == op.second->modulatedBy.end()) {
+        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) != op.second->modulatedBy.end()) {
             op.second->modulatedBy.erase(std::remove(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId),op.second->modulatedBy.end());
         }
     }

@@ -12,6 +12,7 @@ const double kBorderWidth = 0.02;
 const double kBoxSize = 70.0;
 const double kRightAnchor = 20.0;
 const double kPositionY = 60.0;
+const double kCornerRadius = 5.0;
 
 AddOperatorBox::AddOperatorBox(OperatorView *boxView) : boxView_(boxView) {}
 
@@ -39,7 +40,7 @@ void AddOperatorBox::draw(QPainter* painter) {
     painter->setPen(Qt::PenStyle::SolidLine);
     painter->setPen(QColor(255, 255, 255));
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->drawRect(rect);
+    painter->drawRoundedRect(rect, kCornerRadius, kCornerRadius);
 
     painter->setFont(fontAwesome()->font(fa::fa_solid, 45));
     painter->drawText(rect, Qt::AlignCenter, QString(fa::fa_plus));
