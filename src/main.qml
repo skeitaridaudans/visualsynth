@@ -13,12 +13,12 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
 
-//    #property var currentOp
-//    #currentOp: controller.getSelectedOperator()u
+    //    #property var currentOp
+    //    #currentOp: controller.getSelectedOperator()u
 
-//    function onChangeCurrentOp() {
-//        console.log("changed")
-//    }
+    //    function onChangeCurrentOp() {
+    //        console.log("changed")
+    //    }
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
@@ -37,9 +37,9 @@ Window {
         width: 351
         height: 123
         color: "#212121"
-            border.color: "gray"
-            border.width: 3
-            radius: 3
+        border.color: "gray"
+        border.width: 3
+        radius: 3
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.leftMargin: 1321
@@ -100,7 +100,7 @@ Window {
             x: 95
             y: 9
             width: 72
-            height: 714
+            height: 71
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 38
             from: 0.2
@@ -130,7 +130,7 @@ Window {
         }
     }
 
-Rectangle {
+    Rectangle {
         id: sinewaverectangle
         x: 0
         y: 898
@@ -138,81 +138,108 @@ Rectangle {
         height: 185
         color: "#212121"
         border.color: "gray"
-            border.width: 3
-            radius: 3
-    SinWaveItem {
-        id: waveView
-        anchors.right: parent.right
+        border.width: 3
         anchors.bottom: parent.bottom
-        anchors.rightMargin: 177
-        anchors.bottomMargin: 10
-        width: 500
-        height: 100
+        anchors.bottomMargin: -3
+        radius: 3
+        SinWaveItem {
+            id: waveView
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin: 20
+            anchors.bottomMargin: 10
+            width: 500
+            height: 100
+        }
+
+        RoundButton {
+            id: connectedRoundButton
+            x: 88
+            //state: connected ? "Synth_connected" : "Synth_not_connected"    // trying to make color change
+            y: 94
+            width: 34
+            height: 34
+            text: ""
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 88
+            anchors.bottomMargin: 54 //
+            background: Rectangle {
+                radius: connectedRoundButton.radius
+                color: "#55ff00"
+            }
+
+        }
+
+        Text {
+            id: connectedText
+            x: 128
+            y: 100
+            width: 141
+            height: 27
+            color: "#ffffff"
+            text: qsTr("Connected")
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            font.pixelSize: 18
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            anchors.leftMargin: 127
+            anchors.bottomMargin: 58
         }
 
     }
 
- Rectangle {
-         id: operatorrectangle
-         x: 0
-         y: 0
-         width: 1065
-         height: 901
-         color: "#212121"
-         border.color: "gray"
-             border.width: 3
-             radius: 3
-    OperatorView {
-        id: boxes
-        anchors.left: parent.left
-        anchors.leftMargin: 50
-        anchors.top: parent.top
-        anchors.topMargin: 50
-        width: 900
-        height: 800
+    Rectangle {
+        id: operatorrectangle
+        x: 0
+        y: 0
+        width: 1065
+        height: 901
+        color: "#212121"
+        border.color: "gray"
+        border.width: 3
+        radius: 3
+        OperatorView {
+            id: boxes
+            anchors.left: parent.left
+            anchors.leftMargin: 50
+            anchors.top: parent.top
+            anchors.topMargin: 50
+            width: 900
+            height: 800
+        }
+
+        ComboBox {
+            id: presetDrawer
+            x: 412
+            y: 57
+            width: 262
+            height: 36
+        }
+
     }
 
-    ComboBox {
-        id: presetDrawer
-        x: 412
-        y: 57
-        width: 262
-        height: 36
-    }
 
-    Text {
-        id: connectedText
-        x: 128
-        y: 996
-        width: 141
-        height: 27
-        color: "#ffffff"
-        text: qsTr("Connected")
-        font.pixelSize: 18
-    }
-
- }
-
-
-//    Button {
-//        id: button
-//        x: 717
-//        width: 224
-//        height: 96
-//        text: qsTr("Send note")
-//        anchors.right: parent.right
-//        anchors.top: parent.top
-//        font.pointSize: 16
-//        anchors.rightMargin: 979
-//        anchors.topMargin: 957
-//        onPressed: {
-//            console.log(currentOp.freqProp)
-//            controller.noteOn(60)
- //       }
-//        onReleased: {
-//            controller.noteOff(60)
-//        }
-//    }
+    //    Button {
+    //        id: button
+    //        x: 717
+    //        width: 224
+    //        height: 96
+    //        text: qsTr("Send note")
+    //        anchors.right: parent.right
+    //        anchors.top: parent.top
+    //        font.pointSize: 16
+    //        anchors.rightMargin: 979
+    //        anchors.topMargin: 957
+    //        onPressed: {
+    //            console.log(currentOp.freqProp)
+    //            controller.noteOn(60)
+    //       }
+    //        onReleased: {
+    //            controller.noteOff(60)
+    //        }
+    //    }
 
     Rectangle {
         // Operator info box
@@ -224,8 +251,8 @@ Rectangle {
         color: "#212121"
         // Temporary border boundsof box
         border.color: "gray"
-            border.width: 3
-            radius: 3
+        border.width: 3
+        radius: 3
         // Box title
         Text {
             id: operatorName
@@ -236,135 +263,137 @@ Rectangle {
             color: "#f0f0f0"
             font.pixelSize: 32
 
-        // Frequency text
-        Text {
-            id: freqText
-            x: 12
-            y: 79
-            width: 80
-            height: 49
-            color: "#f0f0f0"
-            text: qsTr("Freq: ")
-            font.family: "Noto Sans"
-            font.pixelSize: 32
-
-        }
-        // Frequency amount
-        Rectangle {
-            id: freqValueBox
-            x: 98
-            y: 79
-            width: 219
-            height: 65
-            color: "#222222"
-            border.color: "#f0f0f0"
-            border.width: 3
-
+            // Frequency text
             Text {
-                //TODO: get value from operator and update text
-                id: freqValueText
-                x: 8
-                y: 8
-                width: 203
+                id: freqText
+                x: 12
+                y: 79
+                width: 80
                 height: 49
-                text: qsTr("1337 " + "Hz")
+                color: "#f0f0f0"
+                text: qsTr("Freq: ")
+                font.family: "Noto Sans"
+                font.pixelSize: 32
+
+            }
+            // Frequency amount
+            Rectangle {
+                id: freqValueBox
+                x: 98
+                y: 79
+                width: 219
+                height: 65
+                color: "#222222"
+                border.color: "#f0f0f0"
+                border.width: 3
+
+                Text {
+                    //TODO: get value from operator and update text
+                    id: freqValueText
+                    x: 8
+                    y: 8
+                    width: 203
+                    height: 49
+                    text: qsTr("1337 " + "Hz")
+                    font.pixelSize: 32
+                    color: "#f0f0f0"
+                }
+            }
+
+            // Amplitude text
+            Text {
+                id: ampText
+                x: 12
+                y: 163
+                width: 80
+                height: 43
+                text: qsTr("Amp:")
                 font.pixelSize: 32
                 color: "#f0f0f0"
             }
-        }
-
-        // Amplitude text
-        Text {
-            id: ampText
-            x: 12
-            y: 163
-            width: 80
-            height: 43
-            text: qsTr("Amp:")
-            font.pixelSize: 32
-            color: "#f0f0f0"
-        }
-        // Amp value box
-        Rectangle {
-            id: ampValueBox
-            x: 98
-            y: 158
-            width: 219
-            height: 65
-            color: "#222222"
-            border.color: "#f0f0f0"
-            border.width: 3
-            // Amp value text
-            Text {
-                id: ampValueText
-                x: 8
-                y: 8
-                width: 203
-                height: 49
-                text: qsTr(currentOp.ampProp + "Db")
-                font.pixelSize: 32
-                color: "#f0f0f0"
+            // Amp value box
+            Rectangle {
+                id: ampValueBox
+                x: 98
+                y: 158
+                width: 219
+                height: 65
+                color: "#222222"
+                border.color: "#f0f0f0"
+                border.width: 3
+                // Amp value text
+                Text {
+                    id: ampValueText
+                    x: 8
+                    y: 8
+                    width: 203
+                    height: 49
+                    text: qsTr(currentOp.ampProp + "Db")
+                    font.pixelSize: 32
+                    color: "#f0f0f0"
+                }
             }
-        }
-        // Operator box
-        Rectangle {
-            id: opDrag
-            x: 359
-            y: 38
-            width: 200
-            height: 200
-            // TODO: get color of operator
-            // TODO: Change color on drag
-            color: "#ff961d"
-            // Make it respond to geastures
-            MultiPointTouchArea{
-                anchors.fill: parent
-                anchors.rightMargin: 0
-                anchors.bottomMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 0
-                property var drag: parent
-                property var offset : null
-//                property var currentOp: null
-                touchPoints: [
-                    TouchPoint {id: touch1}
-                ]
+            // Operator box
+            Rectangle {
+                id: opDrag
+                x: 359
+                y: 38
+                width: 200
+                height: 200
+                // TODO: get color of operator
+                // TODO: Change color on drag
+                color: "#ff961d"
+                // Make it respond to geastures
+                MultiPointTouchArea{
+                    anchors.fill: parent
+                    anchors.rightMargin: 0
+                    anchors.bottomMargin: 0
+                    anchors.leftMargin: 0
+                    anchors.topMargin: 0
+                    property var drag: parent
+                    property var offset : null
+                    //                property var currentOp: null
+                    touchPoints: [
+                        TouchPoint {id: touch1}
+                    ]
 
-            
 
-                onTouchUpdated: {
-                    var currentOp = controller.getSelectedOperator();
-                    var freq = currentOp.getFreq();
-                    console.log("Current frequency: ", freq);
-                    if (touchPoints[0].x > offset.x){
-                        currentOp.setFrequency(1)
-                        controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
-                    } else if (touchPoints[0].x < offset.x){
-                        currentOp.setFrequency(-1)
-                        controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
-                    } else if (touchPoints[0].y > offset.y) {
-                        currentOp.setAmplitude(1)
-                        controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
-                    } else if (touchPoints[0].y < offset.y){
-                        currentOp.setAmplitude(-1)
-                        controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+
+                    onTouchUpdated: {
+                        var currentOp = controller.getSelectedOperator();
+                        var freq = currentOp.getFreq();
+                        console.log("Current frequency: ", freq);
+                        if (touchPoints[0].x > offset.x){
+                            currentOp.setFrequency(1)
+                            controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                        } else if (touchPoints[0].x < offset.x){
+                            currentOp.setFrequency(-1)
+                            controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                        } else if (touchPoints[0].y > offset.y) {
+                            currentOp.setAmplitude(1)
+                            controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                        } else if (touchPoints[0].y < offset.y){
+                            currentOp.setAmplitude(-1)
+                            controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                        }
                     }
-                }
 
-                onPressed: {
-//                    currentOp: controller.getSelectedOperator();
-                    var point = touchPoints[0];
-//                    var operator = controller.getSelectedOperator();
-//                    console.log(operator.freqProp);
-//                    console.log(operator);
-                    parent.width = parent.width+10;
-                    offset = Qt.point(point.x, point.y);
-//                    dragMove(offset, point)
-                }
+                    onPressed: {
+                        //                    currentOp: controller.getSelectedOperator();
+                        var point = touchPoints[0];
+                        //                    var operator = controller.getSelectedOperator();
+                        //                    console.log(operator.freqProp);
+                        //                    console.log(operator);
+                        parent.width = parent.width+10;
+                        offset = Qt.point(point.x, point.y);
+                        //                    dragMove(offset, point)
+                    }
 
-                onReleased: {
-                    parent.width = 200;
-                    console.log("Oh we be releasing");
+                    onReleased: {
+                        parent.width = 200;
+                        console.log("Oh we be releasing");
+                    }
+
                 }
 
             }
@@ -372,8 +401,6 @@ Rectangle {
         }
 
     }
-
-}
 
     Text {
         id: presetsText
@@ -434,40 +461,25 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
     }
-
-    RoundButton {
-        id: connectedRoundButton
-        //state: connected ? "Synth_connected" : "Synth_not_connected"    // trying to make color change
-        x: 88
-        y: 992
-        width: 34
-        height: 34
-        text: "" //
-        background: Rectangle {
-            radius: connectedRoundButton.radius
-            color: "#55ff00"
-        }
-
-    }
     // TODO: make colour of CONNECTED change if synth is not connected
-//    states: [
-//        State {
-//            name: "Synth_connected"
-//            PropertyChanges {
-//                target: connectedRoundButton
-//                radius: myRoundButton.radius
-//                color: "blue" //"#55ff00"
-//
-//            }
-//        },
-//        State {
-//            name: "Synth_not_connected"
-//            PropertyChanges {
-//                target: connectedRoundButton
-//                radius: myRoundButton.radius
-//                color: "gray"
-//            }
-//        }
-//    ]
+    //    states: [
+    //        State {
+    //            name: "Synth_connected"
+    //            PropertyChanges {
+    //                target: connectedRoundButton
+    //                radius: myRoundButton.radius
+    //                color: "blue" //"#55ff00"
+    //
+    //            }
+    //        },
+    //        State {
+    //            name: "Synth_not_connected"
+    //            PropertyChanges {
+    //                target: connectedRoundButton
+    //                radius: myRoundButton.radius
+    //                color: "gray"
+    //            }
+    //        }
+    //    ]
 
 }
