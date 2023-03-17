@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include <iostream>
 #include "src/Alert/AlertController.h"
 #include <QDebug>
 #include <QTimer>
@@ -111,13 +112,12 @@ std::optional<int> Controller::selectedOperatorId() {
     return selectedOperatorId_;
 }
 
-std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::selectedOperator() {
+Operator* Controller::getSelectedOperator() {
     if (selectedOperatorId_.has_value()) {
-        auto& operator_ = operators_[selectedOperatorId_.value()];
-        return  { operator_ };
+        const auto& operator_ = operators_[selectedOperatorId_.value()];
+        return operator_.get();
     }
     else {
-        return std::nullopt;
+        return nullptr;
     }
 }
-

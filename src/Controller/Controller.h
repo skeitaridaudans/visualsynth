@@ -14,7 +14,7 @@ class Controller : public QObject {
 public:
     static std::unique_ptr<Controller> instance;
     Controller (QObject* parent = 0);
-
+//    Operator* selectedOperator;
     Q_INVOKABLE bool isConnected();     //Breki - checks if connection to the synth is working
     Q_INVOKABLE std::optional<int> addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
@@ -29,7 +29,8 @@ public:
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
-    std::optional<std::reference_wrapper<std::unique_ptr<Operator>>>  selectedOperator();
+    Q_INVOKABLE Operator* getSelectedOperator();
+//    Q_PROPERTY(Operator* selectedOperator MEMBER selectedOperator )
 
 private:
     void sendOperator(int operatorId);
