@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import SinViewItem
 import OperatorView
 // This does not work
+//import Presets
 
 Window {
     id: window
@@ -211,12 +212,25 @@ Window {
         }
 
         ComboBox {
-            id: presetDrawer
+
+            //var bleBle = qsTr(presets.getName() + "hello");
+            //var bleBle = text()"helloooo";
+            id: presetDropdown
             x: 412
             y: 57
             width: 262
             height: 36
+            //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
+            textRole: "key"
+            model: ListModel {
+                    ListElement { key: "Init"; value: 0 }
+                    ListElement { key: "Bass"; value: 1 }
+                    ListElement { key: "Pad"; value: 2 }
+                    ListElement { key: "Lead"; value: 3 }
+                }
+
         }
+
 
     }
 
