@@ -8,7 +8,7 @@ const int kMaxNumberOfOperators = 8;
 
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
-Controller::Controller(QObject *parent) : QObject(parent) {
+Controller::Controller(QObject *parent) : QObject(parent){
     for (int i = 0; i < 8; i++) {
         availableOperatorIds_.insert(i);
     }
@@ -56,11 +56,13 @@ void Controller::noteOff(int note) {
 
 void Controller::changeFrequency(int operatorId, long frequency) {
     operators_[operatorId]->frequency = frequency;
+    emit freqChanged(frequency);
     sendOperator(operatorId);
 }
 
 void Controller::changeAmplitude(int operatorId, long amplitude) {
     operators_[operatorId]->amplitude = amplitude;
+    emit ampChanged(amplitude);
     sendOperator(operatorId);
 }
 
@@ -113,6 +115,8 @@ void Controller::sendOperator(int operatorId) {
 
 void Controller::selectOperator(int id) {
     selectedOperatorId_ = {id};
+    const auto& operator_ = operators_[selectedOperatorId_.value()];
+    emit operatorSelected(operator_.get());
 }
 
 void Controller::deselectOperator() {

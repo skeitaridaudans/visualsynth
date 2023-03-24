@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import QtQml 2.0
 import SinViewItem
 import OperatorView
 // This does not work
@@ -13,12 +14,24 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
 
-    //    #property var currentOp
-    //    #currentOp: controller.getSelectedOperator()u
+    property var selectedOperator: null
 
-    //    function onChangeCurrentOp() {
-    //        console.log("changed")
-    //    }
+    Connections {
+        target: controller
+        function onOperatorSelected(operator) {
+            selectedOperator = operator
+            freqValueText.text = operator.freqProp + "hz"
+            ampValueText.text = operator.ampProp + ""
+        }
+
+        function onFreqChanged(freq){
+            freqValueText.text = freq + " hz"
+        }
+
+        function onAmpChanged(amp) {
+            ampValueText.text = amp + ""
+        }
+    }
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
@@ -252,13 +265,14 @@ Window {
         border.color: "gray"
         border.width: 3
         radius: 3
+        property int operatorId: selectedOerator ? selectedOperator.idProp : 0
         // Box title
         Text {
             id: operatorName
             x: 27
             y: 14
             //TODO: get ID of operator and add to it!
-            text: qsTr("Operator: ")
+            text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
             color: "#f0f0f0"
             font.pixelSize: 32
 
@@ -293,7 +307,7 @@ Window {
                     y: 8
                     width: 203
                     height: 49
-                    text: qsTr("1337 " + "Hz")
+                    text: selectedOperator ? selectedOperator.freqProp + " hz" : "0"
                     font.pixelSize: 32
                     color: "#f0f0f0"
                 }
@@ -327,7 +341,7 @@ Window {
                     y: 8
                     width: 203
                     height: 49
-                    text: qsTr(currentOp.ampProp + "Db")
+                    text: selectedOperator ? selectedOperator.ampProp + "" : "0"
                     font.pixelSize: 32
                     color: "#f0f0f0"
                 }
@@ -359,47 +373,44 @@ Window {
 
 
                     onTouchUpdated: {
-                        var currentOp = controller.getSelectedOperator();
-                        if (currentOp) {
-                            var freq = currentOp.getFreq();
-                            var amp = currentOp.getAmp();
-                            console.log("Current frequency: ", freq);
-                            console.log("Current amplitude: ", amp);
+                        if (selectedOperator) {
+
+                            // TODO add multipliers !
+                            var freq = selectedOperator.getFreq();
+                            var amp = selectedOperator.getAmp();
+
                             if (touchPoints[0].x > offset.x){
-                                currentOp.setFrequency(100)
-                                controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                                selectedOperator.setFrequency(1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                             } else if (touchPoints[0].x < offset.x){
-                                currentOp.setFrequency(-100)
-                                controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
+                                selectedOperator.setFrequency(-1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                             }
                             if (touchPoints[0].y < offset.y) {
-                                currentOp.setAmplitude(1)
-                                controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                                selectedOperator.setAmplitude(1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+
                             } else if (touchPoints[0].y > offset.y){
-                                currentOp.setAmplitude(-1)
-                                controller.changeAmplitude(currentOp.idProp, currentOp.ampProp);
+                                selectedOperator.setAmplitude(-1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
                             }
                         }
                     }
 
                     onPressed: {
-                        //                    currentOp: controller.getSelectedOperator();
                         var point = touchPoints[0];
-                        //                    var operator = controller.getSelectedOperator();
-                        //                    console.log(operator.freqProp);
-                        //                    console.log(operator);
-                        parent.width = parent.width+10;
+                        parent.border.color = "pink"
+                        parent.border.width = 3
+                        parent.width = parent.width + 5
+                        parent.height = parent.height + 5
                         offset = Qt.point(point.x, point.y);
-                        //                    dragMove(offset, point)
                     }
 
                     onReleased: {
-                        parent.width = 200;
-//                        var currentOp = controller.getSelectedOperator();
-//                        if (currentOp) {
-//                        controller.sendOperator(currentOp.idProp);
-//                        }
-                        console.log("Oh we be releasing");
+                        parent.border.width = 0
+                        parent.width = parent.width - 5
+                        parent.height = parent.height - 5
+
                     }
 
                 }
