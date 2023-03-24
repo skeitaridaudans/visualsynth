@@ -234,25 +234,24 @@ Window {
     }
 
 
-    //    Button {
-    //        id: button
-    //        x: 717
-    //        width: 224
-    //        height: 96
-    //        text: qsTr("Send note")
-    //        anchors.right: parent.right
-    //        anchors.top: parent.top
-    //        font.pointSize: 16
-    //        anchors.rightMargin: 979
-    //        anchors.topMargin: 957
-    //        onPressed: {
-    //            console.log(currentOp.freqProp)
-    //            controller.noteOn(60)
-    //       }
-    //        onReleased: {
-    //            controller.noteOff(60)
-    //        }
-    //    }
+        Button {
+            id: button
+            x: 717
+            width: 224
+            height: 96
+            text: qsTr("Send note")
+            anchors.right: parent.right
+            anchors.top: parent.top
+            font.pointSize: 16
+            anchors.rightMargin: 979
+            anchors.topMargin: 957
+            onPressed: {
+                controller.noteOn(60)
+           }
+            onReleased: {
+                controller.noteOff(60)
+            }
+        }
 
     Rectangle {
         // Operator info box
