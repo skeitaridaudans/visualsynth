@@ -91,6 +91,20 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
     api.removeModulator(operatorId, modulatorId);
 }
 
+void Controller::addCarrier(int operatorId) {
+    if (operators_[operatorId]->isCarrier) return;
+
+    operators_[operatorId]->isCarrier = true;
+    api.addCarrier(operatorId);
+}
+
+void Controller::removeCarrier(int operatorId) {
+    if (!operators_[operatorId]->isCarrier) return;
+
+    operators_[operatorId]->isCarrier = false;
+    api.removeCarrier(operatorId);
+}
+
 void Controller::sendOperator(int operatorId) {
     const auto& op = operators_[operatorId];
     std::cout << op->amplitude << std::endl;

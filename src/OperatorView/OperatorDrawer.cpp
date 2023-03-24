@@ -62,11 +62,11 @@ void OperatorDrawer::update(Operator* operator_) {
 
         const auto carrierLinePoints = operatorView_->carrierLineEndPoints();
         if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
-            operator_->isCarrier = true;
+            controller->addCarrier(operator_->id);
             operator_->position.setY(carrierLinePoints.first.y() - kBoxSize / 2.0);
         }
         else {
-            operator_->isCarrier = false;
+            controller->removeCarrier(operator_->id);
         }
     }
     else if (operator_->draggingState == DraggingState::Dragging) {
