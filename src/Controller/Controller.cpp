@@ -70,6 +70,8 @@ void Controller::addModulator(int operatorId, int modulatorId) {
 
     op->modulatedBy.push_back(modulatorId);
     mod->isModulator = true;
+
+    api.addModulator(operatorId, modulatorId);
 }
 
 void Controller::removeModulator(int operatorId, int modulatorId) {
@@ -85,6 +87,8 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
         }
     }
     mod->isModulator = false;
+
+    api.removeModulator(operatorId, modulatorId);
 }
 
 void Controller::sendOperator(int operatorId) {

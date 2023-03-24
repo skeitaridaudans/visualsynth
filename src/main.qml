@@ -221,25 +221,24 @@ Window {
     }
 
 
-    //    Button {
-    //        id: button
-    //        x: 717
-    //        width: 224
-    //        height: 96
-    //        text: qsTr("Send note")
-    //        anchors.right: parent.right
-    //        anchors.top: parent.top
-    //        font.pointSize: 16
-    //        anchors.rightMargin: 979
-    //        anchors.topMargin: 957
-    //        onPressed: {
-    //            console.log(currentOp.freqProp)
-    //            controller.noteOn(60)
-    //       }
-    //        onReleased: {
-    //            controller.noteOff(60)
-    //        }
-    //    }
+        Button {
+            id: button
+            x: 717
+            width: 224
+            height: 96
+            text: qsTr("Send note")
+            anchors.right: parent.right
+            anchors.top: parent.top
+            font.pointSize: 16
+            anchors.rightMargin: 979
+            anchors.topMargin: 957
+            onPressed: {
+                controller.noteOn(60)
+           }
+            onReleased: {
+                controller.noteOff(60)
+            }
+        }
 
     Rectangle {
         // Operator info box
@@ -367,10 +366,10 @@ Window {
                             console.log("Current frequency: ", freq);
                             console.log("Current amplitude: ", amp);
                             if (touchPoints[0].x > offset.x){
-                                currentOp.setFrequency(1)
+                                currentOp.setFrequency(100)
                                 controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
                             } else if (touchPoints[0].x < offset.x){
-                                currentOp.setFrequency(-1)
+                                currentOp.setFrequency(-100)
                                 controller.changeFrequency(currentOp.idProp, currentOp.freqProp);
                             }
                             if (touchPoints[0].y < offset.y) {
