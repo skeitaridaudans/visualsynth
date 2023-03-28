@@ -1,11 +1,13 @@
 import QtQuick
-import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
+import QtQuick.Controls 2.15
+import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
+import QtQuick 2.15
 // This does not work
 //import Presets
+//import QtMultimedia 5.15
 
 Window {
     id: window
@@ -45,104 +47,7 @@ Window {
         onTriggered: alertController.update()
     }
 
-    Rectangle {
-        id: rectangle
-        y: 771
-        width: 351
-        height: 123
-        color: "#212121"
-        border.color: "gray"
-        border.width: 3
-        radius: 3
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: 1321
-        anchors.bottomMargin: 186
 
-        Label {
-            id: label
-            x: 26
-            y: 86
-            text: qsTr("Attack")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
-        }
-
-        Label {
-            id: label1
-            x: 112
-            y: 86
-            text: qsTr("Decay")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
-        }
-
-        Label {
-            id: label2
-            x: 190
-            y: 86
-            text: qsTr("Sustain")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
-        }
-
-        Label {
-            id: label3
-            x: 275
-            y: 86
-            text: qsTr("Release")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
-        }
-
-        Dial {
-            id: dial
-            x: 10
-            y: 9
-            width: 72
-            height: 71
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 38
-            from: 5.0
-            to: 25.0
-            value: 15.0
-            onMoved: waveView.setFrequency(dial.value)
-        }
-
-        Dial {
-            id: dial1
-            x: 95
-            y: 9
-            width: 72
-            height: 71
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 38
-            from: 0.2
-            to: 0.95
-            value: 0.9
-            onMoved: waveView.setAmplitude(dial1.value)
-        }
-
-        Dial {
-            id: dial2
-            x: 176
-            y: 9
-            width: 72
-            height: 71
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 38
-        }
-
-        Dial {
-            id: dial3
-            x: 262
-            y: 9
-            width: 72
-            height: 71
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 38
-        }
-    }
 
     Rectangle {
         id: sinewaverectangle
@@ -250,15 +155,15 @@ Window {
 
         Button {
             id: button
-            x: 717
-            width: 224
-            height: 96
+            x: 81
+            width: 155
+            height: 53
             text: qsTr("Send note")
             anchors.right: parent.right
             anchors.top: parent.top
             font.pointSize: 16
-            anchors.rightMargin: 979
-            anchors.topMargin: 957
+            anchors.rightMargin: 1684
+            anchors.topMargin: 927
             onPressed: {
                 controller.noteOn(60)
            }
@@ -515,4 +420,202 @@ Window {
     //        }
     //    ]
 
-}
+
+    Rectangle {
+        id: rectangle
+        y: 556
+        width: 351
+        height: 338
+        color: "#212121"
+        border.color: "gray"
+        border.width: 3
+        radius: 3
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 1321
+        anchors.bottomMargin: 186
+
+
+    Item {
+        id: envelopeItem
+        x: 24
+        y: 13
+        width: 310
+        height: 210
+
+        property real attackTime: 0.01
+        property real decTime: 0.3
+        property real susLevel: 0.25
+        property real relTime: 0.3
+
+        Canvas {
+
+            id: envelopeCanvas
+            anchors.fill: parent
+
+            onPaint: {
+                var ctx = getContext("2d")
+                var w = width
+                var h = height
+                ctx.clearRect(0, 0, w, h);
+
+
+                // Release
+                var relStart = ((4 - envelopeItem.relTime) * (w/4))
+                ctx.beginPath()
+                ctx.lineWidth = 5
+                ctx.strokeStyle = "purple"
+                ctx.moveTo(relStart, (envelopeItem.susLevel * h))
+                ctx.lineTo(w, h)
+                ctx.stroke()
+
+
+                // Attack
+                var attackEnd = (envelopeItem.attackTime * (w/4))
+                ctx.beginPath()
+                ctx.lineWidth = 5
+                ctx.strokeStyle = "purple"
+                ctx.moveTo(0, h)
+                ctx.lineTo(attackEnd, 0)
+                ctx.stroke()
+
+
+                // Decay
+                //var decayEnd = attackEnd + envelopeItem.decTime * w / (envelopeItem.attackTime + envelopeItem.decTime)
+                var decayEnd = (attackEnd + (envelopeItem.decTime  * (w/4)) - envelopeItem.relTime)
+                ctx.beginPath()
+                ctx.lineWidth = 5
+                ctx.strokeStyle = "purple"
+                ctx.moveTo(attackEnd, 0)
+                ctx.lineTo(decayEnd, envelopeItem.susLevel * h)
+                ctx.stroke()
+
+
+                // Sustain
+                ctx.beginPath()
+                ctx.lineWidth = 5
+                ctx.strokeStyle = "purple"
+                ctx.moveTo(decayEnd, (envelopeItem.susLevel) * h)
+                ctx.lineTo(relStart,(envelopeItem.susLevel) * h)
+                ctx.stroke()
+            }
+        }
+    }
+    Label {
+        id: label
+        x: 26
+        y: 86
+        text: qsTr("Attack")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 16
+    }
+
+    Label {
+        id: label1
+        x: 112
+        y: 86
+        text: qsTr("Decay")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 16
+    }
+
+    Label {
+        id: label2
+        x: 190
+        y: 86
+        text: qsTr("Sustain")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 16
+    }
+
+    Label {
+        id: label3
+        x: 275
+        y: 86
+        text: qsTr("Release")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 16
+    }
+
+    Dial {
+        id: dial
+        x: 10
+        y: 9
+        width: 72
+        height: 71
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 38
+        from: 0.01
+        //to: 0.5
+        value: 0.01
+
+        property real commonValue;
+        onValueChanged: {
+            console.log("Attack: " + value);
+            envelopeItem.attackTime = dial.value;
+            envelopeCanvas.requestPaint();
+        }
+    }
+
+    Dial {
+        id: dial1
+        x: 95
+        y: 9
+        width: 72
+        height: 71
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 38
+        from: 0.01
+        //to: 0.3
+        value: 0.01
+
+        property real commonValue;
+        onValueChanged: {
+            console.log("Decay: " + value);
+            envelopeItem.decTime = dial1.value;
+            envelopeCanvas.requestPaint();
+        }
+    }
+
+    Dial {
+        id: dial2
+        x: 176
+        y: 9
+        width: 72
+        height: 71
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 38
+        from: 0.01
+        value: 0.01
+
+        property real commonValue;
+        onValueChanged: {
+            console.log("Sustain: " + value);
+            envelopeItem.susLevel = dial2.value;
+            envelopeCanvas.requestPaint();
+        }
+    }
+
+    Dial {
+        id: dial3
+        x: 262
+        y: 9
+        width: 72
+        height: 71
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 38
+        from: 0.01
+        //to: 0.3
+        value: 0.01
+
+        property real commonValue;
+        onValueChanged: {
+            console.log("Release: " + value);
+            envelopeItem.relTime = dial3.value;
+            envelopeCanvas.requestPaint();
+        }
+    }
+
+ }
+
+ }
