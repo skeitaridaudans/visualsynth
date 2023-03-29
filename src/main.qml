@@ -3,6 +3,9 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import SinViewItem
 import OperatorView
+import AmpEnvGraphView
+
+
 // This does not work
 Window {
     id: window
@@ -17,17 +20,17 @@ Window {
 
     Rectangle {
         id: rectangle
-        y: 745
-        width: 351
+        y: 750
+        width: 628
         height: 123
         color: "#212121"
-            border.color: "gray"
-            border.width: 3
-            radius: 3
+        border.color: "gray"
+        border.width: 3
+        radius: 3
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 1489
-        anchors.bottomMargin: 212
+        anchors.leftMargin: 1212
+        anchors.bottomMargin: 207
 
         Label {
             id: label
@@ -137,24 +140,24 @@ Window {
     }
 
 
-//    Button {
-//        id: button
-//        x: 717
-//        width: 224
-//        height: 96
-//        text: qsTr("Send note")
-//        anchors.right: parent.right
-//        anchors.top: parent.top
-//        font.pointSize: 16
-//        anchors.rightMargin: 979
-//        anchors.topMargin: 957
-//        onPressed: {
-//            controller.noteOn(60)
-//        }
-//        onReleased: {
-//            controller.noteOff(60)
-//        }
-//    }
+    //    Button {
+    //        id: button
+    //        x: 717
+    //        width: 224
+    //        height: 96
+    //        text: qsTr("Send note")
+    //        anchors.right: parent.right
+    //        anchors.top: parent.top
+    //        font.pointSize: 16
+    //        anchors.rightMargin: 979
+    //        anchors.topMargin: 957
+    //        onPressed: {
+    //            controller.noteOn(60)
+    //        }
+    //        onReleased: {
+    //            controller.noteOff(60)
+    //        }
+    //    }
 
     Rectangle {
         // Operator info box
@@ -177,113 +180,116 @@ Window {
             color: "#f0f0f0"
             font.pixelSize: 32
 
-        // Frequency text
-        Text {
-            id: freqText
-            x: 12
-            y: 79
-            width: 80
-            height: 49
-            color: "#f0f0f0"
-            text: qsTr("Freq: ")
-            font.family: "Noto Sans"
-            font.pixelSize: 32
-
-        }
-        // Frequency amount
-        Rectangle {
-            id: freqValueBox
-            x: 98
-            y: 79
-            width: 219
-            height: 65
-            color: "#222222"
-            border.color: "#f0f0f0"
-            border.width: 3
-
+            // Frequency text
             Text {
-                //TODO: get value from operator and update text
-                id: freqValueText
-                x: 8
-                y: 8
-                width: 203
+                id: freqText
+                x: 12
+                y: 79
+                width: 80
                 height: 49
-                text: qsTr("1337 " + "Hz")
+                color: "#f0f0f0"
+                text: qsTr("Freq: ")
+                font.family: "Noto Sans"
+                font.pixelSize: 32
+
+            }
+            // Frequency amount
+            Rectangle {
+                id: freqValueBox
+                x: 98
+                y: 79
+                width: 219
+                height: 65
+                color: "#222222"
+                border.color: "#f0f0f0"
+                border.width: 3
+
+                Text {
+                    //TODO: get value from operator and update text
+                    id: freqValueText
+                    x: 8
+                    y: 8
+                    width: 203
+                    height: 49
+                    text: qsTr("1337 " + "Hz")
+                    font.pixelSize: 32
+                    color: "#f0f0f0"
+                }
+            }
+
+            // Amplitude text
+            Text {
+                id: ampText
+                x: 12
+                y: 163
+                width: 80
+                height: 43
+                text: qsTr("Amp:")
                 font.pixelSize: 32
                 color: "#f0f0f0"
             }
-        }
-
-        // Amplitude text
-        Text {
-            id: ampText
-            x: 12
-            y: 163
-            width: 80
-            height: 43
-            text: qsTr("Amp:")
-            font.pixelSize: 32
-            color: "#f0f0f0"
-        }
-        // Amp value box
-        Rectangle {
-            id: ampValueBox
-            x: 98
-            y: 158
-            width: 219
-            height: 65
-            color: "#222222"
-            border.color: "#f0f0f0"
-            border.width: 3
-            // Amp value text
-            Text {
-                id: ampValueText
-                x: 8
-                y: 8
-                width: 203
-                height: 49
-                text: qsTr("420 " + "Db")
-                font.pixelSize: 32
-                color: "#f0f0f0"
+            // Amp value box
+            Rectangle {
+                id: ampValueBox
+                x: 98
+                y: 158
+                width: 219
+                height: 65
+                color: "#222222"
+                border.color: "#f0f0f0"
+                border.width: 3
+                // Amp value text
+                Text {
+                    id: ampValueText
+                    x: 8
+                    y: 8
+                    width: 203
+                    height: 49
+                    text: qsTr("420 " + "Db")
+                    font.pixelSize: 32
+                    color: "#f0f0f0"
+                }
             }
-        }
-        // Operator box
-        Rectangle {
-            id: opDrag
-            x: 359
-            y: 38
-            width: 200
-            height: 200
-            // TODO: get color of operator
-            // TODO: Change color on drag
-            color: "#ff961d"
-            // Make it respond to geastures
-            MultiPointTouchArea{
-                anchors.fill: parent
-                anchors.rightMargin: 0
-                anchors.bottomMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 0
-                property var drag: parent
-                property var offset : null
+            // Operator box
+            Rectangle {
+                id: opDrag
+                x: 359
+                y: 38
+                width: 200
+                height: 200
+                // TODO: get color of operator
+                // TODO: Change color on drag
+                color: "#ff961d"
+                // Make it respond to geastures
+                MultiPointTouchArea{
+                    anchors.fill: parent
+                    anchors.rightMargin: 0
+                    anchors.bottomMargin: 0
+                    anchors.leftMargin: 0
+                    anchors.topMargin: 0
+                    property var drag: parent
+                    property var offset : null
 
-                function dragMove(holder, point){
-                    if (point && drag) {
-                        consnole.log("oh we be draggin");
+                    function dragMove(holder, point){
+                        if (point && drag) {
+                            consnole.log("oh we be draggin");
+                        }
                     }
-                }
 
-                onPressed: {
-                    var point = touchPoints[0];
-                    console.log("Oh we be pressin");
-                    parent.width = 250;
+                    onPressed: {
+                        var point = touchPoints[0];
+                        console.log("Oh we be pressin");
+                        parent.width = 250;
 
-                    offset = Qt.point(point.x, point.y);
-                }
+                        offset = Qt.point(point.x, point.y);
+                    }
 
-                onReleased: {
-                    parent.width = 200;
-                    console.log("Oh we be releasing");
+                    onReleased: {
+                        parent.width = 200;
+                        console.log("Oh we be releasing");
+                    }
+
+
                 }
 
 
@@ -291,11 +297,8 @@ Window {
 
 
         }
-
 
     }
-
-}
     
     Text {
         id: connectedText
@@ -323,25 +326,37 @@ Window {
         }
 
     }
+
+
+    AmpEnvGraphItem{
+        id: ampEnvGraphView
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin:80
+            anchors.bottomMargin: 340
+            width: 628
+            height: 316
+    }
+
     //Trying to make colour of CONNECTED change if synth is not connected
-//    states: [
-//        State {
-//            name: "Synth_connected"
-//            PropertyChanges {
-//                target: connectedRoundButton
-//                radius: myRoundButton.radius
-//                color: "blue" //"#55ff00"
-//
-//            }
-//        },
-//        State {
-//            name: "Synth_not_connected"
-//            PropertyChanges {
-//                target: connectedRoundButton
-//                radius: myRoundButton.radius
-//                color: "gray"
-//            }
-//        }
-//    ]
+    //    states: [
+    //        State {
+    //            name: "Synth_connected"
+    //            PropertyChanges {
+    //                target: connectedRoundButton
+    //                radius: myRoundButton.radius
+    //                color: "blue" //"#55ff00"
+    //
+    //            }
+    //        },
+    //        State {
+    //            name: "Synth_not_connected"
+    //            PropertyChanges {
+    //                target: connectedRoundButton
+    //                radius: myRoundButton.radius
+    //                color: "gray"
+    //            }
+    //        }
+    //    ]
 
 }
