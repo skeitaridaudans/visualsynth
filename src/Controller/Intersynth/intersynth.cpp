@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include "intersynth.h"
+#include "messages.h"
 struct RtMidiWrapper* midiout = {0};
 void intersynth_init()
 {
@@ -126,5 +127,46 @@ bool intersynth_add_modulator(int operator_id, int modulator_id)
 
 }
 
+bool intersynth_remove_modulator(int operator_id, int modulator_id)
+{
+    //
+    unsigned char msg[6];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x02;
+    msg[3] = MODULATED_BY + operator_id;
+    msg[4] = MODULATOR_OFF + modulator_id;
+    msg[5] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 6);
+    return midiout->ok;
+}
+
+
+bool intersynth_add_carrier(int operator_id)
+{
+    unsigned char msg[5];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x01;
+    // 0x0101 0000 + operator
+    msg[3] = CARRIER_ON + operator_id;
+    msg[4] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 5);
+    return midiout->ok;
+}
+
+
+bool intersynth_remove_carrier(int operator_id)
+{
+    unsigned char msg[5];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x01;
+    // 0x0110 0000 + operator
+    msg[3] = CARRIER_OFF + operator_id;
+    msg[4] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 5);
+    return midiout->ok;
+}
 
 #endif

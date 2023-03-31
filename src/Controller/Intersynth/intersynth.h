@@ -23,8 +23,17 @@ char* intersynth_get_port_name(uint32_t port_num);
 void intersynth_free_get_port_name(char* arr);
 bool intersynth_select_port(uint32_t port_num);
 bool intersynth_send_note(unsigned char key, unsigned char velocity);
+
+//OPERATOR CHANGE
 bool intersynth_change_operator_values(unsigned char operator_, unsigned char alg_index, bool attack, float frequency_factor, float amplitude);
+
+//OPERATOR MODULATION
 bool intersynth_add_modulator(int operator_id, int modulator_id);
+bool intersynth_remove_modulator(int operator_id, int modulator_id);
+
+//OPERATOR CARRIERS
+bool intersynth_add_carrier(int operator_id);
+bool intersynth_remove_carrier(int operator_id);
 
 #endif //MIDI_SYNTH_INTERSYNTH_H
 

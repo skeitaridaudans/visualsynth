@@ -1,8 +1,14 @@
 #include "Controller.h"
+#include <iostream>
+#include "src/Alert/AlertController.h"
+#include <QDebug>
+#include <QTimer>
+
+const int kMaxNumberOfOperators = 8;
 
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
-Controller::Controller(QObject *parent) : QObject(parent) {
+Controller::Controller(QObject *parent) : QObject(parent){
     for (int i = 0; i < 8; i++) {
         availableOperatorIds_.insert(i);
     }
@@ -13,7 +19,12 @@ bool Controller::isConnected(){
     return true;
 }
 
-int Controller::addOperator() {
+std::optional<int> Controller::addOperator() {
+    if (operators_.size() >= kMaxNumberOfOperators) {
+        AlertController::instance->showAlert("Error: Only 8 operators allowed");
+        return std::nullopt;
+    }
+
     int id = *std::min_element(availableOperatorIds_.begin(), availableOperatorIds_.end());
     availableOperatorIds_.erase(id);
 
@@ -29,7 +40,7 @@ void Controller::removeOperator(int operatorId) {
 
     // Remove operator from all modulatedBy lists
     for (const auto& op : operators_) {
-        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) == op.second->modulatedBy.end()) {
+        if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) != op.second->modulatedBy.end()) {
             op.second->modulatedBy.erase(std::remove(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId),op.second->modulatedBy.end());
         }
     }
@@ -45,11 +56,13 @@ void Controller::noteOff(int note) {
 
 void Controller::changeFrequency(int operatorId, long frequency) {
     operators_[operatorId]->frequency = frequency;
+    emit freqChanged(frequency);
     sendOperator(operatorId);
 }
 
 void Controller::changeAmplitude(int operatorId, long amplitude) {
     operators_[operatorId]->amplitude = amplitude;
+    emit ampChanged(amplitude);
     sendOperator(operatorId);
 }
 
@@ -59,6 +72,8 @@ void Controller::addModulator(int operatorId, int modulatorId) {
 
     op->modulatedBy.push_back(modulatorId);
     mod->isModulator = true;
+
+    api.addModulator(operatorId, modulatorId);
 }
 
 void Controller::removeModulator(int operatorId, int modulatorId) {
@@ -74,15 +89,34 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
         }
     }
     mod->isModulator = false;
+
+    api.removeModulator(operatorId, modulatorId);
+}
+
+void Controller::addCarrier(int operatorId) {
+    if (operators_[operatorId]->isCarrier) return;
+
+    operators_[operatorId]->isCarrier = true;
+    api.addCarrier(operatorId);
+}
+
+void Controller::removeCarrier(int operatorId) {
+    if (!operators_[operatorId]->isCarrier) return;
+
+    operators_[operatorId]->isCarrier = false;
+    api.removeCarrier(operatorId);
 }
 
 void Controller::sendOperator(int operatorId) {
     const auto& op = operators_[operatorId];
+    std::cout << op->amplitude << std::endl;
     api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
 }
 
 void Controller::selectOperator(int id) {
     selectedOperatorId_ = {id};
+    const auto& operator_ = operators_[selectedOperatorId_.value()];
+    emit operatorSelected(operator_.get());
 }
 
 void Controller::deselectOperator() {
@@ -101,12 +135,12 @@ std::optional<int> Controller::selectedOperatorId() {
     return selectedOperatorId_;
 }
 
-std::optional<std::reference_wrapper<std::unique_ptr<Operator>>> Controller::selectedOperator() {
+Operator* Controller::getSelectedOperator() {
     if (selectedOperatorId_.has_value()) {
-        auto& operator_ = operators_[selectedOperatorId_.value()];
-        return  { operator_ };
+        const auto& operator_ = operators_[selectedOperatorId_.value()];
+        return operator_.get();
     }
     else {
-        return std::nullopt;
+        return nullptr;
     }
 }

@@ -10,9 +10,13 @@ class Api {
 public:
     Api();
 
-    void sendOperatorValue(bool attack, int envelopeId, int operatorId, float frequency, float amplitude);
+    void sendOperatorValue(unsigned char operator_, unsigned char alg_index, bool attack, float frequency_factor, float amplitude);
     void noteOn(unsigned char key);
     void noteOff(unsigned char key);
+    void addModulator(int operatorId, int modulatorId);
+    void removeModulator(int operatorId, int modulatorId);
+    void addCarrier(int operatorId);
+    void removeCarrier(int operatorId);
 };
 
 
