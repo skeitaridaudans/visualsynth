@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
+import AmpEnvGraphView
 import QtQuick 2.15
 // This does not work
 //import Presets
@@ -50,6 +51,30 @@ Window {
 
 
     Rectangle {
+        id: rectangle
+        y: 750
+        width: 628
+        height: 123
+        color: "#212121"
+        border.color: "gray"
+        border.width: 3
+        radius: 3
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 1212
+        anchors.bottomMargin: 207
+
+        Label {
+            id: label
+            x: 26
+            y: 86
+            text: qsTr("Attack")
+           anchors.bottom: parent.bottom
+            anchors.rightMargin: 20
+            anchors.bottomMargin: 10
+            width: 500
+            height: 100
+        }
         id: sinewaverectangle
         x: 0
         y: 898
@@ -64,13 +89,6 @@ Window {
         SinWaveItem {
             id: waveView
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin: 20
-            anchors.bottomMargin: 10
-            width: 500
-            height: 100
-        }
-
         RoundButton {
             id: connectedRoundButton
             x: 88
@@ -316,6 +334,23 @@ Window {
                         }
                     }
 
+                        console.log("Oh we be pressin");
+                        parent.width = 250;
+
+                        offset = Qt.point(point.x, point.y);
+                    }
+
+                    onReleased: {
+                        parent.width = 200;
+                        console.log("Oh we be releasing");
+                    }
+
+
+                }
+                
+                                        }
+                    }
+
                     onPressed: {
                         var point = touchPoints[0];
                         parent.border.color = "pink"
@@ -331,7 +366,6 @@ Window {
                         parent.height = parent.height - 5
 
                     }
-
                 }
 
             }
@@ -339,7 +373,6 @@ Window {
         }
 
     }
-
     Text {
         id: presetsText
         x: 347
@@ -508,6 +541,17 @@ Window {
         text: qsTr("Attack")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 16
+    }
+
+
+    AmpEnvGraphItem{
+        id: ampEnvGraphView
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin:80
+            anchors.bottomMargin: 340
+            width: 628
+            height: 316
     }
 
     Label {
