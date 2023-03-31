@@ -22,40 +22,44 @@ AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent):QQuickPaintedItem(parent), 
 
     double widthFromParams = x_/3;
 
+    //assigning variables to attack
     attack->assignText("A");
     attack->assignRGBColor(255,255,0);
-    attack->assignX(widthFromParams*0 +(widthFromParams/2) );
-    attack->assignY(center_);
+    attack->assignX(0 );
+    attack->assignY(0);
 
+
+    //assigning variables to decay
     decay->assignText("D");
     decay->assignRGBColor(255,128,0);
-    decay->assignX(widthFromParams*1 +(widthFromParams/2));
+    decay->assignX(center_- widthFromParams);
     decay->assignY(center_);
 
+    //assigning variables to sustain
     sustain->assignText("S");
     sustain->assignRGBColor(255,229,180);
-    sustain->assignX(widthFromParams*2 + (widthFromParams/2));
+    sustain->assignX(center_+widthFromParams);
     sustain->assignY(center_);
 
+    //assigning variables to release
     release->assignText("R");
     release->assignRGBColor(128,0,128);
-    release->assignX(widthFromParams*3 + (widthFromParams/2));
-    release->assignY(center_);
+    release->assignX(x_+(widthFromParams));
+    release->assignY(center_*2);
 
 
-    start_to_a->assignP1(x_-width_,height_+y_);
-    start_to_a->assignP2(attack->coords.x(),attack->coords.y());
-    start_to_a->setColor(QColor(Qt::red));
-
+    //Here is a line between attack and decay
     a_to_d->assignP1(attack->coords.x(),attack->coords.y());
     a_to_d->assignP2(decay->coords.x(),decay->coords.y());
     a_to_d->setColor(QColor(Qt::green));
 
 
+    //Here is a line between decay and sustain
     d_to_s->assignP1(decay->coords.x(),decay->coords.y());
     d_to_s->assignP2(sustain->coords.x(),sustain->coords.y());
     d_to_s->setColor(QColor(Qt::yellow));
 
+    //Here is a line between sustain and release
     s_to_r->assignP1(sustain->coords.x(),sustain->coords.y());
     s_to_r->assignP2(release->coords.x(),release->coords.y());
     s_to_r->setColor(QColor(Qt::magenta));
