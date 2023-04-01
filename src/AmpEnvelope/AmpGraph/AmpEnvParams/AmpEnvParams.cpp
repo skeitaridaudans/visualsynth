@@ -48,7 +48,7 @@ void AmpEnvParams::assignText(QString newTxt){
 
 void AmpEnvParams::draw(QPainter *painter) {
 
-    qDebug() << "im drawing... ";
+//    qDebug() << "im drawing... ";
 
     //qDebug() << "b in rgb: " << rgb_b <<"";
 

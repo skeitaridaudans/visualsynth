@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
+
 import QtQuick 2.15
 // This does not work
 //import Presets
@@ -27,14 +28,26 @@ Window {
             selectedOperator = operator
             freqValueText.text = operator.freqProp + "hz"
             ampValueText.text = operator.ampProp + ""
+
+            var color = selectedOperator.getColorForOperator();
+            opDrag.color = color
         }
+
+
 
         function onFreqChanged(freq){
             freqValueText.text = freq + " hz"
+
+            var color = selectedOperator.getColorForOperator();
+            opDrag.color = color
+
         }
 
         function onAmpChanged(amp) {
             ampValueText.text = amp + ""
+
+            var color = selectedOperator.getColorForOperator();
+            opDrag.color = color
         }
     }
 
@@ -157,15 +170,15 @@ Window {
 
         Button {
             id: button
-            x: 81
+            x: 80
             width: 155
             height: 53
             text: qsTr("Send note")
             anchors.right: parent.right
             anchors.top: parent.top
             font.pointSize: 16
-            anchors.rightMargin: 1684
-            anchors.topMargin: 927
+            anchors.rightMargin: 1685
+            anchors.topMargin: 916
             onPressed: {
                 controller.noteOn(60)
            }
@@ -276,7 +289,9 @@ Window {
                 height: 200
                 // TODO: get color of operator
                 // TODO: Change color on drag
+
                 color: "#ff961d"
+
                 // Make it respond to geastures
                 MultiPointTouchArea{
                     anchors.fill: parent
@@ -504,16 +519,16 @@ Window {
         }
     }
 
-    AmpEnvGraphItem{
-        id: ampEnvGraphView
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin:-160
-
-            anchors.bottomMargin: 100
-            width: 628
-            height: 316
-    }
+    //AmpEnvGraphItem{
+    //    id: ampEnvGraphView
+    //        anchors.right: parent.right
+    //        anchors.bottom: parent.bottom
+    //        anchors.rightMargin:-160
+    //
+    //        anchors.bottomMargin: 100
+    //        width: 628
+    //        height: 316
+    //}
 
     Label {
         id: label
@@ -565,7 +580,7 @@ Window {
 
         property real commonValue;
         onValueChanged: {
-            console.log("Attack: " + value);
+            //console.log("Attack: " + value);
             envelopeItem.attackTime = dial.value;
             envelopeCanvas.requestPaint();
         }
@@ -585,7 +600,7 @@ Window {
 
         property real commonValue;
         onValueChanged: {
-            console.log("Decay: " + value);
+            //console.log("Decay: " + value);
             envelopeItem.decTime = dial1.value;
             envelopeCanvas.requestPaint();
         }
@@ -604,7 +619,7 @@ Window {
 
         property real commonValue;
         onValueChanged: {
-            console.log("Sustain: " + value);
+            //console.log("Sustain: " + value);
             envelopeItem.susLevel = dial2.value;
             envelopeCanvas.requestPaint();
         }
@@ -624,7 +639,7 @@ Window {
 
         property real commonValue;
         onValueChanged: {
-            console.log("Release: " + value);
+            //console.log("Release: " + value);
             envelopeItem.relTime = dial3.value;
             envelopeCanvas.requestPaint();
         }
