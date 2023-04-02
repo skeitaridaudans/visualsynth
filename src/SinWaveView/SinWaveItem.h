@@ -20,8 +20,8 @@ public:
     Q_INVOKABLE void setFrequency(qreal frequency);
     Q_INVOKABLE void setAmplitude(qreal amplitude);
 private:
-    qreal frequency_ = 15.0;
-    qreal amplitude_ = 0.9;
+    qreal frequency_ = 0;
+    qreal amplitude_ = 0;
     float sinStartX_ = 0.0;
 };
 

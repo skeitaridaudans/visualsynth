@@ -121,6 +121,7 @@ void Controller::selectOperator(int id) {
 
 void Controller::deselectOperator() {
     selectedOperatorId_ = std::nullopt;
+    emit operatorDeselected(true);
 }
 
 const std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
