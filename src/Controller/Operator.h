@@ -46,6 +46,7 @@ public:
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
+    Q_INVOKABLE QColor getColorForOperator(); //Operator *operator_
 };
 
 void to_json(json& j, const Operator& o);

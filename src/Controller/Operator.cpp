@@ -3,10 +3,13 @@
 //
 
 #include "Operator.h"
+#include "qcolor.h"
 #include <iostream>
 
-Operator::Operator(int id, QObject *parent)
-        : id(id), QObject(parent), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
+
+
+Operator::Operator(int id, QObject* parent)
+    : id(id), QObject(parent), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
 
 Operator::Operator()
         : id(0), QObject(), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
@@ -29,6 +32,11 @@ long Operator::getAmp() {
 
 long Operator::getFreq() {
     return this->frequency;
+}
+
+
+QColor Operator::getColorForOperator() {
+    return QColor((int) ((log10((double) this->frequency) / 4.38) * 255.0), 20, (int) ((log10((double) this->amplitude) / 4.38) * 255.0));
 }
 
 void to_json(json &j, const Operator &o) {
