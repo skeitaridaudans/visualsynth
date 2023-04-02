@@ -81,6 +81,9 @@ void to_json(json &j, const std::unique_ptr<Operator> &o) {
 }
 
 void from_json(const json &j, std::unique_ptr<Operator> &o) {
+    if (o == nullptr) {
+        o = std::make_unique<Operator>();
+    }
     j["id"].get_to(o->id);
     j["frequency"].get_to(o->frequency);
     j["amplitude"].get_to(o->amplitude);

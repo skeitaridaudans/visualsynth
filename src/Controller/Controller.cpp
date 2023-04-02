@@ -10,9 +10,7 @@ const int kMaxNumberOfOperators = 8;
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
 Controller::Controller(QObject *parent) : QObject(parent){
-    for (int i = 0; i < 8; i++) {
-        availableOperatorIds_.insert(i);
-    }
+    resetAvailableOperatorIds();
 }
 
 bool Controller::isConnected(){
@@ -147,10 +145,27 @@ Operator* Controller::getSelectedOperator() {
 }
 
 void Controller::saveOperators(const std::string& name) {
-    json j(operators_);
-    j.dump();
+    json json(operators_);
 
     std::ofstream file("presets/" + name + ".json");
-    file << j.dump();
+    file << json.dump();
     file.close();
+}
+
+void Controller::loadOperators(const std::string& name) {
+    std::ifstream file("presets/" + name + ".json");
+    json data = json::parse(file);
+    operators_ = data.get<std::unordered_map<int, std::unique_ptr<Operator>>>();
+
+    resetAvailableOperatorIds();
+    for (const auto& operator_ : operators_) {
+        availableOperatorIds_.erase(operator_.first);
+    }
+}
+
+void Controller::resetAvailableOperatorIds() {
+    availableOperatorIds_.clear();
+    for (int i = 0; i < 8; i++) {
+        availableOperatorIds_.insert(i);
+    }
 }
