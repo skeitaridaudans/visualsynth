@@ -16,10 +16,10 @@ public:
     void sendMessageString(QString msg);
 
     QString sendOperatorValue(int operator_id, bool attack, int envelope_index, float frequency, float amplitude);
-    void addModulator(int operator_id, int modulator_id);
-    void removeModulator(int operator_id, int modulator_id);
-    void addCarrier(int operator_id);
-    void removeCarrier(int operator_id);
+    QString addModulator(int operator_id, int modulator_id);
+    QString removeModulator(int operator_id, int modulator_id);
+    QString addCarrier(int operator_id);
+    QString removeCarrier(int operator_id);
 
 
 private:
