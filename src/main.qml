@@ -32,15 +32,20 @@ Window {
             opContainer.visible = true
             var color = selectedOperator.getColorForOperator();
             opDrag.color = color
+            waveView.setFrequency(operator.freqProp);
+            waveView.setAmplitude(operator.ampProp);
         }
 
         function onOperatorDeselected(deselected){
                 opContainer.enabled = false
                 opContainer.visible = false
+                waveView.setFrequency(0);
+                waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
             freqValueText.text = freq + ""
+            waveView.setFrequency(freq);
 
             var color = selectedOperator.getColorForOperator();
             opDrag.color = color
@@ -49,6 +54,7 @@ Window {
 
         function onAmpChanged(amp) {
             ampValueText.text = amp + ""
+            waveView.setAmplitude(amp);
 
             var color = selectedOperator.getColorForOperator();
             opDrag.color = color
@@ -86,7 +92,7 @@ Window {
             anchors.bottom: parent.bottom
             anchors.rightMargin: 20
             anchors.bottomMargin: 10
-            width: 500
+            width: 800
             height: 100
         }
 
@@ -215,7 +221,6 @@ Window {
                 id: operatorName
                 x: 27
                 y: 14
-                //TODO: get ID of operator and add to it!
                 text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
                 color: "#f0f0f0"
                 font.pixelSize: 32
