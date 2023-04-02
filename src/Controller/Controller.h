@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE Operator* getSelectedOperator();
     // Signals for operators
     Q_SIGNAL void operatorSelected(Operator* op);
+    Q_SIGNAL void operatorDeselected(bool deselected);
     Q_SIGNAL void ampChanged(long amp);
     Q_SIGNAL void freqChanged(long freq);
 
