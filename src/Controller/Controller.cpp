@@ -3,6 +3,7 @@
 #include "src/Alert/AlertController.h"
 #include <QDebug>
 #include <QTimer>
+#include <fstream>
 
 const int kMaxNumberOfOperators = 8;
 
@@ -143,4 +144,13 @@ Operator* Controller::getSelectedOperator() {
     else {
         return nullptr;
     }
+}
+
+void Controller::saveOperators(const std::string& name) {
+    json j(operators_);
+    j.dump();
+
+    std::ofstream file("presets/" + name + ".json");
+    file << j.dump();
+    file.close();
 }

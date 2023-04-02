@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE void deselectOperator();
     Q_INVOKABLE void addCarrier(int operatorId);
     Q_INVOKABLE void removeCarrier(int operatorId);
+    void saveOperators(const std::string& name);
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
