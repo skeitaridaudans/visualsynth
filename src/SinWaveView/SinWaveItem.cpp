@@ -27,13 +27,7 @@ qreal SinWaveItem::frequency() {
 }
 
 void SinWaveItem::setFrequency(qreal frequency)  {
-    if(frequency*0.05 < 22){
-        frequency_ = 20;
-    } else if (frequency*0.05 > 452){
-        frequency_ = frequency*0.02;
-    } else{
-        frequency_ = frequency*0.05;
-    }
+    frequency_ = frequency;
 }
 
 void SinWaveItem::setAmplitude(qreal amplitude) {

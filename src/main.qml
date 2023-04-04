@@ -383,9 +383,11 @@ Window {
 
                                     if(horiDrag) {
                                         if (xDelta > 0){
+                                            console.log("here")
                                             selectedOperator.setFrequency(1)
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         } else if (xDelta < 0){
+                                            console.log("there");
                                             selectedOperator.setFrequency(-1)
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         }
