@@ -109,8 +109,9 @@ void Controller::removeCarrier(int operatorId) {
 
 void Controller::sendOperator(int operatorId) {
     const auto& op = operators_[operatorId];
-    std::cout << op->amplitude << std::endl;
-    api.sendOperatorValue(op->id, op->frequency, op->amplitude, true, 0);
+    float freq = std::pow(1.90366, (float)(op->frequency - 50) / 20.0);
+    float amp = std::pow(1.6, (float)(op->amplitude - 50) / 20.0) - 0.3;
+    api.sendOperatorValue(op->id, freq, amp , 1, 0);
 }
 
 void Controller::selectOperator(int id) {
