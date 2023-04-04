@@ -199,7 +199,7 @@ Window {
         border.color: "gray"
         border.width: 3
         radius: 3
-        property int operatorId: selectedOerator ? selectedOperator.idProp : 0
+        property int operatorId: selectedOperator ? selectedOperator.idProp : 0
         // Box title
         Text {
             id: operatorName
