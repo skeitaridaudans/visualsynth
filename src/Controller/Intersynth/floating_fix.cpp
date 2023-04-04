@@ -5,7 +5,6 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "floating_fix.h"
 void fragment_floating(float f, unsigned char* fragmented)
 {
     // i am going to break the geniva convension

@@ -6,6 +6,8 @@
 #define QTQUICKTEST_API_H
 
 
+#include "src/lovecommunicationtcp/lovecommunicationtcp.h"
+
 class Api {
 public:
     Api();
@@ -17,6 +19,9 @@ public:
     void removeModulator(int operatorId, int modulatorId);
     void addCarrier(int operatorId);
     void removeCarrier(int operatorId);
+
+private:
+    LoveCommunicationTcp loveCommunicationTcp_;
 };
 
 
