@@ -14,7 +14,7 @@
 Api::Api() {
 #ifdef USE_INTERSYNTH
 
-    loveCommunicationTcp_.connectToServer("10.121.101.122", 4893);
+    loveCommunicationTcp_.connectToServer("10.121.101.239", 4893);
 
 #endif
 }
