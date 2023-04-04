@@ -9,16 +9,16 @@
 
 
 Operator::Operator(int id, QObject* parent)
-    : id(id), QObject(parent), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
+    : id(id), QObject(parent), frequency(40), amplitude(20), isCarrier(false), isModulator(false) {}
 
 void Operator::setFrequency(long step) {
-    if(((this->frequency + step) < 20000) && ((this->frequency + step) > 0)){
+    if(((this->frequency + step) <= 100) && ((this->frequency + step) > 0)){
         this->frequency = this->frequency+step;
     }
 }
 
 void Operator::setAmplitude(long step) {
-    if(((this->amplitude + step) <= 60) && ((this->amplitude + step) >= 1)){
+    if(((this->amplitude + step) <= 100) && ((this->amplitude + step) >= 0)){
         this->amplitude = this->amplitude+step;
     }
 }

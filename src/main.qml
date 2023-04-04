@@ -262,25 +262,26 @@ Window {
                         color: "#f0f0f0"
                         readOnly: false
                         validator: RegularExpressionValidator{
-                            regularExpression: /^([1-9]|[1-9][0-9]{1,3}|1[0-9]{4}|2[0-4][0-9]{3}|25000)/
+                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
+//                            regularExpression: /^([1-9]|[1-9][0-9]{1,3}|1[0-9]{4}|2[0-4][0-9]{3}|25000)/
                         }
                         onEditingFinished: {
                             var values = freqValueText.text
                             controller.changeFrequency(selectedOperator.idProp, values);
                         }
                     }
-                    Text {
-                        id: hzText
-                        x: 168
-                        y: 8
-                        width: 80
-                        height: 49
-                        color: "#f0f0f0"
-                        text: qsTr(" Hz")
-                        font.family: "Noto Sans"
-                        font.pixelSize: 32
+//                    Text {
+//                        id: hzText
+//                        x: 168
+//                        y: 8
+//                        width: 80
+//                        height: 49
+//                        color: "#f0f0f0"
+//                        text: qsTr(" Hz")
+//                        font.family: "Noto Sans"
+//                        font.pixelSize: 32
 
-                    }
+//                    }
                 }
 
                 // Amplitude text
@@ -316,7 +317,8 @@ Window {
                         color: "#f0f0f0"
                         readOnly: false
                         validator: RegularExpressionValidator{
-                            regularExpression: /^([0-9]|[1-5][0-9]|60)/
+                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
+//                            regularExpression: /^([0-9]|[1-5][0-9]|60)/
                         }
                         onEditingFinished: {
                             var values = ampValueText.text
@@ -342,51 +344,87 @@ Window {
                         anchors.topMargin: 0
                         property var drag: parent
                         property var offset : null
-                        //                property var currentOp: null
+                        property bool horiDrag: false
+                        property bool vertiDrag: false
+                        property real lastX: 0
+                        property real lastY: 0
                         touchPoints: [
                             TouchPoint {id: touch1}
                         ]
-
-
+                        //                property var currentOp: null
 
                         onTouchUpdated: {
                             if (selectedOperator) {
-
                                 // TODO add multipliers !
                                 var freq = selectedOperator.getFreq();
                                 var amp = selectedOperator.getAmp();
+                                if(touchPoints.length > 0){
 
-                                if (touchPoints[0].x > offset.x){
-                                    selectedOperator.setFrequency(1)
-                                    controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                                } else if (touchPoints[0].x < offset.x){
-                                    selectedOperator.setFrequency(-1)
-                                    controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                                }
-                                if (touchPoints[0].y < offset.y) {
-                                    selectedOperator.setAmplitude(1)
-                                    controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                    var touchPoint = touchPoints[0]
+                                    var xDelta = touchPoint.sceneX - lastX;
+                                    var yDelta = touchPoint.sceneY - lastY;
+                                    lastX = touchPoint.sceneX;
+                                    lastY = touchPoint.sceneY;
 
-                                } else if (touchPoints[0].y > offset.y){
-                                    selectedOperator.setAmplitude(-1)
-                                    controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+
+                                    if (!horiDrag && !vertiDrag){
+                                        if (Math.abs(xDelta) > Math.abs(yDelta)){
+                                            horiDrag = true
+                                        } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
+                                            vertiDrag = true;
+                                        }
+                                    } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)){
+                                        vertiDrag = true;
+                                        horiDrag = false;
+                                    } else if ( vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)){
+                                        horiDrag = true;
+                                        vertiDrag = false;
+                                    }
+
+                                    if(horiDrag) {
+                                        if (xDelta > 0){
+                                            selectedOperator.setFrequency(1)
+                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                        } else if (xDelta < 0){
+                                            selectedOperator.setFrequency(-1)
+                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                        }
+                                    } else if(vertiDrag) {
+                                        if (yDelta < 0) {
+                                            selectedOperator.setAmplitude(1)
+                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+
+                                        } else if (yDelta > 0){
+                                            selectedOperator.setAmplitude(-1)
+                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                        }
+                                    }
                                 }
                             }
                         }
 
+
+
                         onPressed: {
-                            var point = touchPoints[0];
+                            var point = touchPoints[0]
+
                             parent.border.color = "pink"
                             parent.border.width = 3
                             parent.width = parent.width + 5
                             parent.height = parent.height + 5
                             offset = Qt.point(point.x, point.y);
+                            point.startSceneX = touchPoint.sceneX
+                            point.startSceneY = touchPoint.sceneY
+                            lastX = point.sceneX
+                            lastY = point.sceneY
                         }
 
                         onReleased: {
                             parent.border.width = 0
                             parent.width = parent.width - 5
                             parent.height = parent.height - 5
+                            horiDrag = false;
+                            vertiDrag = false;
 
                         }
 
