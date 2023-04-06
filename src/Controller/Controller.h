@@ -8,6 +8,8 @@
 #include <iostream>
 #include "Operator.h"
 #include "Api.h"
+#include "src/AmpEnvelope/AmpEnvParams/AmpEnvParams.h"
+#include "src/AmpEnvelope/AmpEnvParams/AmpEnvGraphView.h"
 
 class Controller : public QObject {
     Q_OBJECT
@@ -27,6 +29,9 @@ public:
     Q_INVOKABLE void deselectOperator();
     Q_INVOKABLE void addCarrier(int operatorId);
     Q_INVOKABLE void removeCarrier(int operatorId);
+	Q_INVOKABLE void setAmpEnvelopeAttackPointValue(int index, float value, float time); // index 1, value = highest point time = time to get to highest point .
+	Q_INVOKABLE void setAmpEnvelopeSustainValue(int index, float value, float time);  	 // index 2, value = sustain point time = attack+decay time to get to sustain point.
+	Q_INVOKABLE void setReleaseEnvelopeValue(int index, float value, float time); // index = 0?, value = amplitude of the note on release, time = time from note release to value. 
     const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
