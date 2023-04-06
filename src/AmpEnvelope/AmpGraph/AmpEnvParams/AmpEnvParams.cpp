@@ -32,6 +32,7 @@ void AmpEnvParams::assignText(QString newTxt){
 void AmpEnvParams::draw(QPainter *painter) {
     QRect rect = QRect(coords.x()-(width_/2),coords.y()-(height_/2), width_, height_);
 
+
     QBrush brush(QColor(this->rgb_r,this->rgb_g,this->rgb_b));
     painter->setBrush(brush);
 
@@ -43,28 +44,4 @@ void AmpEnvParams::draw(QPainter *painter) {
     painter->setFont(QFont("Arial", 18));
     painter->drawText(rect, Qt::AlignCenter, text);
 
-}
-
-QPointF AmpEnvParams::myCoords() const{
-    return this->coords;
-}
-
-void AmpEnvParams::setMyCoords(QPointF update_point) {
-    bool emit_valid;
-
-    if (this->coords.y() != update_point.y()) {
-        this->coords.setY(update_point.y());
-
-        emit_valid = true;
-    }
-
-    if (this->coords.x() != update_point.x()) {
-        this->coords.setX(update_point.x());
-        emit_valid = true;
-    }
-
-
-    if (emit_valid == true) {
-        emit myCoordsChanged();
-    }
 }
