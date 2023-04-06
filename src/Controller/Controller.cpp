@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QTimer>
 #include <fstream>
+#include <utility>
+#include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
 
@@ -153,9 +155,21 @@ void Controller::saveOperators(const std::string& name) {
 }
 
 void Controller::loadOperators(const std::string& name) {
-    std::ifstream file("presets/" + name + ".json");
-    json data = json::parse(file);
-    operators_ = data.get<std::unordered_map<int, std::unique_ptr<Operator>>>();
+    operators_ = loadJsonFileAsObject<std::unordered_map<int, std::unique_ptr<Operator>>>("presets/" + name + ".json");
+
+    resetAvailableOperatorIds();
+    for (const auto& operator_ : operators_) {
+        availableOperatorIds_.erase(operator_.first);
+    }
+}
+
+void Controller::setOperators(const std::unordered_map<int, std::unique_ptr<Operator>>& operators) {
+    operators_.clear();
+
+    for (const auto& operator_ : operators) {
+        auto op = std::make_unique<Operator>(*operator_.second);
+        operators_.insert(std::make_pair((int) operator_.first, std::move(op)));
+    }
 
     resetAvailableOperatorIds();
     for (const auto& operator_ : operators_) {

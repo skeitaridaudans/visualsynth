@@ -24,6 +24,7 @@ struct Operator:public QObject {
 public:
     Operator();
     Operator(int id, QObject* parent=0);
+    Operator(const Operator& operator_);
 
     int id;
     long frequency;

@@ -72,9 +72,6 @@ void OperatorView::addOperator(double x, double y) {
 
         operator_->position = QPointF(x, y);
     }
-    else {
-        // TODO: Show error message if operator could not be added (due to operator limit reached)
-    }
 }
 
 std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
@@ -90,4 +87,14 @@ std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
 
 const std::unique_ptr<DeleteOperatorBox> &OperatorView::deleteOperatorBox() {
     return deleteOperatorBox_;
+}
+
+// Converts from the coords stored in Operator (0-1) to coords inside of the operator view
+QPointF OperatorView::toViewCoords(const QPointF &pos) {
+    return {pos.x() * width(), pos.y() * height()};
+}
+
+// Converts from coords inside the operator view to the ones stored in operator (0-1)
+QPointF OperatorView::fromViewCoords(const QPointF &pos) {
+    return {pos.x() / width(), pos.y() / height()};
 }

@@ -8,9 +8,44 @@
 
 #include <QPointF>
 #include <QRect>
+#include <algorithm>
+#include <qdebug.h>
+#include <fstream>
+#include "json.hpp"
 
-QPointF closestPointInBox(const QPointF& point, const QPointF& boxPosition, double width, double height);
+using json = nlohmann::json;
 
-bool isRectInsideLine(const QRectF& rect, const QPointF& lineStart, const QPointF& lineEnd);
+inline QPointF closestPointInBox(const QPointF& point, const QPointF& boxPosition, const double width, const double height) {
+    const auto minX = boxPosition.x();
+    const auto maxX = boxPosition.x() + width;
+    const auto minY = boxPosition.y();
+    const auto maxY = boxPosition.y() + height;
+
+    return QPointF(std::clamp(point.x(), minX, maxX), std::clamp(point.y(), minY, maxY));
+}
+
+inline bool isRectInsideLine(const QRectF& rect, const QPointF& lineStart, const QPointF& lineEnd) {
+    // This assumes the line is horizontal, so lineStart.y has to be the same as lineEnd.y
+    return rect.left() >= lineStart.x() && rect.right() <= lineEnd.x() &&
+           rect.top() <= lineStart.y() && rect.bottom() >= lineStart.y();
+}
+
+inline bool isPointInsideRect(const QPointF& point, const QRectF& rect) {
+    return point.x() >= rect.x() &&
+            point.x() < rect.x() + rect.width() && // point.x is within x range of rect
+            point.y() >= rect.y() &&
+            point.y() < rect.y() + rect.height(); // point.y is within y range of rect
+}
+
+inline json loadJsonFile(const std::string& path) {
+    std::ifstream file(path);
+    return json::parse(file);
+}
+
+template <class T>
+inline T loadJsonFileAsObject(const std::string& path) {
+    const auto json = loadJsonFile(path);
+    return json.get<T>();
+}
 
 #endif //QTQUICKTEST_UTILS_H

@@ -27,8 +27,9 @@ public:
     void paint(QPainter *painter) override;
     void addOperator(double x, double y);
     std::pair<QPointF, QPointF> carrierLineEndPoints();
-
     const std::unique_ptr<DeleteOperatorBox>& deleteOperatorBox();
+    QPointF toViewCoords(const QPointF& pos);
+    QPointF fromViewCoords(const QPointF& pos);
 private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<AddOperatorBox> newBox_;

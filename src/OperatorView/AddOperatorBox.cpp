@@ -23,7 +23,8 @@ void AddOperatorBox::update() {
     const auto pos = boxView_->mapFromGlobal(QCursor::pos());
 
     if (isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton && !boxCreated_) {
-        boxView_->addOperator(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0);
+        const auto newOperatorPos = boxView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
+        boxView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
         boxCreated_ = true;
     }
     else if (!isInsideBox(pos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {

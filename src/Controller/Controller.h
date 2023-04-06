@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <QObject>
 #include <iostream>
+#include <QStringListModel>
 #include "Operator.h"
 #include "Api.h"
 
@@ -33,11 +34,17 @@ public:
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
     Q_INVOKABLE Operator* getSelectedOperator();
+    void setOperators(const std::unordered_map<int, std::unique_ptr<Operator>>& operators);
+
+    Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
+
+signals:
     // Signals for operators
     Q_SIGNAL void operatorSelected(Operator* op);
     Q_SIGNAL void ampChanged(long amp);
     Q_SIGNAL void freqChanged(long freq);
 
+    Q_SIGNAL void showPresetsChanged(bool showPresets);
 private:
     void sendOperator(int operatorId);
     void resetAvailableOperatorIds();
@@ -46,6 +53,7 @@ private:
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     Api api;
+    bool showPresets_;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include "Controller/Controller.h"
 #include "src/Alert/AlertController.h"
+#include "src/OperatorPresetsView/OperatorPresetsView.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<SinWaveItem>("SinViewItem", 1, 0, "SinWaveItem");
     qmlRegisterType<OperatorView>("OperatorView", 1, 0, "OperatorView");
     qmlRegisterType<AmpEnvGraphView>("AmpEnvGraphView",1,0,"AmpEnvGraphItem");
+    qmlRegisterType<OperatorPresetsView>("OperatorPresetsView", 1, 0, "OperatorPresetsView");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/VisualSynth/src/main.qml"_qs);

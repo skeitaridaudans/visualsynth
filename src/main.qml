@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
+import OperatorPresetsView
 
 import QtQuick 2.15
 // This does not work
@@ -144,25 +145,52 @@ Window {
             height: 800
         }
 
-        ComboBox {
+        Button {
+            id: button1
+            width: 114
+            height: 42
+            text: qsTr("Presets")
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.leftMargin: 62
+            anchors.topMargin: 52
+            onPressed: {
+                controller.showPresets = !controller.showPresets;
+            }
+        }
+
+        Rectangle {
+            id: presetsContainer
+            visible: controller.showPresets
+            x: 62
+            y: 88
+            width: 450
+            height: 450
+            color: "#323232"
+
+            OperatorPresetsView {
+                id: presetsView
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.fill: parent
+
+            }
+        }
+
+        // ComboBox {
 
             //var bleBle = qsTr(presets.getName() + "hello");
             //var bleBle = text()"helloooo";
-            id: presetDropdown
-            x: 412
-            y: 57
-            width: 262
-            height: 36
+            // id: presetDropdown
+            // x: 412
+            // y: 57
+            // width: 262
+            // height: 36
             //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
-            textRole: "key"
-            model: ListModel {
-                    ListElement { key: "Init"; value: 0 }
-                    ListElement { key: "Bass"; value: 1 }
-                    ListElement { key: "Pad"; value: 2 }
-                    ListElement { key: "Lead"; value: 3 }
-                }
+            // textRole: "key"
+            // model: controller.loadAvailablePresets()
 
-        }
+        // }
 
 
     }
@@ -357,7 +385,7 @@ Window {
 
     }
 
-    Text {
+    /*Text {
         id: presetsText
         x: 347
         y: 62
@@ -367,7 +395,7 @@ Window {
         text: qsTr("Presets")
         font.pixelSize: 18
 
-    }
+    }*/
 
     Rectangle {
         id: rectangle1
