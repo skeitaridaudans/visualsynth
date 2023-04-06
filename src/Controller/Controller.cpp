@@ -54,16 +54,12 @@ void Controller::noteOff(int note) {
     api.noteOff(note);
 }
 
-void Controller::setAmpEnvelopeAttackPointValue(int index, float value, float time){
-	// api.setAmpEnvelopeAttackValue(int index, float value, float time);
+void Controller::setAttackAmpEnvelopePoint(int index, float value, float time){
+	// api.setAmpEnvelopeAttackValue(index, value, time);
 }
 
-void Controller::setAmpEnvelopeSustainValue(int index, float value, float time){
-	// api.setAmpEnvelopeAttackValue(int index, float value, float time);
-}
-
-void Controller::setReleaseEnvelopeValue(int index, float value, float time){
-	// api.setReleaseEnvelopeValue(int index, float value, float time);
+void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time){
+	// api.setAmpReleaseEnvelopePoint(index, value, time);
 }
 
 void Controller::changeFrequency(int operatorId, long frequency) {
