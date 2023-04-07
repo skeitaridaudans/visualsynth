@@ -109,7 +109,7 @@ void AmpEnvGraphView::paint(QPainter *painter) {
     //Drawing Rectangle
     this->paintLines(painter);
     this->paintGraphContainer(painter);
-    //this->paintParams(painter);
+    this->paintParams(painter);
 
     update();
 }
