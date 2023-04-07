@@ -124,7 +124,7 @@ void Controller::deselectOperator() {
     selectedOperatorId_ = std::nullopt;
 }
 
-const std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
+const Operators &Controller::operators() {
     return operators_;
 }
 
@@ -155,7 +155,7 @@ void Controller::saveOperators(const std::string& name) {
 }
 
 void Controller::loadOperators(const std::string& name) {
-    operators_ = loadJsonFileAsObject<std::unordered_map<int, std::unique_ptr<Operator>>>("presets/" + name + ".json");
+    operators_ = loadJsonFileAsObject<Operators>("presets/" + name + ".json");
 
     resetAvailableOperatorIds();
     for (const auto& operator_ : operators_) {
@@ -163,7 +163,7 @@ void Controller::loadOperators(const std::string& name) {
     }
 }
 
-void Controller::setOperators(const std::unordered_map<int, std::unique_ptr<Operator>>& operators) {
+void Controller::setOperators(const Operators& operators) {
     operators_.clear();
 
     for (const auto& operator_ : operators) {

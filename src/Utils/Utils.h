@@ -8,6 +8,7 @@
 
 #include <QPointF>
 #include <QRect>
+#include <QColor>
 #include <algorithm>
 #include <qdebug.h>
 #include <fstream>
@@ -35,6 +36,21 @@ inline bool isPointInsideRect(const QPointF& point, const QRectF& rect) {
             point.x() < rect.x() + rect.width() && // point.x is within x range of rect
             point.y() >= rect.y() &&
             point.y() < rect.y() + rect.height(); // point.y is within y range of rect
+}
+
+inline QPointF moveBetweenRects(const QPointF& point, const QRectF& from, const QRectF& to) {
+    const auto x = ((point.x() - from.x()) / from.width()) * to.width() + to.x();
+    const auto y = ((point.y() - from.y()) / from.height()) * to.height() + to.y();
+
+    return {x, y};
+}
+
+inline QColor colorLerp(const QColor& from, const QColor& to, double fraction) {
+    const auto red = (int) ((to.red() - from.red()) * fraction + from.red());
+    const auto green = (int) ((to.green() - from.green()) * fraction + from.green());
+    const auto blue = (int) ((to.blue() - from.blue()) * fraction + from.blue());
+
+    return {red, green, blue};
 }
 
 inline json loadJsonFile(const std::string& path) {

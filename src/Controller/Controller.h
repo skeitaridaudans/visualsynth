@@ -10,6 +10,8 @@
 #include "Operator.h"
 #include "Api.h"
 
+using Operators = std::unordered_map<int, std::unique_ptr<Operator>>;
+
 class Controller : public QObject {
     Q_OBJECT
 public:
@@ -30,11 +32,11 @@ public:
     Q_INVOKABLE void removeCarrier(int operatorId);
     void saveOperators(const std::string& name);
     void loadOperators(const std::string &name);
-    const std::unordered_map<int, std::unique_ptr<Operator>>& operators();
+    const Operators& operators();
     const std::unique_ptr<Operator> &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
     Q_INVOKABLE Operator* getSelectedOperator();
-    void setOperators(const std::unordered_map<int, std::unique_ptr<Operator>>& operators);
+    void setOperators(const Operators& operators);
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
 
@@ -49,7 +51,7 @@ private:
     void sendOperator(int operatorId);
     void resetAvailableOperatorIds();
 
-    std::unordered_map<int, std::unique_ptr<Operator>> operators_;
+    Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     Api api;
