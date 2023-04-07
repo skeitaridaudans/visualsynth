@@ -13,8 +13,6 @@ class AmpEnvGraphView;
 class AmpEnvParams : public QObject {
 Q_OBJECT
 
-    Q_PROPERTY(QPointF myCoords READ myCoords WRITE setMyCoords NOTIFY myCoordsChanged)
-
 public:
 
     AmpEnvParams(AmpEnvGraphView *GraphView);
@@ -37,12 +35,7 @@ public:
     int rgb_b = 0;
 
     QString text = "None";
-    QPointF myCoords() const;
 
-    void setMyCoords(QPointF update_point);
-
-signals:
-    void myCoordsChanged();
 
 private:
 
