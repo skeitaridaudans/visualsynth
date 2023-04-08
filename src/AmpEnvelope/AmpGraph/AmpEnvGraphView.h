@@ -26,7 +26,13 @@ Q_OBJECT
     Q_PROPERTY(QPointF decay READ decay WRITE setDecay NOTIFY decayChanged)
     Q_PROPERTY(QPointF sustain READ sustain WRITE setSustain NOTIFY sustainChanged)
     Q_PROPERTY(QPointF release READ release WRITE setRelease NOTIFY releaseChanged)
+    Q_PROPERTY(QColor bColor READ bColor WRITE setbColor NOTIFY bColorChanged)
 
+
+    Q_PROPERTY(double graphMinW READ graphMinW WRITE setGraphMinW NOTIFY graphMinWChanged)
+    Q_PROPERTY(double graphMinH READ graphMinH WRITE setGraphMinH NOTIFY graphMinHChanged)
+    Q_PROPERTY(double graphMaxW READ graphMaxW WRITE setGraphMaxW NOTIFY graphMaxWChanged)
+    Q_PROPERTY(double graphMaxH READ graphMaxH WRITE setGraphMaxH NOTIFY graphMaxHChanged)
 
 public:
     explicit AmpEnvGraphView(QQuickItem *parent = nullptr);
@@ -53,6 +59,24 @@ public:
     QPointF release();
     void setRelease(QPointF);
 
+    QColor bColor();
+    void setbColor(QColor);
+
+
+    double graphMinW() const;
+    void setGraphMinW(double val);
+
+
+    double graphMaxW() const;
+    void setGraphMaxW(double val);
+
+    double graphMinH() const;
+    void setGraphMinH(double val);
+
+
+    double graphMaxH() const;
+    void setGraphMaxH(double val);
+
     std::unique_ptr<AmpEnvParams> attack_ = std::make_unique<AmpEnvParams>(this);
     std::unique_ptr<AmpEnvParams> decay_ = std::make_unique<AmpEnvParams>(this);
     std::unique_ptr<AmpEnvParams> sustain_ = std::make_unique<AmpEnvParams>(this);
@@ -68,9 +92,13 @@ public:
 
     double height_ = 316;
     double width_ = 628;
-
-    QPointF center_ = QPointF(width_/2, height_/2);
     double borderwidth_ = 5;
+
+
+    double maxHeight_ = height_ - (borderwidth_*2);
+    double maxWidth_ = width_ - (borderwidth_*2);
+    double minHeight_ = 0 + (borderwidth_*2);
+    double minWidth_ = 0 + (borderwidth_*2);
 
 signals:
     void WChanged();
@@ -83,20 +111,22 @@ signals:
     void releaseChanged();
 
 
+    void bColorChanged();
+
+
+    void graphMaxWChanged();
+    void graphMinWChanged();
+
+    void graphMaxHChanged();
+    void graphMinHChanged();
+
+
 private:
     void paintGraphContainer(QPainter *painter);
     void paintParams(QPainter *painter);
     void paintLines(QPainter *painter);
 
-    void initializeParams(std::unique_ptr<AmpEnvParams> param, double x, double y, int r, int g, int b, QString text);
-
-
-    QPointF topRight_ = QPointF(this->x_+this->width_, this->y_+this->height_);
-    QPointF topLeft_ = QPointF(this->x_, this->y_+this->height_);
-
-    QPointF bottomRight_ = QPointF(this->x_+this->width_, this->y_);
-    QPointF bottomLeft_ = QPointF(this->x_, this->y_);
-
+    QColor borderColor = QColor(Qt::gray);
 };
 
 #endif // AMPENVGRAPHVIEW_H

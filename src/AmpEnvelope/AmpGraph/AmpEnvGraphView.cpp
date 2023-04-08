@@ -10,7 +10,9 @@
 #include <QtGui>
 #include <QtCore>
 #include <QQuickItem>
+#include <QMouseEvent>
 #include "AmpEnvGraphView.h"
+
 
 AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
         QQuickPaintedItem(parent),
@@ -26,26 +28,26 @@ AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
     // Assign variables to attack
     attack_->assignText("");
     attack_->assignRGBColor(128, 0, 128);
-    attack_->assignX(0 + borderwidth_);
-    attack_->assignY(0 + borderwidth_);
+    attack_->assignX(minWidth_);
+    attack_->assignY(minHeight_);
 
     // Assign variables to decay
     decay_->assignText("");
     decay_->assignRGBColor(128, 0, 128);
-    decay_->assignX(center_.x() - center_.x() / 2);
-    decay_->assignY(center_.y());
+    decay_->assignX(minWidth_);
+    decay_->assignY(minHeight_);
 
     // Assign variables to sustain
     sustain_->assignText("");
     sustain_->assignRGBColor(128, 0, 128);
-    sustain_->assignX(center_.x() + center_.x() / 2);
-    sustain_->assignY(center_.y());
+    sustain_->assignX(minWidth_);
+    sustain_->assignY(minHeight_);
 
     // Assign variables to release
     release_->assignText("");
     release_->assignRGBColor(128, 0, 128);
-    release_->assignX(width_ - 2*borderwidth_);
-    release_->assignY(height_ - 2*borderwidth_);
+    release_->assignX(maxWidth_+borderwidth_);
+    release_->assignY(maxHeight_+borderwidth_);
 
     // Create a line between start and attack
     start_to_attack_->assignP1(0, height_);
@@ -68,18 +70,9 @@ AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
     sustain_to_release_->setColor(QColor(128,0,128));
 }
 
-
-void AmpEnvGraphView::initializeParams(std::unique_ptr <AmpEnvParams> param,double x,double y,int r,int g,int b,QString text){
-    param->assignText(text);
-    param->assignRGBColor(r,g,b);
-    param->assignX(x);
-    param->assignY(y);
-}
-
-
 void AmpEnvGraphView::paintGraphContainer(QPainter *painter){
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(QColor(Qt::gray), 10));
+    painter->setPen(QPen(borderColor, 10));
     QRect rect = QRect(0, 0, this->width_, this->height_);
     painter->drawRect(rect);
 
@@ -215,5 +208,56 @@ void  AmpEnvGraphView::setRelease(QPointF new_point){
 
     emit releaseChanged();
 
+}
 
+QColor AmpEnvGraphView::bColor() {
+    return borderColor;
+}
+
+void AmpEnvGraphView::setbColor(QColor c) {
+    borderColor = c;
+
+    emit bColorChanged();
+}
+
+
+
+double AmpEnvGraphView::graphMinW() const{
+    return this->minWidth_;
+};
+
+
+void AmpEnvGraphView::setGraphMinW(double val){
+    this->minWidth_ = val;
+    emit graphMinWChanged();
+};
+
+
+double AmpEnvGraphView::graphMaxW() const{
+    return this->maxWidth_;
+};
+
+void AmpEnvGraphView::setGraphMaxW(double val){
+    this->maxWidth_ = val;
+    emit graphMaxWChanged();
+}
+
+double AmpEnvGraphView::graphMinH() const{
+    return this->minHeight_;
+}
+
+void AmpEnvGraphView::setGraphMinH(double val){
+    this->minHeight_ = val;
+    emit graphMinHChanged();
+}
+
+
+double AmpEnvGraphView::graphMaxH() const{
+    return this->maxHeight_;
+}
+
+void AmpEnvGraphView::setGraphMaxH(double val){
+
+    this->maxHeight_ = val;
+    emit graphMaxHChanged();
 }

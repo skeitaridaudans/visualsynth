@@ -6,7 +6,9 @@
 #define AMPENVPARAMS_H
 
 #include "src/AmpEnvelope/AmpGraph/AmpEnvGraphView.h"
+#include "src/Controller/Operator.h"
 #include <QQuickPaintedItem>
+#include <QWidget>
 
 class AmpEnvGraphView;
 
@@ -36,14 +38,16 @@ public:
 
     QString text = "None";
 
+    bool isBeingDragged;
+    DraggingState draggingState = DraggingState::None;
+
+    std::optional<QPointF> initialDragCursorPos;
+
 
 private:
 
-
-
-
+    QPointF dragOffset;
     AmpEnvGraphView *GraphView_;
-
 };
 
 
