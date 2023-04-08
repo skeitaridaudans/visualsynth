@@ -31,7 +31,7 @@ void SinWaveItem::setFrequency(qreal frequency)  {
 }
 
 void SinWaveItem::setAmplitude(qreal amplitude) {
-    amplitude_ = amplitude;
+    amplitude_ = amplitude*0.05;
 }
 
 qreal SinWaveItem::amplitude() {

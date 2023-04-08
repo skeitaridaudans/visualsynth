@@ -7,11 +7,11 @@
 #include <iostream>
 
 
-Operator::Operator(int id, QObject *parent)
-        : id(id), QObject(parent), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
+Operator::Operator(int id, QObject* parent)
+    : id(id), QObject(parent), frequency(40), amplitude(20), isCarrier(false), isModulator(false) {}
 
 Operator::Operator()
-        : id(0), QObject(), frequency(440), amplitude(20), isCarrier(false), isModulator(false) {}
+        : id(0), QObject(), frequency(40), amplitude(20), isCarrier(false), isModulator(false) {}
 
 Operator::Operator(const Operator &operator_)
         : id(operator_.id), frequency(operator_.frequency), amplitude(operator_.amplitude),
@@ -20,14 +20,14 @@ Operator::Operator(const Operator &operator_)
           draggingState(operator_.draggingState), initialDragCursorPos(operator_.initialDragCursorPos) {}
 
 void Operator::setFrequency(long step) {
-    if (((this->frequency + step) < 20000) && ((this->frequency + step) > 0)) {
-        this->frequency = this->frequency + step;
+    if(((this->frequency + step) <= 100) && ((this->frequency + step) > 0)){
+        this->frequency = this->frequency+step;
     }
 }
 
 void Operator::setAmplitude(long step) {
-    if (((this->amplitude + step) <= 60) && ((this->amplitude + step) >= 1)) {
-        this->amplitude = this->amplitude + step;
+    if(((this->amplitude + step) <= 100) && ((this->amplitude + step) >= 0)){
+        this->amplitude = this->amplitude+step;
     }
 }
 

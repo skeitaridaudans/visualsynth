@@ -10,8 +10,8 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <rtmidi/rtmidi_c.h>
-#include "floating_fix.h"
+//#include <rtmidi/rtmidi_c.h>
+//#include "floating_fix.h"
 
 #define MIDI_NOTE_MESSAGE_SIZE 3
 #define MIDI_MESSAGE_FUCK 4
