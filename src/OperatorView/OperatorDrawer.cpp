@@ -57,13 +57,14 @@ void OperatorDrawer::update(Operator* operator_) {
 
 
     if (operator_->draggingState == DraggingState::Dragging && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        operator_->position.setX(cursorPos.x() - kBoxSize / 2.0);
-        operator_->position.setY(cursorPos.y() - kBoxSize / 2.0);
+        const auto operatorPos = operatorView_->fromViewCoords(QPointF(cursorPos.x()  - kBoxSize / 2.0, cursorPos.y() - kBoxSize / 2.0));
+        operator_->position.setX(operatorPos.x());
+        operator_->position.setY(operatorPos.y());
 
         const auto carrierLinePoints = operatorView_->carrierLineEndPoints();
-        if (isRectInsideLine(QRectF(operator_->position, QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
+        if (isRectInsideLine(QRectF(operatorView_->toViewCoords(operator_->position), QSizeF(kBoxSize, kBoxSize)), carrierLinePoints.first, carrierLinePoints.second)) {
             controller->addCarrier(operator_->id);
-            operator_->position.setY(carrierLinePoints.first.y() - kBoxSize / 2.0);
+            operator_->position.setY((carrierLinePoints.first.y() - kBoxSize / 2.0) / operatorView_->height());
         }
         else {
             controller->removeCarrier(operator_->id);
@@ -85,8 +86,9 @@ void OperatorDrawer::draw(QPainter *painter, Operator* operator_) {
     // Draw modulator lines
     auto const& controller = Controller::instance;
     for (const auto opId : operator_->modulatedBy) {
-        const auto modulatorPosition = closestPointInBox(controller->getOperatorById(opId)->position, operator_->position, kBoxSize, kBoxSize);
-        const auto modulatedPosition = closestPointInBox(operator_->position, controller->getOperatorById(opId)->position, kBoxSize, kBoxSize);
+        const auto operatorPos = operatorView_->toViewCoords(operator_->position);
+        const auto modulatorPosition = closestPointInBox(operatorView_->toViewCoords(controller->getOperatorById(opId)->position), operatorPos, kBoxSize, kBoxSize);
+        const auto modulatedPosition = closestPointInBox(operatorPos, operatorView_->toViewCoords(controller->getOperatorById(opId)->position), kBoxSize, kBoxSize);
 
         painter->setPen(getColorForOperator(controller->getOperatorById(opId).get()));
         painter->drawLine(modulatorPosition, modulatedPosition);
@@ -106,14 +108,15 @@ void OperatorDrawer::drawBox(QPainter *painter, Operator* operator_) {
         painter->setPen(Qt::PenStyle::NoPen);
     }
 
-    painter->drawRoundedRect(QRectF(operator_->position, QSize(kBoxSize, kBoxSize)), kCornerRadius, kCornerRadius);
+    painter->drawRoundedRect(QRectF(operatorView_->toViewCoords(operator_->position), QSize(kBoxSize, kBoxSize)), kCornerRadius, kCornerRadius);
 }
 
 bool OperatorDrawer::isInsideBox(Operator* operator_, const QPointF &coords) {
-    return coords.x() >= operator_->position.x() &&
-            coords.x() < operator_->position.x()  + kBoxSize && // coords.x is within x range of operator
-            coords.y() >= operator_->position.y() &&
-            coords.y() < operator_->position.y() + kBoxSize; // coords.y is within y range of operator
+    const auto operatorPos = operatorView_->toViewCoords(operator_->position);
+    return coords.x() >= operatorPos.x() &&
+            coords.x() < operatorPos.x()  + kBoxSize && // coords.x is within x range of operator
+            coords.y() >= operatorPos.y() &&
+            coords.y() < operatorPos.y() + kBoxSize; // coords.y is within y range of operator
 }
 
 QColor OperatorDrawer::getColorForOperator(Operator *operator_) {

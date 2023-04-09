@@ -1,0 +1,137 @@
+//
+// Created by Guðmundur on 4/2/2023.
+//
+
+#include <QCursor>
+#include <QPainter>
+#include <filesystem>
+#include <QGuiApplication>
+#include "OperatorPresetsView.h"
+#include "src/Controller/Operator.h"
+#include "src/Utils/Utils.h"
+#include "src/Controller/Controller.h"
+#include "src/FontAwesome.h"
+#include "src/Dialog/DialogController.h"
+#include "src/Alert/AlertController.h"
+
+const double kOuterPaddingX = 20.0;
+const double kOuterPaddingY = 16.0;
+const double kBetweenPaddingX = 16.0;
+const double kBetweenPaddingY = 16.0;
+const double kRowCount = 3.0;
+const double kColumnCount = 3.0;
+const QColor kAddPresetBackgroundColor = QColor(0x212121);
+const QColor kAddPresetBackgroundHoverColor = QColor(0x161616);
+const double kAddPresetBackgroundAnimTime = 200.0;
+
+OperatorPresetsView::OperatorPresetsView(QQuickItem *parent) : QQuickPaintedItem(parent),
+                                                               addPresetBackgroundAnim_(kAddPresetBackgroundAnimTime,
+                                                                                        kAddPresetBackgroundColor,
+                                                                                        kAddPresetBackgroundHoverColor) {
+
+}
+
+void OperatorPresetsView::paint(QPainter *painter) {
+    if (!isEnabled()) {
+        update();
+        return;
+    }
+
+    if (operatorPresetViews_ == std::nullopt) {
+        loadPresets();
+    }
+    updateSizes();
+
+    for (int i = 0; i < (int) std::ceil((double) operatorPresetViews_->size() / 3.0); i++) {
+        for (int j = 0; j < std::min((int) operatorPresetViews_->size() - i * 3, 3); j++) {
+            const auto x = kOuterPaddingX + (j * (presetBoxSize.width() + kBetweenPaddingX));
+            const auto y = kOuterPaddingY + (i * (presetBoxSize.height() + kBetweenPaddingX));
+            operatorPresetViews_->at((i * 3) + j).update(QPointF(x, y), presetBoxSize);
+            operatorPresetViews_->at((i * 3) + j).paint(painter, QPointF(x, y), presetBoxSize);
+        }
+    }
+
+    const auto addButtonGridPosI = (int) std::ceil((double) (operatorPresetViews_->size() + 1) / 3.0) - 1;
+    const auto addButtonGridPosJ = std::min((int) operatorPresetViews_->size() - addButtonGridPosI * 3, 3);
+    const auto x = kOuterPaddingX + (addButtonGridPosJ * (presetBoxSize.width() + kBetweenPaddingX));
+    const auto y = kOuterPaddingY + (addButtonGridPosI * (presetBoxSize.height() + kBetweenPaddingX));
+    paintAddPresetButton(painter, QPointF(x, y));
+
+    update();
+}
+
+void OperatorPresetsView::paintAddPresetButton(QPainter *painter, const QPointF &pos) {
+    const auto buttonRect = QRectF(pos, QSizeF(presetBoxSize.width(), (presetBoxSize.height() / 3.0) * 2.0));
+
+    painter->setPen(Qt::PenStyle::NoPen);
+    painter->setBrush(addPresetBackgroundAnim_.value());
+    painter->drawRoundedRect(buttonRect, 8, 8);
+
+    painter->setPen(QColor(255, 255, 255));
+    painter->setFont(fontAwesome()->font(fa::fa_solid, 35));
+    painter->drawText(buttonRect, Qt::AlignCenter, QString(fa::fa_plus));
+
+    const auto cursorPos = mapFromGlobal(QCursor::pos());
+    if (isPointInsideRect(cursorPos, buttonRect)) {
+        addPresetBackgroundAnim_.start();
+
+        if (QGuiApplication::mouseButtons() == Qt::LeftButton) {
+            addNewPreset();
+        }
+    } else if (addPresetBackgroundAnim_.isRunning() || addPresetBackgroundAnim_.isAtEnd()) {
+        addPresetBackgroundAnim_.startReverse();
+    }
+
+    addPresetBackgroundAnim_.update();
+}
+
+void OperatorPresetsView::loadPresets() {
+    if (!std::filesystem::directory_entry("presets/").exists()) {
+        qDebug() << "Presets directory does not exist";
+        return;
+    }
+
+    std::vector<OperatorPresetView> operatorPresetViews;
+    for (const auto &entry: std::filesystem::directory_iterator("presets/")) {
+        if (!entry.is_directory()) {
+            auto name = QString::fromStdString(entry.path().filename().string()).split(".").at(0);
+            auto preset = loadJsonFileAsObject<Operators>(
+                    entry.path().string());
+            auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), name, std::move(preset));
+            operatorPresetViews.push_back(std::move(presetView));
+        }
+    }
+
+    operatorPresetViews_ = std::move(operatorPresetViews);
+}
+
+void OperatorPresetsView::updateSizes() {
+    presetBoxSize.setWidth((width() - (kOuterPaddingX * 2.0 + kBetweenPaddingX * kColumnCount)) / kColumnCount);
+    presetBoxSize.setHeight((height() - (kOuterPaddingY * 2.0 + kBetweenPaddingY * kRowCount)) / kRowCount);
+}
+
+void OperatorPresetsView::addNewPreset() {
+    if (Controller::instance->operators().empty()) {
+        AlertController::instance->showAlert("Cannot create preset with no operators");
+        return;
+    }
+
+    DialogController::instance->
+            showDialog("Create preset", "Save current operators as a new preset", "Name", "Create",
+                       "Cancel",
+                       [this](const QString &presetName) {
+                           const auto &controller = Controller::instance;
+                           controller->saveOperators(presetName.toStdString());
+
+                           // Copy operators
+                           Operators preset;
+                           for (const auto &operator_: controller->operators()) {
+                               auto op = std::make_unique<Operator>(*operator_.second);
+                               preset.insert(std::make_pair((int) operator_.first, std::move(op)));
+                           }
+
+                           auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), presetName,
+                                                                std::move(preset));
+                           operatorPresetViews_->push_back(std::move(presetView));
+                       });
+}
