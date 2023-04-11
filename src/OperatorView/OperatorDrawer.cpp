@@ -44,7 +44,13 @@ void OperatorDrawer::update(Operator* operator_) {
                 controller->deselectOperator();
             }
             else if (selectedOperatorId.has_value()) {
-                controller->addModulator(operator_->id, selectedOperatorId.value());
+                if (std::count(operator_->modulatedBy.begin(), operator_->modulatedBy.end(), selectedOperatorId.value()) == 0) {
+                    controller->addModulator(operator_->id, selectedOperatorId.value());
+                }
+                else {
+                    controller->removeModulator(operator_->id, selectedOperatorId.value());
+                }
+
                 controller->deselectOperator();
             }
             else {
