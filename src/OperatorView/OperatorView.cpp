@@ -108,23 +108,23 @@ void OperatorView::touchEvent(QTouchEvent *event) {
     switch (event->type()) {
         case QEvent::TouchBegin:
             if (!points.empty()) {
-                lastTouchPoint_.pressed = true;
-                lastTouchPoint_.pos = points.first().position();
+                lastTouchPoint_.isPressed = true;
+                lastTouchPoint_.position = points.first().position();
                 event->accept();
             }
             break;
         case QEvent::TouchUpdate:
             if (!points.empty()) {
-                lastTouchPoint_.pos = points.first().position();
+                lastTouchPoint_.position = points.first().position();
             }
             event->accept();
             break;
         case QEvent::TouchEnd:
-            lastTouchPoint_.pressed = false;
+            lastTouchPoint_.isPressed = false;
             event->accept();
             break;
         case QEvent::TouchCancel:
-            lastTouchPoint_.pressed = false;
+            lastTouchPoint_.isPressed = false;
             event->accept();
             break;
         default:
@@ -141,22 +141,22 @@ const TouchPoint& OperatorView::touchPoint() {
 void OperatorView::mousePressEvent(QMouseEvent *event) {
     QQuickItem::mousePressEvent(event);
 
-    lastTouchPoint_.pressed = true;
-    lastTouchPoint_.pos = event->position();
+    lastTouchPoint_.isPressed = true;
+    lastTouchPoint_.position = event->position();
     event->accept();
 }
 
 void OperatorView::mouseMoveEvent(QMouseEvent *event) {
     QQuickItem::mouseMoveEvent(event);
 
-    lastTouchPoint_.pos = event->position();
+    lastTouchPoint_.position = event->position();
     event->accept();
 }
 
 void OperatorView::mouseReleaseEvent(QMouseEvent *event) {
     QQuickItem::mouseReleaseEvent(event);
 
-    lastTouchPoint_.pressed = false;
-    lastTouchPoint_.pos = event->position();
+    lastTouchPoint_.isPressed = false;
+    lastTouchPoint_.position = event->position();
     event->accept();
 }

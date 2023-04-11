@@ -10,6 +10,7 @@
 #include <QQuickWindow>
 #include <QPainter>
 #include <QQuickPaintedItem>
+#include "src/Utils/TouchPoint.h"
 #include "AddOperatorBox.h"
 #include "OperatorDrawer.h"
 #include "DeleteOperatorBox.h"
@@ -19,11 +20,6 @@ class AddOperatorBox;
 class DeleteOperatorBox;
 
 class OperatorDrawer;
-
-struct TouchPoint {
-    bool pressed;
-    QPointF pos;
-};
 
 class OperatorView : public QQuickPaintedItem {
     Q_OBJECT

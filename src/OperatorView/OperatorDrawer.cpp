@@ -18,10 +18,10 @@ OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(opera
 }
 
 void OperatorDrawer::update(Operator* operator_) {
-    const auto touchPointPos = operatorView_->touchPoint().pos;
+    const auto touchPointPos = operatorView_->touchPoint().position;
 
     const auto& controller = Controller::instance;
-    if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) && operatorView_->touchPoint().pressed) {
+    if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) && operatorView_->touchPoint().isPressed) {
         operator_->initialDragCursorPos = touchPointPos;
         operator_->draggingState = DraggingState::Holding;
     }
@@ -37,7 +37,7 @@ void OperatorDrawer::update(Operator* operator_) {
         }
 
         // Click
-        if (isInsideBox(operator_, touchPointPos) && !operatorView_->touchPoint().pressed) {
+        if (isInsideBox(operator_, touchPointPos) && !operatorView_->touchPoint().isPressed) {
             const auto selectedOperatorId = controller->selectedOperatorId();
 
             if (selectedOperatorId.has_value() && selectedOperatorId.value() == operator_->id) {
@@ -56,7 +56,7 @@ void OperatorDrawer::update(Operator* operator_) {
     }
 
 
-    if (operator_->draggingState == DraggingState::Dragging && operatorView_->touchPoint().pressed) {
+    if (operator_->draggingState == DraggingState::Dragging && operatorView_->touchPoint().isPressed) {
         const auto operatorPos = operatorView_->fromViewCoords(QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
         operator_->position.setX(operatorPos.x());
         operator_->position.setY(operatorPos.y());

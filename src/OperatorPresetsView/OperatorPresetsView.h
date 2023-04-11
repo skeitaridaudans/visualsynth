@@ -10,6 +10,7 @@
 #include "src/Controller/Operator.h"
 #include "src/Controller/Controller.h"
 #include "src/Utils/ColorTweenAnimation.h"
+#include "src/Utils/TouchPoint.h"
 #include "OperatorPresetView.h"
 
 class OperatorPresetView;
@@ -19,7 +20,13 @@ class OperatorPresetsView : public QQuickPaintedItem {
 public:
     explicit OperatorPresetsView(QQuickItem *parent = nullptr);
     void paint(QPainter *painter) override;
+    const TouchPoint& touchPoint();
 
+protected:
+    void touchEvent(QTouchEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 private:
     void paintAddPresetButton(QPainter *painter, const QPointF &pos);
     void loadPresets();
@@ -29,6 +36,7 @@ private:
     std::optional<std::vector<OperatorPresetView>> operatorPresetViews_;
     QSizeF presetBoxSize;
     ColorTweenAnimation addPresetBackgroundAnim_;
+    TouchPoint lastTouchPoint_;
 };
 
 
