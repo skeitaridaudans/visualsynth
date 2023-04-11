@@ -18,15 +18,15 @@ OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(opera
 }
 
 void OperatorDrawer::update(Operator* operator_) {
-    const auto cursorPos = operatorView_->mapFromGlobal(QCursor::pos());
+    const auto touchPointPos = operatorView_->touchPoint().pos;
 
     const auto& controller = Controller::instance;
-    if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        operator_->initialDragCursorPos = cursorPos;
+    if (operator_->draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) && operatorView_->touchPoint().pressed) {
+        operator_->initialDragCursorPos = touchPointPos;
         operator_->draggingState = DraggingState::Holding;
     }
     else if (operator_->draggingState == DraggingState::Holding) {
-        const auto moveVector = operator_->initialDragCursorPos.value() - cursorPos;
+        const auto moveVector = operator_->initialDragCursorPos.value() - touchPointPos;
         const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
 
         // Start dragging
@@ -37,7 +37,7 @@ void OperatorDrawer::update(Operator* operator_) {
         }
 
         // Click
-        if (isInsideBox(operator_, cursorPos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
+        if (isInsideBox(operator_, touchPointPos) && !operatorView_->touchPoint().pressed) {
             const auto selectedOperatorId = controller->selectedOperatorId();
 
             if (selectedOperatorId.has_value() && selectedOperatorId.value() == operator_->id) {
@@ -56,8 +56,8 @@ void OperatorDrawer::update(Operator* operator_) {
     }
 
 
-    if (operator_->draggingState == DraggingState::Dragging && QGuiApplication::mouseButtons() == Qt::LeftButton) {
-        const auto operatorPos = operatorView_->fromViewCoords(QPointF(cursorPos.x()  - kBoxSize / 2.0, cursorPos.y() - kBoxSize / 2.0));
+    if (operator_->draggingState == DraggingState::Dragging && operatorView_->touchPoint().pressed) {
+        const auto operatorPos = operatorView_->fromViewCoords(QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
         operator_->position.setX(operatorPos.x());
         operator_->position.setY(operatorPos.y());
 
@@ -74,7 +74,7 @@ void OperatorDrawer::update(Operator* operator_) {
         operator_->draggingState = DraggingState::None;
 
         // If cursor is inside delete box
-        if (operatorView_->deleteOperatorBox()->isInsideBox(cursorPos)) {
+        if (operatorView_->deleteOperatorBox()->isInsideBox(touchPointPos)) {
             operator_->scheduleForRemoval = true;
         }
     }

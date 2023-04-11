@@ -33,9 +33,9 @@ inline bool isRectInsideLine(const QRectF& rect, const QPointF& lineStart, const
 
 inline bool isPointInsideRect(const QPointF& point, const QRectF& rect) {
     return point.x() >= rect.x() &&
-            point.x() < rect.x() + rect.width() && // point.x is within x range of rect
+            point.x() <= rect.x() + rect.width() && // point.x is within x range of rect
             point.y() >= rect.y() &&
-            point.y() < rect.y() + rect.height(); // point.y is within y range of rect
+            point.y() <= rect.y() + rect.height(); // point.y is within y range of rect
 }
 
 inline QPointF moveBetweenRects(const QPointF& point, const QRectF& from, const QRectF& to) {
@@ -45,7 +45,7 @@ inline QPointF moveBetweenRects(const QPointF& point, const QRectF& from, const 
     return {x, y};
 }
 
-inline QColor colorLerp(const QColor& from, const QColor& to, double fraction) {
+inline QColor colorLerp(const QColor& from, const QColor& to, const double fraction) {
     const auto red = (int) ((to.red() - from.red()) * fraction + from.red());
     const auto green = (int) ((to.green() - from.green()) * fraction + from.green());
     const auto blue = (int) ((to.blue() - from.blue()) * fraction + from.blue());
