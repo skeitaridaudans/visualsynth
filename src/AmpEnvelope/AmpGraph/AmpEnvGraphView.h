@@ -8,7 +8,6 @@
 #include <QtGui>
 #include <QtCore>
 #include <QQuickPaintedItem>
-#include <memory> // Added for std::unique_ptr
 
 #include "src/AmpEnvelope/AmpGraph/AmpEnvParams/AmpEnvParams.h"
 #include "src/AmpEnvelope/AmpGraph/LineBetweenParams/Line.h"
@@ -91,7 +90,7 @@ public:
     double y_ = 340;
 
     double height_ = 316;
-    double width_ = 628;
+    double width_ = 855;
     double borderwidth_ = 5;
 
 

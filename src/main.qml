@@ -422,8 +422,8 @@ Window {
         id: ampEnvGraphView
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.rightMargin:100
-            anchors.bottomMargin: 325
+            anchors.rightMargin:0
+            anchors.bottomMargin: 310+bW
 
 
            width: ampEnvGraphView.W
@@ -447,7 +447,7 @@ Window {
 
 
         Dial { //Attack Implementation
-            id: dial
+            id: dialAttack
 
             width: 85
             height: 85
@@ -464,7 +464,7 @@ Window {
 
             property real commonValue;
             onValueChanged: {
-                ampEnvGraphView.attack = Qt.point(dial.value,ampEnvGraphView.graphMinH);
+                ampEnvGraphView.attack = Qt.point(dialAttack.value,ampEnvGraphView.graphMinH);
             }
 
             Label {
@@ -477,7 +477,7 @@ Window {
         }
 
         Dial { //Decay Implementation
-            id: dial1
+            id: dialDecay
 
             width: 85
             height: 85
@@ -491,7 +491,7 @@ Window {
 
             property real commonValue;
             onValueChanged: {
-                ampEnvGraphView.decay = Qt.point(value,ampEnvGraphView.decay.y);
+                ampEnvGraphView.decay = Qt.point(dialDecay.value,ampEnvGraphView.decay.y);
 
             }
 
@@ -506,7 +506,7 @@ Window {
         }
 
         Dial {
-            id: dial2
+            id: dialSustain
 
             width: 85
             height: 85
@@ -536,7 +536,7 @@ Window {
         }
 
         Dial {
-            id: dial3
+            id: dialRelease
 
             width: 85
             height: 85
@@ -551,7 +551,7 @@ Window {
 
             property real commonValue;
             onValueChanged: {
-                ampEnvGraphView.release = Qt.point(value,ampEnvGraphView.release.y);
+                ampEnvGraphView.release = Qt.point(dialRelease.value,ampEnvGraphView.release.y);
 
             }
 
