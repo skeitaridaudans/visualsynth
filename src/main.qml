@@ -284,7 +284,7 @@ Window {
                         id: freqValueText
                         x: 8
                         y: 8
-                        width: 166
+                        width: 203
                         height: 49
                         horizontalAlignment: Text.AlignRight
                         activeFocusOnPress: true
