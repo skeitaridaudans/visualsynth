@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <chrono>
+#include <valarray>
 
 enum class TweenAnimationState {
     Stop,
@@ -14,9 +15,23 @@ enum class TweenAnimationState {
     Reverse
 };
 
+namespace AnimationCurves {
+    inline double easeIn(double x) {
+        return std::pow(x, 2.0);
+    }
+
+    inline double easeOut(double x) {
+        return 1.0 - std::pow(1.0 - x, 2.0);
+    }
+
+    inline double linear(double x) {
+        return x;
+    }
+}
+
 class TweenAnimation {
 public:
-    explicit TweenAnimation(double ms, double from = 0.0, double to = 1.0);
+    explicit TweenAnimation(double ms, std::function<double (double x)> animationCurve = AnimationCurves::linear, double from = 0.0, double to = 1.0);
     void setForward();
     void setReverse();
     void stop();
@@ -27,6 +42,7 @@ public:
     bool isAtEnd();
 
 private:
+    std::function<double (double x)> animationCurve_;
     TweenAnimationState animationState_ = TweenAnimationState::Stop;
     std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> startTime_;
     double animTimeMs_;

@@ -17,7 +17,7 @@ const double kPresetBackgroundAnimTime = 100.0;
 
 OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Operators operators)
         : operatorPresetsView_(operatorPresetView), name_(std::move(name)), operators_(std::move(operators)),
-          presetBackgroundAnim_(kPresetBackgroundAnimTime, kPresetBackgroundColor, kPresetBackgroundHoverColor) {
+          presetBackgroundAnim_(kPresetBackgroundAnimTime, kPresetBackgroundColor, kPresetBackgroundHoverColor, AnimationCurves::easeOut) {
     operatorsMinMax_ = findMinMaxOfOperators(operators_);
 }
 
@@ -25,12 +25,12 @@ void OperatorPresetView::update(const QPointF &pos, const QSizeF &size) {
     const auto touchPointPos = operatorPresetsView_->touchPoint().position;
 
     if (isPointInsideRect(touchPointPos, QRectF(pos, size)) && operatorPresetsView_->touchPoint().isPressed) {
-        presetBackgroundAnim_.start();
+        presetBackgroundAnim_.setForward();
         const auto &controller = Controller::instance;
         controller->setOperators(operators_);
     }
     else if (presetBackgroundAnim_.isAtEnd()) {
-        presetBackgroundAnim_.startReverse();
+        presetBackgroundAnim_.setReverse();
     }
 
     presetBackgroundAnim_.update();

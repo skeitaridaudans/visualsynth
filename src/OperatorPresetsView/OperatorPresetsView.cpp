@@ -73,10 +73,10 @@ void OperatorPresetsView::paintAddPresetButton(QPainter *painter, const QPointF 
     painter->drawText(buttonRect, Qt::AlignCenter, QString(fa::fa_plus));
 
     if (isPointInsideRect(touchPoint().position, buttonRect) && touchPoint().isPressed) {
-        addPresetBackgroundAnim_.start();
+        addPresetBackgroundAnim_.setForward();
         addNewPreset();
     } else if (addPresetBackgroundAnim_.isAtEnd()) {
-        addPresetBackgroundAnim_.startReverse();
+        addPresetBackgroundAnim_.setReverse();
     }
 
     addPresetBackgroundAnim_.update();

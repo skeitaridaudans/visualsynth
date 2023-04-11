@@ -6,6 +6,7 @@
 #define QTQUICKTEST_OPERATOR_H
 
 #include "json.hpp"
+#include "src/Utils/PointTweenAnimation.h"
 #include <vector>
 #include <QPoint>
 #include <chrono>
@@ -44,6 +45,7 @@ public:
     Q_INVOKABLE void setAmplitude(long step);
     DraggingState draggingState = DraggingState::None;
     std::optional<QPointF> initialDragCursorPos;
+    std::optional<PointTweenAnimation> moveOperatorAnimation;
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;

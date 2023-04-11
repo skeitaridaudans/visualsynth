@@ -9,6 +9,7 @@
 #include <QPointF>
 #include <QRect>
 #include <QColor>
+#include <QVector2D>
 #include <algorithm>
 #include <qdebug.h>
 #include <fstream>
@@ -45,12 +46,36 @@ inline QPointF moveBetweenRects(const QPointF& point, const QRectF& from, const 
     return {x, y};
 }
 
+inline QVector2D pointToVector(const QPointF& point) {
+    return {(float) point.x(), (float) point.y()};
+}
+
+inline QVector2D vectorBetweenPoints(const QPointF& from, const QPointF& to) {
+    return pointToVector(to) - pointToVector(from);
+}
+
+inline void addVectorToPoint(QPointF& point, const QVector2D& vector) {
+    point.setX(point.x() + vector.x());
+    point.setY(point.y() + vector.y());
+}
+
+inline QPointF operator +(const QPointF& point, const QVector2D& vector) {
+    return { point.x() + vector.x(), point.y() + vector.y() };
+}
+
 inline QColor colorLerp(const QColor& from, const QColor& to, const double fraction) {
     const auto red = (int) ((to.red() - from.red()) * fraction + from.red());
     const auto green = (int) ((to.green() - from.green()) * fraction + from.green());
     const auto blue = (int) ((to.blue() - from.blue()) * fraction + from.blue());
 
     return {red, green, blue};
+}
+
+inline QPointF pointLerp(const QPointF& from, const QPointF& to, const double fraction) {
+    const auto x = ((to.x() - from.x()) * fraction + from.x());
+    const auto y = ((to.y() - from.y()) * fraction + from.y());
+
+    return {x, y};
 }
 
 inline json loadJsonFile(const std::string& path) {
