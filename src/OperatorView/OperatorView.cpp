@@ -16,6 +16,8 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
                                                  newBox_(std::make_unique<AddOperatorBox>(const_cast<OperatorView *>(this))),
                                                  deleteOperatorBox_(std::make_unique<DeleteOperatorBox>(const_cast<OperatorView *>(this))),
                                                  operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<OperatorView *>(this))) {
+    setAcceptTouchEvents(true);
+    setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 void OperatorView::paint(QPainter *painter) {
@@ -97,4 +99,64 @@ QPointF OperatorView::toViewCoords(const QPointF &pos) {
 // Converts from coords inside the operator view to the ones stored in operator (0-1)
 QPointF OperatorView::fromViewCoords(const QPointF &pos) {
     return {pos.x() / width(), pos.y() / height()};
+}
+
+void OperatorView::touchEvent(QTouchEvent *event) {
+    QQuickItem::touchEvent(event);
+
+    const auto& points = event->points();
+    switch (event->type()) {
+        case QEvent::TouchBegin:
+            if (!points.empty()) {
+                lastTouchPoint_.isPressed = true;
+                lastTouchPoint_.position = points.first().position();
+                event->accept();
+            }
+            break;
+        case QEvent::TouchUpdate:
+            if (!points.empty()) {
+                lastTouchPoint_.position = points.first().position();
+            }
+            event->accept();
+            break;
+        case QEvent::TouchEnd:
+            lastTouchPoint_.isPressed = false;
+            event->accept();
+            break;
+        case QEvent::TouchCancel:
+            lastTouchPoint_.isPressed = false;
+            event->accept();
+            break;
+        default:
+            break;
+    }
+
+
+}
+
+const TouchPoint& OperatorView::touchPoint() {
+    return lastTouchPoint_;
+}
+
+void OperatorView::mousePressEvent(QMouseEvent *event) {
+    QQuickItem::mousePressEvent(event);
+
+    lastTouchPoint_.isPressed = true;
+    lastTouchPoint_.position = event->position();
+    event->accept();
+}
+
+void OperatorView::mouseMoveEvent(QMouseEvent *event) {
+    QQuickItem::mouseMoveEvent(event);
+
+    lastTouchPoint_.position = event->position();
+    event->accept();
+}
+
+void OperatorView::mouseReleaseEvent(QMouseEvent *event) {
+    QQuickItem::mouseReleaseEvent(event);
+
+    lastTouchPoint_.isPressed = false;
+    lastTouchPoint_.position = event->position();
+    event->accept();
 }

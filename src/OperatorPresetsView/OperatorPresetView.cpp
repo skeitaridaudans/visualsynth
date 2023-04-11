@@ -13,7 +13,7 @@ const double kOperatorSize = 16.0;
 const double kOperatorBoxPadding = 0.1;
 const QColor kPresetBackgroundColor = QColor(0x212121);
 const QColor kPresetBackgroundHoverColor = QColor(0x161616);
-const double kPresetBackgroundAnimTime = 200.0;
+const double kPresetBackgroundAnimTime = 100.0;
 
 OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Operators operators)
         : operatorPresetsView_(operatorPresetView), name_(std::move(name)), operators_(std::move(operators)),
@@ -22,17 +22,14 @@ OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, 
 }
 
 void OperatorPresetView::update(const QPointF &pos, const QSizeF &size) {
-    const auto cursorPos = operatorPresetsView_->mapFromGlobal(QCursor::pos());
+    const auto touchPointPos = operatorPresetsView_->touchPoint().position;
 
-    if (isPointInsideRect(cursorPos, QRectF(pos, size))) {
+    if (isPointInsideRect(touchPointPos, QRectF(pos, size)) && operatorPresetsView_->touchPoint().isPressed) {
         presetBackgroundAnim_.start();
-
-        if (QGuiApplication::mouseButtons() == Qt::LeftButton) {
-            const auto &controller = Controller::instance;
-            controller->setOperators(operators_);
-        }
+        const auto &controller = Controller::instance;
+        controller->setOperators(operators_);
     }
-    else if (presetBackgroundAnim_.isRunning() || presetBackgroundAnim_.isAtEnd()) {
+    else if (presetBackgroundAnim_.isAtEnd()) {
         presetBackgroundAnim_.startReverse();
     }
 

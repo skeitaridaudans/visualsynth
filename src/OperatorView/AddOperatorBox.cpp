@@ -14,21 +14,21 @@ const double kRightAnchor = 20.0;
 const double kPositionY = 60.0;
 const double kCornerRadius = 5.0;
 
-AddOperatorBox::AddOperatorBox(OperatorView *boxView) : boxView_(boxView) {}
+AddOperatorBox::AddOperatorBox(OperatorView *operatorView) : operatorView_(operatorView) {}
 
 void AddOperatorBox::update() {
-    boxPos_.setX(boxView_->width() - kBoxSize - kRightAnchor);
+    boxPos_.setX(operatorView_->width() - kBoxSize - kRightAnchor);
     boxPos_.setY(kPositionY);
 
-    const auto pos = boxView_->mapFromGlobal(QCursor::pos());
+    const auto pos = operatorView_->touchPoint().position;
 
-    if (isInsideBox(pos) && QGuiApplication::mouseButtons() == Qt::LeftButton && !boxCreated_) {
-        const auto newOperatorPos = boxView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
-        boxView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
-        boxCreated_ = true;
+    if (isInsideBox(pos) && operatorView_->touchPoint().isPressed && !operatorCreated_) {
+        const auto newOperatorPos = operatorView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
+        operatorView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
+        operatorCreated_ = true;
     }
-    else if (!isInsideBox(pos) && QGuiApplication::mouseButtons() != Qt::LeftButton) {
-        boxCreated_ = false;
+    else if (!isInsideBox(pos) && !operatorView_->touchPoint().isPressed) {
+        operatorCreated_ = false;
     }
 }
 

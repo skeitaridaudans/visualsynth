@@ -12,15 +12,15 @@ class OperatorView;
 
 class AddOperatorBox {
 public:
-    AddOperatorBox(OperatorView *boxView);
+    AddOperatorBox(OperatorView *operatorView);
     void update();
     void draw(QPainter* qPainter);
 private:
     bool isInsideBox(const QPointF& coords);
 
     QPointF boxPos_;
-    OperatorView *boxView_;
-    bool boxCreated_ = false;
+    OperatorView *operatorView_;
+    bool operatorCreated_ = false;
 };
 
 
