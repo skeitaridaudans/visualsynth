@@ -190,7 +190,7 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator *operator_, float mov
             } else {
                 operator_->moveOperatorAnimation = PointTweenAnimation(kFixOperatorPositionAnimTime,
                                                                        operatorPos, newPosition,
-                                                                       AnimationCurves::easeOut);
+                                                                       AnimationCurves::easeOutBack);
                 operator_->moveOperatorAnimation->setForward();
             }
 
@@ -224,7 +224,7 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator *operator_, float mov
             operator_->moveOperatorAnimation->toPoint_ = updatedPosition;
         } else {
             operator_->moveOperatorAnimation = PointTweenAnimation(kFixOperatorPositionAnimTime, operatorPos,
-                                                                   updatedPosition, AnimationCurves::easeOut);
+                                                                   updatedPosition, AnimationCurves::easeOutBack);
             operator_->moveOperatorAnimation->setForward();
         }
     }

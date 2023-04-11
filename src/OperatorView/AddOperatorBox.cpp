@@ -7,6 +7,7 @@
 #include <QCursor>
 #include <QGuiApplication>
 #include "src/FontAwesome.h"
+#include "src/Controller/Controller.h"
 
 const double kBorderWidth = 0.02;
 const double kBoxSize = 70.0;
@@ -22,7 +23,7 @@ void AddOperatorBox::update() {
 
     const auto pos = operatorView_->touchPoint().position;
 
-    if (isInsideBox(pos) && operatorView_->touchPoint().isPressed && !operatorCreated_) {
+    if (isInsideBox(pos) && operatorView_->touchPoint().isPressed && !operatorCreated_ && !isAnyPointBeingDragged()) {
         const auto newOperatorPos = operatorView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
         operatorView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
         operatorCreated_ = true;
@@ -49,5 +50,10 @@ void AddOperatorBox::draw(QPainter* painter) {
 
 bool AddOperatorBox::isInsideBox(const QPointF &coords) {
     return coords.x() >= boxPos_.x() && coords.x() < boxPos_.x() + kBoxSize && coords.y() >= boxPos_.y() && coords.y() < boxPos_.y() + kBoxSize;
+}
+
+bool AddOperatorBox::isAnyPointBeingDragged() {
+    const auto& controller = Controller::instance;
+    return q20::ranges::any_of(controller->operators().begin(), controller->operators().end(), [] (const auto& kv) { return kv.second->isBeingDragged; });
 }
 
