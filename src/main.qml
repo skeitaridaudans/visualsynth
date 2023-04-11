@@ -497,235 +497,161 @@ Window {
             verticalAlignment: Text.AlignVCenter
         }
     }
-    // TODO: make colour of CONNECTED change if synth is not connected
-    //    states: [
-    //        State {
-    //            name: "Synth_connected"
-    //            PropertyChanges {
-    //                target: connectedRoundButton
-    //                radius: myRoundButton.radius
-    //                color: "blue" //"#55ff00"
-    //
-    //            }
-    //        },
-    //        State {
-    //            name: "Synth_not_connected"
-    //            PropertyChanges {
-    //                target: connectedRoundButton
-    //                radius: myRoundButton.radius
-    //                color: "gray"
-    //            }
-    //        }
-    //    ]
+
+
+    AmpEnvGraphItem{
+        id: ampEnvGraphView
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin:0
+            anchors.bottomMargin: 310+bW
+
+
+           width: ampEnvGraphView.W
+           height: ampEnvGraphView.H
+    }
+
 
 
     Rectangle {
-        id: rectangle
-        y: 556
-        width: 351
-        height: 338
-        color: "#212121"
-        border.color: "gray"
-        border.width: 3
-        radius: 3
-        anchors.left: parent.left
+        id: dialContainer
+        width: ampEnvGraphView.width
+        height: 140
+        color: "transparent"
+        border.width: ampEnvGraphView.bW
+        border.color: ampEnvGraphView.bColor
+
+        anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 1321
-        anchors.bottomMargin: 186
+        anchors.rightMargin:ampEnvGraphView.anchors.rightMargin
+        anchors.bottomMargin: ampEnvGraphView.anchors.bottomMargin - dialContainer.height +ampEnvGraphView.bW
 
 
-    Item {
-        id: envelopeItem
-        x: 24
-        y: 13
-        width: 310
-        height: 210
+        Dial { //Attack Implementation
+            id: dialAttack
 
-        property real attackTime: 0.01
-        property real decTime: 0.3
-        property real susLevel: 0.25
-        property real relTime: 0.3
-
-        Canvas {
-
-            id: envelopeCanvas
-            anchors.fill: parent
-
-            onPaint: {
-                var ctx = getContext("2d")
-                var w = width
-                var h = height
-                ctx.clearRect(0, 0, w, h);
+            width: 85
+            height: 85
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 35
+            x: dialContainer.width * 0/4 + width/2
 
 
-                // Release
-                var relStart = ((4 - envelopeItem.relTime) * (w/4))
-                ctx.beginPath()
-                ctx.lineWidth = 5
-                ctx.strokeStyle = "purple"
-                ctx.moveTo(relStart, (envelopeItem.susLevel * h))
-                ctx.lineTo(w, h)
-                ctx.stroke()
 
 
-                // Attack
-                var attackEnd = (envelopeItem.attackTime * (w/4))
-                ctx.beginPath()
-                ctx.lineWidth = 5
-                ctx.strokeStyle = "purple"
-                ctx.moveTo(0, h)
-                ctx.lineTo(attackEnd, 0)
-                ctx.stroke()
+            from: ampEnvGraphView.graphMinW
+            to: ampEnvGraphView.graphMaxW * 1/4
+            value: ampEnvGraphView.graphMaxW * 1/4
 
+            property real commonValue;
+            onValueChanged: {
+                ampEnvGraphView.attack = Qt.point(dialAttack.value,ampEnvGraphView.graphMinH);
+            }
 
-                // Decay
-                //var decayEnd = attackEnd + envelopeItem.decTime * w / (envelopeItem.attackTime + envelopeItem.decTime)
-                var decayEnd = (attackEnd + (envelopeItem.decTime  * (w/4)) - envelopeItem.relTime)
-                ctx.beginPath()
-                ctx.lineWidth = 5
-                ctx.strokeStyle = "purple"
-                ctx.moveTo(attackEnd, 0)
-                ctx.lineTo(decayEnd, envelopeItem.susLevel * h)
-                ctx.stroke()
+            Label {
+                id: label
+                text: qsTr("Attack")
 
-
-                // Sustain
-                ctx.beginPath()
-                ctx.lineWidth = 5
-                ctx.strokeStyle = "purple"
-                ctx.moveTo(decayEnd, (envelopeItem.susLevel) * h)
-                ctx.lineTo(relStart,(envelopeItem.susLevel) * h)
-                ctx.stroke()
+                x: (parent.width - width) / 2
+                y: (parent.height) + (height / 2)
             }
         }
-    }
 
-    //AmpEnvGraphItem{
-    //    id: ampEnvGraphView
-    //        anchors.right: parent.right
-    //        anchors.bottom: parent.bottom
-    //        anchors.rightMargin:-160
-    //
-    //        anchors.bottomMargin: 100
-    //        width: 628
-    //        height: 316
-    //}
+        Dial { //Decay Implementation
+            id: dialDecay
 
-    Label {
-        id: label
-        x: 26
-        y: 86
-        text: qsTr("Attack")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 16
-    }
+            width: 85
+            height: 85
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 35
+            x: dialContainer.width * 1/4 + width/2
 
-    Label {
-        id: label1
-        x: 112
-        y: 86
-        text: qsTr("Decay")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 16
-    }
+            from: ampEnvGraphView.attack.x
+            to: ampEnvGraphView.graphMaxW * 2/4
+            value: ampEnvGraphView.graphMaxW * 2/4
 
-    Label {
-        id: label2
-        x: 190
-        y: 86
-        text: qsTr("Sustain")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 16
-    }
+            property real commonValue;
+            onValueChanged: {
+                ampEnvGraphView.decay = Qt.point(dialDecay.value,ampEnvGraphView.decay.y);
 
-    Label {
-        id: label3
-        x: 275
-        y: 86
-        text: qsTr("Release")
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 16
-    }
+            }
 
-    Dial {
-        id: dial
-        x: 10
-        y: 9
-        width: 72
-        height: 71
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 38
-        from: 0.01
-        //to: 0.5
-        value: 0.01
+            Label {
+                id: label1
+                text: qsTr("Decay")
 
-        property real commonValue;
-        onValueChanged: {
-            //console.log("Attack: " + value);
-            envelopeItem.attackTime = dial.value;
-            envelopeCanvas.requestPaint();
+                x: (parent.width - width) / 2
+                y: (parent.height) + (height / 2)
+            }
+
         }
-    }
 
-    Dial {
-        id: dial1
-        x: 95
-        y: 9
-        width: 72
-        height: 71
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 38
-        from: 0.01
-        //to: 0.3
-        value: 0.01
+        Dial {
+            id: dialSustain
 
-        property real commonValue;
-        onValueChanged: {
-            //console.log("Decay: " + value);
-            envelopeItem.decTime = dial1.value;
-            envelopeCanvas.requestPaint();
+            width: 85
+            height: 85
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 35
+            x: dialContainer.width * 2/4 + width/2
+
+
+
+            from:ampEnvGraphView.graphMaxH - ampEnvGraphView.bW*2
+            to: ampEnvGraphView.graphMinH + ampEnvGraphView.bW
+            value: (from - to) / 2
+
+            property real commonValue;
+            onValueChanged: {
+                ampEnvGraphView.sustain = Qt.point(ampEnvGraphView.sustain.x,value);
+            }
+
+            Label {
+                id: label2
+                text: qsTr("Sustain")
+
+                x: (parent.width - width) / 2
+                y: (parent.height) + (height / 2)
+            }
+
         }
-    }
 
-    Dial {
-        id: dial2
-        x: 176
-        y: 9
-        width: 72
-        height: 71
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 38
-        from: 0.01
-        value: 0.01
+        Dial {
+            id: dialRelease
 
-        property real commonValue;
-        onValueChanged: {
-            //console.log("Sustain: " + value);
-            envelopeItem.susLevel = dial2.value;
-            envelopeCanvas.requestPaint();
+            width: 85
+            height: 85
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 35
+            x: dialContainer.width * 3/4 + width/2
+
+
+            from: ampEnvGraphView.graphMaxW * 3/4
+            to: ampEnvGraphView.graphMaxW * 4/4 - 2*ampEnvGraphView.bW
+            value: ampEnvGraphView.graphMaxW * 3/4
+
+            property real commonValue;
+            onValueChanged: {
+                ampEnvGraphView.release = Qt.point(dialRelease.value,ampEnvGraphView.release.y);
+
+            }
+
+            Label {
+                id: label3
+                text: qsTr("Release")
+
+                x: (parent.width - width) / 2
+                y: (parent.height) + (height / 2)
+
+            }
+
         }
+
+
     }
 
-    Dial {
-        id: dial3
-        x: 262
-        y: 9
-        width: 72
-        height: 71
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 38
-        from: 0.01
-        //to: 0.3
-        value: 0.01
 
-        property real commonValue;
-        onValueChanged: {
-            //console.log("Release: " + value);
-            envelopeItem.relTime = dial3.value;
-            envelopeCanvas.requestPaint();
-        }
-    }
 
- }
+
 
  }
