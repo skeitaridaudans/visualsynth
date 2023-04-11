@@ -19,6 +19,9 @@ public:
     void removeModulator(int operatorId, int modulatorId);
     void addCarrier(int operatorId);
     void removeCarrier(int operatorId);
+    void setAmpEnvelopeAttackValue(int index, float value, float time);
+    void setAmpEnvelopeSize(int size);
+
 
 private:
     LoveCommunicationTcp loveCommunicationTcp_;

@@ -14,7 +14,7 @@
 Api::Api() {
 #ifdef USE_INTERSYNTH
 
-    loveCommunicationTcp_.connectToServer("10.121.101.239", 4893);
+    loveCommunicationTcp_.connectToServer("10.121.101.106", 4893);
 
 #endif
 }
@@ -65,5 +65,17 @@ void Api::removeCarrier(int operatorId) {
     //intersynth_remove_carrier(operatorId);
     loveCommunicationTcp_.removeCarrier(operatorId);
 
+#endif
+}
+
+void Api::setAmpEnvelopeAttackValue(int index, float value, float time) {
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setAttackAmpEnvelopePoint(index, value, time);
+#endif
+}
+
+void Api::setAmpEnvelopeSize(int size){
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setAttackAmpEnvelopeSize(size);
 #endif
 }

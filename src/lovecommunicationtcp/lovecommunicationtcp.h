@@ -20,6 +20,10 @@ public:
     QString removeModulator(int operator_id, int modulator_id);
     QString addCarrier(int operator_id);
     QString removeCarrier(int operator_id);
+    QString setAttackAmpEnvelopePoint(int point_index, float value, float time);
+    QString setReleaseAmpEnvelopePoint(int point_index, float value, float time);
+    QString setAttackAmpEnvelopeSize(int size);
+    QString setReleaseAmpEnvelopeSize(int size);
 
 
 private:

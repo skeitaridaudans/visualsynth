@@ -54,8 +54,11 @@ void Controller::noteOff(int note) {
     api.noteOff(note);
 }
 
+void Controller::setAmpEnvelopeSize(int size) {
+    api.setAmpEnvelopeSize(size);
+}
 void Controller::setAttackAmpEnvelopePoint(int index, float value, float time){
-	// api.setAmpEnvelopeAttackValue(index, value, time);
+    api.setAmpEnvelopeAttackValue(index, value, time);
 }
 
 void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time){

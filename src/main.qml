@@ -19,8 +19,10 @@ Window {
     visible: true
     title: qsTr("VisualSynth")
     color: "#212121"
-
     property var selectedOperator: null
+    property var ay: controller.setAmpEnvelopeSize(3)
+    property var yo: controller.setAttackAmpEnvelopePoint(0, 0, 0); // To put the first dot to the bottom so the attack dial does atleast something.
+
 
     Connections {
         target: controller
@@ -546,6 +548,7 @@ Window {
             property real commonValue;
             onValueChanged: {
                 ampEnvGraphView.attack = Qt.point(dialAttack.value,ampEnvGraphView.graphMinH);
+                controller.setAttackAmpEnvelopePoint(1, 1, dialAttack.value/1000);
             }
 
             Label {
@@ -572,7 +575,9 @@ Window {
 
             property real commonValue;
             onValueChanged: {
+                console.log("value changed")
                 ampEnvGraphView.decay = Qt.point(dialDecay.value,ampEnvGraphView.decay.y);
+                controller.setAttackAmpEnvelopePoint(2, dialSustain.value/300, (dialDecay.value/300));
 
             }
 
@@ -604,6 +609,9 @@ Window {
             property real commonValue;
             onValueChanged: {
                 ampEnvGraphView.sustain = Qt.point(ampEnvGraphView.sustain.x,value);
+                controller.setAttackAmpEnvelopePoint(2, dialSustain.value/300, (dialDecay.value/300))
+                controller.setAttackAmpEnvelopePoint(3, (dialSustain.value/300), 5);
+
             }
 
             Label {
