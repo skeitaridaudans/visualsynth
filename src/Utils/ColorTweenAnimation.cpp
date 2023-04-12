@@ -5,8 +5,12 @@
 #include "ColorTweenAnimation.h"
 #include "Utils.h"
 
-ColorTweenAnimation::ColorTweenAnimation(double ms, QColor from, QColor to) : tweenAnimation_(ms), fromColor_(from),
-                                                                              toColor_(to) {
+ColorTweenAnimation::ColorTweenAnimation(double ms, QColor from, QColor to,
+                                         std::function<double(double x)> animationCurve) : tweenAnimation_(ms,
+                                                                                                           animationCurve),
+                                                                                           fromColor_(from),
+                                                                                           toColor_(to),
+                                                                                           color_(from) {
 
 }
 
@@ -19,11 +23,11 @@ const QColor &ColorTweenAnimation::value() {
     return color_;
 }
 
-void ColorTweenAnimation::start() {
+void ColorTweenAnimation::setForward() {
     tweenAnimation_.setForward();
 }
 
-void ColorTweenAnimation::startReverse() {
+void ColorTweenAnimation::setReverse() {
     tweenAnimation_.setReverse();
 }
 

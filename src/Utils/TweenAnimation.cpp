@@ -4,7 +4,9 @@
 
 #include "TweenAnimation.h"
 
-TweenAnimation::TweenAnimation(double ms, double from, double to) : animTimeMs_(ms), fromValue_(from), toValue_(to) {
+#include <utility>
+
+TweenAnimation::TweenAnimation(double ms, std::function<double (double x)> animationCurve, double from, double to) : animTimeMs_(ms), animationCurve_(std::move(animationCurve)), fromValue_(from), toValue_(to) {
 
 }
 
@@ -62,7 +64,7 @@ void TweenAnimation::update() {
         return;
     }
 
-    value_ = (timeElapsed / animTimeMs_) * (toValue_ - fromValue_) + fromValue_;
+    value_ = animationCurve_(timeElapsed / animTimeMs_) * (toValue_ - fromValue_) + fromValue_;
 
     if (animationState_ == TweenAnimationState::Reverse) {
         value_ = toValue_ - (value_ - fromValue_);

@@ -38,6 +38,7 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+
 private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<AddOperatorBox> newBox_;

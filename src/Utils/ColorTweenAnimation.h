@@ -11,9 +11,9 @@
 
 class ColorTweenAnimation {
 public:
-    ColorTweenAnimation(double ms, QColor from, QColor to);
-    void start();
-    void startReverse();
+    ColorTweenAnimation(double ms, QColor from, QColor to, std::function<double(double x)> animationCurve = AnimationCurves::linear);
+    void setForward();
+    void setReverse();
     void stop();
     void update();
     const QColor& value();
