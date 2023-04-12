@@ -119,6 +119,20 @@ void Controller::sendOperator(int operatorId) {
    // api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/20000.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0)));
 }
 
+void Controller::sendAllOperatorInfo(int operatorId) {
+    sendOperator(operatorId);
+
+    const auto& operator_ = getOperatorById(operatorId);
+
+    for (const auto& modulatorId : operator_->modulatedBy) {
+        api.addModulator(operatorId, modulatorId);
+    }
+
+    if (operator_->isCarrier) {
+        addCarrier(operatorId);
+    }
+}
+
 void Controller::selectOperator(int id) {
     selectedOperatorId_ = {id};
     const auto& operator_ = operators_[selectedOperatorId_.value()];
@@ -170,6 +184,8 @@ void Controller::loadOperators(const std::string& name) {
 }
 
 void Controller::setOperators(const Operators& operators) {
+    removeAllModulators();
+    removeAllCarriers();
     operators_.clear();
 
     for (const auto& operator_ : operators) {
@@ -180,6 +196,26 @@ void Controller::setOperators(const Operators& operators) {
     resetAvailableOperatorIds();
     for (const auto& operator_ : operators_) {
         availableOperatorIds_.erase(operator_.first);
+
+        sendOperator(operator_.first);
+    }
+}
+
+void Controller::removeAllModulators() {
+    for (const auto& operator_ : operators_) {
+        const auto modulatedBy = operator_.second->modulatedBy;
+
+        for (const auto& modulator : modulatedBy) {
+            removeModulator(operator_.first, modulator);
+        }
+    }
+}
+
+void Controller::removeAllCarriers() {
+    for (const auto& operator_ : operators_) {
+        if (operator_.second->isCarrier) {
+            removeCarrier(operator_.first);
+        }
     }
 }
 
