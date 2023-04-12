@@ -611,9 +611,6 @@ Window {
                 ampEnvGraphView.sustain = Qt.point(ampEnvGraphView.sustain.x,value);
                 controller.setAttackAmpEnvelopePoint(2, 1 - (dialSustain.value/300), (dialDecay.value/900))
                 controller.setAttackAmpEnvelopePoint(3, 1 - (dialSustain.value/300), 5);
-                // console.log(((1 - dialSustain.value)/300))
-                console.log(dialSustain.value)
-
             }
 
             Label {
