@@ -40,7 +40,7 @@ void OperatorDrawer::update(Operator *operator_) {
         operator_->moveOperatorAnimation = std::nullopt;
         // Is any point being dragged, used to make sure only one point can be dragged at once
         isPointBeingDragged_ = true;
-        operatorView_->touchPressEventState_ = TouchPressEventState::Handled;
+        operatorView_->touchPressHandledState_ = TouchEventHandledState::Handled;
     }
         // While holding down when the operator hasn't been moved
     else if (operator_->draggingState == DraggingState::Holding) {

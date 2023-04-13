@@ -21,7 +21,7 @@ class DeleteOperatorBox;
 
 class OperatorDrawer;
 
-enum class TouchPressEventState {
+enum class TouchEventHandledState {
     None,
     Unhandled,
     Handled
@@ -39,7 +39,7 @@ public:
     QPointF fromViewCoords(const QPointF& pos);
     const TouchPoint &touchPoint();
 
-    TouchPressEventState touchPressEventState_ = TouchPressEventState::None;
+    TouchEventHandledState touchPressHandledState_ = TouchEventHandledState::None;
 protected:
     void touchEvent(QTouchEvent *event) override;
     void mousePressEvent(QMouseEvent* event) override;

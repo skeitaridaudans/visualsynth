@@ -250,3 +250,8 @@ void Controller::resetAvailableOperatorIds() {
         availableOperatorIds_.insert(i);
     }
 }
+
+void Controller::hidePresets() {
+    showPresets_ = false;
+    showPresetsChanged(false);
+}

@@ -41,6 +41,7 @@ public:
     std::optional<int> selectedOperatorId();
     Q_INVOKABLE Operator* getSelectedOperator();
     void setOperators(const Operators& operators);
+    Q_INVOKABLE void hidePresets();
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
 
