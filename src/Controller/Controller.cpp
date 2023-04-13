@@ -134,16 +134,17 @@ void Controller::sendOperator(int operatorId) {
 }
 
 void Controller::sendAllOperatorInfo(int operatorId) {
-    sendOperator(operatorId);
-
     const auto& operator_ = getOperatorById(operatorId);
+    if (operator_->isCarrier) {
+        addCarrier(operatorId);
+    }
+
+    sendOperator(operatorId);
 
     for (const auto& modulatorId : operator_->modulatedBy) {
         api.addModulator(operatorId, modulatorId);
-    }
-
-    if (operator_->isCarrier) {
-        addCarrier(operatorId);
+        // TODO: Fix possible infinite recursion here
+        sendAllOperatorInfo(operatorId);
     }
 }
 
@@ -211,7 +212,9 @@ void Controller::setOperators(const Operators& operators) {
     for (const auto& operator_ : operators_) {
         availableOperatorIds_.erase(operator_.first);
 
-        sendAllOperatorInfo(operator_.first);
+        if (operator_.second->isCarrier) {
+            sendAllOperatorInfo(operator_.first);
+        }
     }
 }
 
