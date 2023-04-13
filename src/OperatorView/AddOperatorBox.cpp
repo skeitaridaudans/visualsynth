@@ -27,6 +27,7 @@ void AddOperatorBox::update() {
         const auto newOperatorPos = operatorView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
         operatorView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
         operatorCreated_ = true;
+        operatorView_->touchPressEventState_ = TouchPressEventState::Handled;
     }
     else if (!isInsideBox(pos) && !operatorView_->touchPoint().isPressed) {
         operatorCreated_ = false;

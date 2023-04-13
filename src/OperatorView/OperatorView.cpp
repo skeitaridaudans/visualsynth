@@ -48,6 +48,10 @@ void OperatorView::paint(QPainter *painter) {
         controller->removeOperator(operatorId);
     }
 
+    if (touchPressEventState_ == TouchPressEventState::Unhandled)  {
+        controller->deselectOperator();
+    }
+
     update();
 }
 
@@ -110,6 +114,7 @@ void OperatorView::touchEvent(QTouchEvent *event) {
             if (!points.empty()) {
                 lastTouchPoint_.isPressed = true;
                 lastTouchPoint_.position = points.first().position();
+                touchPressEventState_ = TouchPressEventState::Unhandled;
                 event->accept();
             }
             break;
@@ -143,6 +148,7 @@ void OperatorView::mousePressEvent(QMouseEvent *event) {
 
     lastTouchPoint_.isPressed = true;
     lastTouchPoint_.position = event->position();
+    touchPressEventState_ = TouchPressEventState::Unhandled;
     event->accept();
 }
 
