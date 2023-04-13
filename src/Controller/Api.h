@@ -21,6 +21,8 @@ public:
     void removeCarrier(int operatorId);
     void setAmpEnvelopeAttackValue(int index, float value, float time);
     void setAmpEnvelopeSize(int size);
+    void setAmpReleaseEnvelopePoint(int index, float value, float time);
+    void setAmpReleaseEnvelopeSize(int size);
 
 
 private:
