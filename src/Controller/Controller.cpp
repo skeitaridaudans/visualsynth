@@ -36,6 +36,9 @@ std::optional<int> Controller::addOperator() {
 }
 
 void Controller::removeOperator(int operatorId) {
+    removeAllModulatorsForOperator(operatorId);
+    removeCarrier(operatorId);
+
     operators_.erase(operatorId);
     availableOperatorIds_.insert(operatorId);
 
@@ -208,7 +211,7 @@ void Controller::setOperators(const Operators& operators) {
     for (const auto& operator_ : operators_) {
         availableOperatorIds_.erase(operator_.first);
 
-        sendOperator(operator_.first);
+        sendAllOperatorInfo(operator_.first);
     }
 }
 
@@ -219,6 +222,14 @@ void Controller::removeAllModulators() {
         for (const auto& modulator : modulatedBy) {
             removeModulator(operator_.first, modulator);
         }
+    }
+}
+
+void Controller::removeAllModulatorsForOperator(int operatorId) {
+    const auto modulatedBy = getOperatorById(operatorId)->modulatedBy;
+
+    for (const auto& modulator : modulatedBy) {
+        removeModulator(operatorId, modulator);
     }
 }
 

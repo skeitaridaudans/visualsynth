@@ -58,6 +58,7 @@ private:
     void resetAvailableOperatorIds();
     void removeAllModulators();
     void removeAllCarriers();
+    void removeAllModulatorsForOperator(int operatorId);
 
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
