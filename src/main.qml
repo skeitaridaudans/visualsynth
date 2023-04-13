@@ -210,24 +210,24 @@ Window {
 
 
 
-    Button {
-        id: button
-        x: 80
-        width: 155
-        height: 53
-        text: qsTr("Send note")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        font.pointSize: 16
-        anchors.rightMargin: 1685
-        anchors.topMargin: 916
-        onPressed: {
-            controller.noteOn(60)
-        }
-        onReleased: {
-            controller.noteOff(60)
-        }
-    }
+//    Button {
+//        id: button
+//        x: 80
+//        width: 155
+//        height: 53
+//        text: qsTr("Send note")
+//        anchors.right: parent.right
+//        anchors.top: parent.top
+//        font.pointSize: 16
+//        anchors.rightMargin: 1685
+//        anchors.topMargin: 916
+//        onPressed: {
+//            controller.noteOn(60)
+//        }
+//        onReleased: {
+//            controller.noteOff(60)
+//        }
+//    }
 
     Rectangle {
         // Operator info box

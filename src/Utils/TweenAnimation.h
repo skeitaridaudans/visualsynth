@@ -8,6 +8,7 @@
 #include <optional>
 #include <chrono>
 #include <valarray>
+#include <functional>
 
 enum class TweenAnimationState {
     Stop,
