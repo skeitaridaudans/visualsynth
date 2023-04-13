@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
+import OperatorPresetsView
 
 import QtQuick 2.15
 // This does not work
@@ -156,48 +157,77 @@ Window {
             height: 800
         }
 
-        ComboBox {
-
-            //var bleBle = qsTr(presets.getName() + "hello");
-            //var bleBle = text()"helloooo";
-            id: presetDropdown
-            x: 412
-            y: 57
-            width: 262
-            height: 36
-            //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
-            textRole: "key"
-            model: ListModel {
-                    ListElement { key: "Init"; value: 0 }
-                    ListElement { key: "Bass"; value: 1 }
-                    ListElement { key: "Pad"; value: 2 }
-                    ListElement { key: "Lead"; value: 3 }
-                }
-
+        Button {
+            id: button1
+            width: 114
+            height: 42
+            text: qsTr("Presets")
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.leftMargin: 62
+            anchors.topMargin: 52
+            onPressed: {
+                controller.showPresets = !controller.showPresets;
+            }
         }
+
+        Rectangle {
+            id: presetsContainer
+            visible: controller.showPresets
+            x: 62
+            y: 88
+            width: 450
+            height: 450
+            color: "#323232"
+            radius: 8
+
+            OperatorPresetsView {
+                id: presetsView
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.fill: parent
+                enabled: controller.showPresets
+            }
+        }
+
+        // ComboBox {
+
+        //var bleBle = qsTr(presets.getName() + "hello");
+        //var bleBle = text()"helloooo";
+        // id: presetDropdown
+        // x: 412
+        // y: 57
+        // width: 262
+        // height: 36
+        //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
+        // textRole: "key"
+        // model: controller.loadAvailablePresets()
+
+        // }
 
 
     }
 
 
-        Button {
-            id: button
-            x: 80
-            width: 155
-            height: 53
-            text: qsTr("Send note")
-            anchors.right: parent.right
-            anchors.top: parent.top
-            font.pointSize: 16
-            anchors.rightMargin: 1685
-            anchors.topMargin: 916
-            onPressed: {
-                controller.noteOn(60)
-           }
-            onReleased: {
-                controller.noteOff(60)
-            }
+
+    Button {
+        id: button
+        x: 80
+        width: 155
+        height: 53
+        text: qsTr("Send note")
+        anchors.right: parent.right
+        anchors.top: parent.top
+        font.pointSize: 16
+        anchors.rightMargin: 1685
+        anchors.topMargin: 916
+        onPressed: {
+            controller.noteOn(60)
         }
+        onReleased: {
+            controller.noteOff(60)
+        }
+    }
 
     Rectangle {
         // Operator info box
@@ -256,7 +286,7 @@ Window {
                         id: freqValueText
                         x: 8
                         y: 8
-                        width: 166
+                        width: 203
                         height: 49
                         horizontalAlignment: Text.AlignRight
                         activeFocusOnPress: true
@@ -439,8 +469,10 @@ Window {
             }
 
         }
-}
-    Text {
+    }
+
+
+    /*Text {
         id: presetsText
         x: 347
         y: 62
@@ -450,12 +482,12 @@ Window {
         text: qsTr("Presets")
         font.pixelSize: 18
 
-    }
+    }*/
 
     Rectangle {
         id: rectangle1
         y: 965
-        width: 350
+        width: 510
         height: 53
         color: "#f44336"
         radius: 10
@@ -488,12 +520,9 @@ Window {
 
         Text {
             id: text1
-            x: 0
-            y: 0
-            width: 350
-            height: 53
             color: "#ffffff"
             text: alertController.alertText
+            anchors.fill: parent
             font.pixelSize: 22
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -512,7 +541,6 @@ Window {
            width: ampEnvGraphView.W
            height: ampEnvGraphView.H
     }
-
 
 
     Rectangle {
@@ -661,4 +689,110 @@ Window {
 
 
 
- }
+    Rectangle {
+        id: textInputDialog
+        x: 710
+        y: 295
+        width: 600
+        height: 280
+        color: "#323232"
+        radius: 8
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        visible: dialogController.isVisible
+
+        Text {
+            id: title
+            y: 8
+            width: 543
+            height: 36
+            color: "#ffffff"
+            text: dialogController.title
+            font.pixelSize: 26
+            verticalAlignment: Text.AlignVCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.family: "Noto Sans"
+        }
+
+
+        Rectangle {
+            id: textInputContainer
+            y: 153
+            width: 543
+            height: 32
+            color: "#212121"
+            anchors.horizontalCenterOffset: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            TextInput {
+                id: textInput
+                x: 87
+                y: 6
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.fill: parent
+                color: "#ffffff"
+                text: dialogController.value
+                font.pixelSize: 16
+                verticalAlignment: Text.AlignVCenter
+                anchors.rightMargin: 10
+                anchors.leftMargin: 10
+                selectionColor: "#99144b"
+                onTextChanged: dialogController.value = text
+            }
+        }
+
+        Rectangle {
+            id: actionButtonsContainer
+            y: 222
+            width: 302
+            height: 39
+            color: "#323232"
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 19
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Button {
+                id: okButton
+                width: 96
+                text: dialogController.confirmButtonText
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                anchors.topMargin: 0
+                anchors.leftMargin: 2
+                onPressed: dialogController.submit()
+            }
+
+            Button {
+                id: cancelButton
+                width: 96
+                text: dialogController.cancelButtonText
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 2
+                anchors.bottomMargin: 0
+                anchors.topMargin: 0
+                onPressed: dialogController.cancel()
+            }
+        }
+
+        Text {
+            id: content
+            y: 50
+            width: 543
+            height: 97
+            color: "#ffffff"
+            text: dialogController.text
+            font.pixelSize: 12
+            verticalAlignment: Text.AlignTop
+            anchors.horizontalCenterOffset: 1
+            font.family: "Noto Sans"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+
+    }
+}

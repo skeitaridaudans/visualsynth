@@ -19,10 +19,12 @@ public:
 private:
     void drawBox(QPainter *painter, Operator *operator_);
     bool isInsideBox(Operator* operator_, const QPointF& coords);
-    float randomColor();
     QColor getColorForOperator(Operator *operator_);
+    void fixOperatorPositionAfterDrop(Operator* operator_, float moveMultiplier = 1.1f);
+
 
     OperatorView *operatorView_;
+    bool isPointBeingDragged_ = false;
 };
 
 

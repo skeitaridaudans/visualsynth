@@ -5,10 +5,14 @@
 #ifndef QTQUICKTEST_OPERATOR_H
 #define QTQUICKTEST_OPERATOR_H
 
+#include "json.hpp"
+#include "src/Utils/PointTweenAnimation.h"
 #include <vector>
 #include <QPoint>
 #include <chrono>
 #include <QObject>
+
+using json = nlohmann::json;
 
 enum class DraggingState {
     None,
@@ -19,7 +23,9 @@ enum class DraggingState {
 struct Operator:public QObject {
     Q_OBJECT
 public:
+    Operator();
     Operator(int id, QObject* parent=0);
+    Operator(const Operator& operator_);
 
     int id;
     long frequency;
@@ -39,10 +45,17 @@ public:
     Q_INVOKABLE void setAmplitude(long step);
     DraggingState draggingState = DraggingState::None;
     std::optional<QPointF> initialDragCursorPos;
+    std::optional<PointTweenAnimation> moveOperatorAnimation;
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
     Q_INVOKABLE QColor getColorForOperator(); //Operator *operator_
 };
+
+void to_json(json& j, const Operator& o);
+void from_json(const json& j, Operator& o);
+
+void to_json(json& j, const std::unique_ptr<Operator>& o);
+void from_json(const json& j, std::unique_ptr<Operator>& o);
 
 #endif //QTQUICKTEST_OPERATOR_H

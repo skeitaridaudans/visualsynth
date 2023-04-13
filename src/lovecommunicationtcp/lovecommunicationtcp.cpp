@@ -1,4 +1,3 @@
-
 #include "lovecommunicationtcp.h"
 #include "src/Controller/Intersynth/floating_fix.h"
 

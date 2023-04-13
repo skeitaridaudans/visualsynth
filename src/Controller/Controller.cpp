@@ -3,15 +3,16 @@
 #include "src/Alert/AlertController.h"
 #include <QDebug>
 #include <QTimer>
+#include <fstream>
+#include <utility>
+#include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
 
 std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
 Controller::Controller(QObject *parent) : QObject(parent){
-    for (int i = 0; i < 8; i++) {
-        availableOperatorIds_.insert(i);
-    }
+    resetAvailableOperatorIds();
 }
 
 bool Controller::isConnected(){
@@ -140,7 +141,7 @@ void Controller::deselectOperator() {
     emit operatorDeselected(true);
 }
 
-const std::unordered_map<int, std::unique_ptr<Operator>> &Controller::operators() {
+const Operators &Controller::operators() {
     return operators_;
 }
 
@@ -159,5 +160,43 @@ Operator* Controller::getSelectedOperator() {
     }
     else {
         return nullptr;
+    }
+}
+
+void Controller::saveOperators(const std::string& name) {
+    json json(operators_);
+
+    std::ofstream file("presets/" + name + ".json");
+    file << json.dump();
+    file.close();
+}
+
+void Controller::loadOperators(const std::string& name) {
+    operators_ = loadJsonFileAsObject<Operators>("presets/" + name + ".json");
+
+    resetAvailableOperatorIds();
+    for (const auto& operator_ : operators_) {
+        availableOperatorIds_.erase(operator_.first);
+    }
+}
+
+void Controller::setOperators(const Operators& operators) {
+    operators_.clear();
+
+    for (const auto& operator_ : operators) {
+        auto op = std::make_unique<Operator>(*operator_.second);
+        operators_.insert(std::make_pair((int) operator_.first, std::move(op)));
+    }
+
+    resetAvailableOperatorIds();
+    for (const auto& operator_ : operators_) {
+        availableOperatorIds_.erase(operator_.first);
+    }
+}
+
+void Controller::resetAvailableOperatorIds() {
+    availableOperatorIds_.clear();
+    for (int i = 0; i < 8; i++) {
+        availableOperatorIds_.insert(i);
     }
 }

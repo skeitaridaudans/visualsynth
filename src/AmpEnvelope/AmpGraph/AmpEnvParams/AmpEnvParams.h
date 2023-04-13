@@ -36,7 +36,7 @@ public:
     int rgb_g = 0;
     int rgb_b = 0;
 
-    QString text = "None";
+    QString text = "Stop";
 
     bool isBeingDragged;
     DraggingState draggingState = DraggingState::None;
