@@ -21,10 +21,12 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
     property var selectedOperator: null
-    property var ay: controller.setAmpEnvelopeSize(3)
-    property var yo: controller.setAttackAmpEnvelopePoint(0, 0, 0); // To put the first dot to the bottom so the attack dial does atleast something.
 
-
+    Component.onCompleted: {
+        controller.setAmpEnvelopeSize(3);
+        controller.setAttackAmpEnvelopePoint(0, 0, 0);
+        controller.setAttackAmpEnvelopePoint(3, 1-(dialSustain.value/300), 5);
+    }
     Connections {
         target: controller
         function onOperatorSelected(operator) {
@@ -294,7 +296,9 @@ Window {
                         color: "#f0f0f0"
                         readOnly: false
                         validator: RegularExpressionValidator{
-                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
+                            regularExpression: /([1-9]|[1-9][0-9]|1[0-9]{2}|200)/
+//
+//                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
 //                            regularExpression: /^([1-9]|[1-9][0-9]{1,3}|1[0-9]{4}|2[0-4][0-9]{3}|25000)/
                         }
                         onEditingFinished: {
