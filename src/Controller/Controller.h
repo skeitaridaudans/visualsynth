@@ -58,7 +58,7 @@ signals:
     Q_SIGNAL void showPresetsChanged(bool showPresets);
 private:
     void sendOperator(int operatorId);
-    void sendAllOperatorInfo(int operatorId);
+    void sendAllOperatorInfo(int operatorId, std::unordered_set<int> *visited = nullptr);
     void resetAvailableOperatorIds();
     void removeAllModulators();
     void removeAllCarriers();
