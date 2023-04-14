@@ -16,6 +16,16 @@ Api::Api() {
 
     loveCommunicationTcp_.connectToServer("10.121.101.205", 4893);
 
+    loveCommunicationTcp_.removeCarrier(0); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(1); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(2); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(3); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(4); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(5); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(6); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(7); // All operators removed in the beginning
+
+
 #endif
 }
 

@@ -21,9 +21,18 @@ Window {
     property var selectedOperator: null
 
     Component.onCompleted: {
-        controller.setAmpEnvelopeSize(3);
+        controller.setAmpEnvelopeSize(3); // controller.setReleaseAmpEnvelopeSize(3); ???
         controller.setAttackAmpEnvelopePoint(0, 0, 0);
         controller.setAttackAmpEnvelopePoint(3, 1-(dialSustain.value/300), 5);
+
+        controller.setReleaseAmpEnvelopeSize(2);
+
+        controller.setReleaseAmpEnvelopePoint(0 , dialSustain.value ,0);
+        controller.setReleaseAmpEnvelopePoint(1, 0, 1);
+
+
+
+
     }
 
     Connections {
@@ -607,6 +616,8 @@ Window {
                 ampEnvGraphView.sustain = Qt.point(ampEnvGraphView.sustain.x,value);
                 controller.setAttackAmpEnvelopePoint(2, 1 - (dialSustain.value/300), ((dialDecay.value - 100)/500))
                 controller.setAttackAmpEnvelopePoint(3, 1 - (dialSustain.value/300), 5);
+                controller.setReleaseAmpEnvelopePoint(0, 1 - (dialSustain.value/300), 0) //release changes when sustain changes
+
             }
 
             Label {
@@ -627,15 +638,30 @@ Window {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 35
             x: dialContainer.width * 3/4 + width/2
+            property real ble: dialContainer.width;
 
-
-            from: ampEnvGraphView.graphMaxW * 3/4
-            to: ampEnvGraphView.graphMaxW * 4/4 - 2*ampEnvGraphView.bW
+            //         from: and to: cannot be used because it limits the full range the dials use to set the release?  //
+            //from: ampEnvGraphView.graphMaxW * 3/4
+            //to: ampEnvGraphView.graphMaxW * 4/4 - 2*ampEnvGraphView.bW
             value: ampEnvGraphView.graphMaxW * 3/4
 
             property real commonValue;
+            //property real lowest_release: mpEnvGraphView.graphMaxW * 3/4;
+            //property real highest_release: ampEnvGraphView.graphMaxW * 4/4 - 2*ampEnvGraphView.bW;
+
             onValueChanged: {
-                ampEnvGraphView.release = Qt.point(dialRelease.value,ampEnvGraphView.release.y);
+
+                ampEnvGraphView.release = Qt.point(((ble * dialRelease.value) / 6) + x , dialSustain.value); //////////////
+
+
+
+
+                //ampEnvGraphView.release = Qt.point(ble * dialRelease.value, dialSustain.value);
+
+
+                controller.setReleaseAmpEnvelopePoint(0, 1 - (dialSustain.value/300), 0)
+                controller.setReleaseAmpEnvelopePoint(1, 0, dialRelease.value);
+                console.log(dialRelease.value);
 
             }
 
