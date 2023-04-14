@@ -7,9 +7,7 @@ import OperatorView
 import OperatorPresetsView
 
 import QtQuick 2.15
-// This does not work
-//import Presets
-//import QtMultimedia 5.15
+
 
 import AmpEnvGraphView
 
@@ -21,9 +19,12 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
     property var selectedOperator: null
-    property var ay: controller.setAmpEnvelopeSize(3)
-    property var yo: controller.setAttackAmpEnvelopePoint(0, 0, 0); // To put the first dot to the bottom so the attack dial does atleast something.
 
+    Component.onCompleted: {
+        controller.setAmpEnvelopeSize(3);
+        controller.setAttackAmpEnvelopePoint(0, 0, 0);
+        controller.setAttackAmpEnvelopePoint(3, 1-(dialSustain.value/300), 5);
+    }
 
     Connections {
         target: controller
@@ -209,26 +210,6 @@ Window {
     }
 
 
-
-    Button {
-        id: button
-        x: 80
-        width: 155
-        height: 53
-        text: qsTr("Send note")
-        anchors.right: parent.right
-        anchors.top: parent.top
-        font.pointSize: 16
-        anchors.rightMargin: 1685
-        anchors.topMargin: 916
-        onPressed: {
-            controller.noteOn(60)
-        }
-        onReleased: {
-            controller.noteOff(60)
-        }
-    }
-
     Rectangle {
         // Operator info box
         id: operatorInfo
@@ -282,7 +263,6 @@ Window {
                     border.width: 3
 
                     TextInput {
-                        //TODO: get value from operator and update text
                         id: freqValueText
                         x: 8
                         y: 8
@@ -294,26 +274,14 @@ Window {
                         color: "#f0f0f0"
                         readOnly: false
                         validator: RegularExpressionValidator{
-                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
-//                            regularExpression: /^([1-9]|[1-9][0-9]{1,3}|1[0-9]{4}|2[0-4][0-9]{3}|25000)/
+                            regularExpression: /([1-9]|[1-9][0-9]|1[0-9]{2}|200)/
                         }
                         onEditingFinished: {
                             var values = freqValueText.text
                             controller.changeFrequency(selectedOperator.idProp, values);
                         }
                     }
-//                    Text {
-//                        id: hzText
-//                        x: 168
-//                        y: 8
-//                        width: 80
-//                        height: 49
-//                        color: "#f0f0f0"
-//                        text: qsTr(" Hz")
-//                        font.family: "Noto Sans"
-//                        font.pixelSize: 32
 
-//                    }
                 }
 
                 // Amplitude text
@@ -350,7 +318,6 @@ Window {
                         readOnly: false
                         validator: RegularExpressionValidator{
                             regularExpression: /^([1-9]|[1-9][0-9]|100)/
-//                            regularExpression: /^([0-9]|[1-5][0-9]|60)/
                         }
                         onEditingFinished: {
                             var values = ampValueText.text
