@@ -645,18 +645,11 @@ Window {
             value: ampEnvGraphView.graphMaxW * 3/4
 
             property real commonValue;
-            //property real lowest_release: mpEnvGraphView.graphMaxW * 3/4;
-            //property real highest_release: ampEnvGraphView.graphMaxW * 4/4 - 2*ampEnvGraphView.bW;
 
             onValueChanged: {
 
-                ampEnvGraphView.release = Qt.point(((ble * dialRelease.value) / 6) + x , dialSustain.value); //////////////
-
-
-
-
+                ampEnvGraphView.release = Qt.point((0 - (ble * (dialRelease.value + 0.1) / 4) + ble), 0 - dialSustain.value); //
                 //ampEnvGraphView.release = Qt.point(ble * dialRelease.value, dialSustain.value);
-
 
                 controller.setReleaseAmpEnvelopePoint(0, 1 - (dialSustain.value/300), 0)
                 controller.setReleaseAmpEnvelopePoint(1, 0, dialRelease.value);
