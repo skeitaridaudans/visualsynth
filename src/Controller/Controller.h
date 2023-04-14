@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE void setAttackAmpEnvelopePoint(int index, float value, float time);
     Q_INVOKABLE void setReleaseAmpEnvelopePoint(int index, float value, float time);
     Q_INVOKABLE void setAmpEnvelopeSize(int size);
+
     void saveOperators(const std::string& name);
     void loadOperators(const std::string &name);
     const Operators& operators();
@@ -44,6 +45,8 @@ public:
     Q_INVOKABLE void hidePresets();
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
+
+
 
 signals:
     // Signals for operators
