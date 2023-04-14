@@ -134,7 +134,15 @@ void Controller::sendOperator(int operatorId) {
    // api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/20000.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0)));
 }
 
-void Controller::sendAllOperatorInfo(int operatorId) {
+void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *visited) {
+    auto visited_ = visited == nullptr ? new std::unordered_set<int>() : visited;
+
+    // Operator has been visited before
+    if (visited_->count(operatorId) != 0) {
+        return;
+    }
+    visited_->insert(operatorId);
+
     const auto& operator_ = getOperatorById(operatorId);
     if (operator_->isCarrier) {
         api.addCarrier(operatorId);
@@ -144,8 +152,13 @@ void Controller::sendAllOperatorInfo(int operatorId) {
 
     for (const auto& modulatorId : operator_->modulatedBy) {
         api.addModulator(operatorId, modulatorId);
-        // TODO: Fix possible infinite recursion here
-        sendAllOperatorInfo(modulatorId);
+
+        sendAllOperatorInfo(modulatorId, visited_);
+    }
+
+    // If this is the initial call
+    if (visited == nullptr) {
+        delete visited_;
     }
 }
 
