@@ -177,6 +177,7 @@ Window {
             anchors.leftMargin: 62
             anchors.topMargin: 52
             onPressed: {
+                controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
             }
         }
@@ -725,6 +726,7 @@ Window {
                 anchors.leftMargin: 10
                 selectionColor: "#99144b"
                 onTextChanged: dialogController.value = text
+                onAccepted: dialogController.submit()
             }
         }
 
