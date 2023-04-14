@@ -46,6 +46,7 @@ void Controller::removeOperator(int operatorId) {
     for (const auto& op : operators_) {
         if (std::find(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId) != op.second->modulatedBy.end()) {
             op.second->modulatedBy.erase(std::remove(op.second->modulatedBy.begin(), op.second->modulatedBy.end(), operatorId),op.second->modulatedBy.end());
+            api.removeModulator(op.second->id, operatorId);
         }
     }
 }
@@ -88,7 +89,7 @@ void Controller::addModulator(int operatorId, int modulatorId) {
     op->modulatedBy.push_back(modulatorId);
     mod->isModulator = true;
 
-    api.addModulator(operatorId, modulatorId);
+    sendAllOperatorInfo(operatorId);
 }
 
 void Controller::removeModulator(int operatorId, int modulatorId) {
@@ -96,6 +97,7 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
     const auto& mod = operators_[modulatorId];
 
     op->modulatedBy.erase(std::remove(op->modulatedBy.begin(), op->modulatedBy.end(), modulatorId), op->modulatedBy.end());
+    api.removeModulator(operatorId, modulatorId);
 
     // Check if modulator is modulating any other operator before setting isModulator to false
     for (const auto& op_ : operators_) {
@@ -104,15 +106,13 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
         }
     }
     mod->isModulator = false;
-
-    api.removeModulator(operatorId, modulatorId);
 }
 
 void Controller::addCarrier(int operatorId) {
     if (operators_[operatorId]->isCarrier) return;
 
     operators_[operatorId]->isCarrier = true;
-    api.addCarrier(operatorId);
+    sendAllOperatorInfo(operatorId);
 }
 
 void Controller::removeCarrier(int operatorId) {
@@ -137,7 +137,7 @@ void Controller::sendOperator(int operatorId) {
 void Controller::sendAllOperatorInfo(int operatorId) {
     const auto& operator_ = getOperatorById(operatorId);
     if (operator_->isCarrier) {
-        addCarrier(operatorId);
+        api.addCarrier(operatorId);
     }
 
     sendOperator(operatorId);
@@ -145,7 +145,7 @@ void Controller::sendAllOperatorInfo(int operatorId) {
     for (const auto& modulatorId : operator_->modulatedBy) {
         api.addModulator(operatorId, modulatorId);
         // TODO: Fix possible infinite recursion here
-        sendAllOperatorInfo(operatorId);
+        sendAllOperatorInfo(modulatorId);
     }
 }
 
