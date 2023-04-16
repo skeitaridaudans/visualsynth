@@ -9,6 +9,7 @@
 #include <QStringListModel>
 #include "Operator.h"
 #include "Api.h"
+#include "src/AmpEnvelope/AmpGraph/AmpEnvParams/AmpEnvParams.h"
 
 using Operators = std::unordered_map<int, std::unique_ptr<Operator>>;
 
@@ -30,6 +31,10 @@ public:
     Q_INVOKABLE void deselectOperator();
     Q_INVOKABLE void addCarrier(int operatorId);
     Q_INVOKABLE void removeCarrier(int operatorId);
+    Q_INVOKABLE void setAttackAmpEnvelopePoint(int index, float value, float time);
+    Q_INVOKABLE void setReleaseAmpEnvelopePoint(int index, float value, float time);
+    Q_INVOKABLE void setAmpEnvelopeSize(int size);
+
     void saveOperators(const std::string& name);
     void loadOperators(const std::string &name);
     const Operators& operators();
@@ -37,8 +42,11 @@ public:
     std::optional<int> selectedOperatorId();
     Q_INVOKABLE Operator* getSelectedOperator();
     void setOperators(const Operators& operators);
+    Q_INVOKABLE void hidePresets();
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
+
+
 
 signals:
     // Signals for operators
@@ -50,7 +58,11 @@ signals:
     Q_SIGNAL void showPresetsChanged(bool showPresets);
 private:
     void sendOperator(int operatorId);
+    void sendAllOperatorInfo(int operatorId, std::unordered_set<int> *visited = nullptr);
     void resetAvailableOperatorIds();
+    void removeAllModulators();
+    void removeAllCarriers();
+    void removeAllModulatorsForOperator(int operatorId);
 
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;

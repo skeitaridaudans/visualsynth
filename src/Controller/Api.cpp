@@ -14,7 +14,17 @@
 Api::Api() {
 #ifdef USE_INTERSYNTH
 
-    loveCommunicationTcp_.connectToServer("10.121.101.76", 4893); // find the IP of the rasperry pi and update the ip here
+    loveCommunicationTcp_.connectToServer("10.121.101.205", 4893);
+
+    loveCommunicationTcp_.removeCarrier(0); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(1); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(2); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(3); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(4); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(5); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(6); // All operators removed in the beginning
+    loveCommunicationTcp_.removeCarrier(7); // All operators removed in the beginning
+
 
 #endif
 }
@@ -67,3 +77,28 @@ void Api::removeCarrier(int operatorId) {
 
 #endif
 }
+
+void Api::setAmpEnvelopeAttackValue(int index, float value, float time) {
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setAttackAmpEnvelopePoint(index, value, time);
+#endif
+}
+
+void Api::setAmpEnvelopeSize(int size){
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setAttackAmpEnvelopeSize(size);
+#endif
+}
+
+void Api::setAmpReleaseEnvelopeSize(int size){
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setReleaseAmpEnvelopeSize(size);
+#endif
+}
+
+void Api::setAmpReleaseEnvelopePoint(int index, float value, float time){
+#ifdef USE_INTERSYNTH
+    loveCommunicationTcp_.setReleaseAmpEnvelopePoint(index, value, time);
+#endif
+}
+

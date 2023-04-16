@@ -1,8 +1,0 @@
-//
-// Created by Sigurður on 3/3/2023.
-//
-
-#ifndef QTQUICKTEST_AMPENVVIEW_H
-#define QTQUICKTEST_AMPENVVIEW_H
-
-#endif //QTQUICKTEST_AMPENVVIEW_H
