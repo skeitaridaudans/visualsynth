@@ -12,7 +12,7 @@ class OperatorPresetsView;
 
 class OperatorPresetView {
 public:
-    OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Operators operators);
+    OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Preset preset);
 
     void update(const QPointF &pos, const QSizeF &size);
     void paint(QPainter *painter, const QPointF &pos, const QSizeF &size);
@@ -21,7 +21,7 @@ private:
     std::pair<QPointF, QPointF> findMinMaxOfOperators(const Operators& operators);
 
     OperatorPresetsView* operatorPresetsView_;
-    Operators operators_;
+    Preset preset_;
     QString name_;
     // The range of coordinates that the operators are inside
     std::pair<QPointF, QPointF> operatorsMinMax_;

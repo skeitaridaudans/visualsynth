@@ -17,7 +17,7 @@ public:
     void setReverse();
     void stop();
     void update();
-    const QPointF &value();
+    const QPointF &value() const;
     bool isRunning();
     bool isAtStart();
     bool isAtEnd();

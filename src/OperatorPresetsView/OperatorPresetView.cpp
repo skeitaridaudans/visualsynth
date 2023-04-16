@@ -15,10 +15,10 @@ const QColor kPresetBackgroundColor = QColor(0x212121);
 const QColor kPresetBackgroundHoverColor = QColor(0x161616);
 const double kPresetBackgroundAnimTime = 100.0;
 
-OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Operators operators)
-        : operatorPresetsView_(operatorPresetView), name_(std::move(name)), operators_(std::move(operators)),
+OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Preset preset)
+        : operatorPresetsView_(operatorPresetView), name_(std::move(name)), preset_(std::move(preset)),
           presetBackgroundAnim_(kPresetBackgroundAnimTime, kPresetBackgroundColor, kPresetBackgroundHoverColor, AnimationCurves::easeOut) {
-    operatorsMinMax_ = findMinMaxOfOperators(operators_);
+    operatorsMinMax_ = findMinMaxOfOperators(preset_.operators);
 }
 
 void OperatorPresetView::update(const QPointF &pos, const QSizeF &size) {
@@ -27,7 +27,7 @@ void OperatorPresetView::update(const QPointF &pos, const QSizeF &size) {
     if (isPointInsideRect(touchPointPos, QRectF(pos, size)) && operatorPresetsView_->touchPoint().isPressed) {
         presetBackgroundAnim_.setForward();
         const auto &controller = Controller::instance;
-        controller->setOperators(operators_);
+        controller->changeToPreset(preset_);
     }
     else if (presetBackgroundAnim_.isAtEnd()) {
         presetBackgroundAnim_.setReverse();
@@ -58,26 +58,26 @@ void OperatorPresetView::paintPreview(QPainter *painter, const QPointF &pos, con
     painter->drawRoundedRect(QRectF(pos, size), 8, 8);
 
     // Draw the modulator lines
-    for (const auto &operator_: operators_) {
-        for (const auto opId: operator_.second->modulatedBy) {
+    for (const auto &operator_: preset_.operators) {
+        for (const auto opId: operator_.second.modulatedBy) {
             const auto operatorCenterOffset = QPointF(kOperatorSize / 2.0, kOperatorSize / 2.0);
             const auto modulatorPos =
-                    moveBetweenRects(operators_.at(opId)->position, sourceRect, destRect) +
+                    moveBetweenRects(preset_.operators.at(opId).position, sourceRect, destRect) +
                     operatorCenterOffset;
             const auto modulatedPos =
-                    moveBetweenRects(operator_.second->position, sourceRect, destRect) + operatorCenterOffset;
+                    moveBetweenRects(operator_.second.position, sourceRect, destRect) + operatorCenterOffset;
 
-            painter->setPen(operators_.at(opId)->getColorForOperator());
+            painter->setPen(preset_.operators.at(opId).getColorForOperator());
             painter->drawLine(modulatorPos, modulatedPos);
         }
     }
 
     // Draw the operators
     painter->setPen(Qt::PenStyle::NoPen);
-    for (const auto &operator_: operators_) {
-        painter->setBrush(QBrush(operator_.second->getColorForOperator()));
+    for (const auto &operator_: preset_.operators) {
+        painter->setBrush(QBrush(operator_.second.getColorForOperator()));
 
-        const auto operatorRectPos = moveBetweenRects(operator_.second->position, sourceRect, destRect);
+        const auto operatorRectPos = moveBetweenRects(operator_.second.position, sourceRect, destRect);
         painter->drawRoundedRect(QRectF(operatorRectPos, QSizeF(kOperatorSize, kOperatorSize)), 4, 4);
     }
 }
@@ -89,11 +89,11 @@ OperatorPresetView::findMinMaxOfOperators(const Operators &operators) {
 
     for (const auto &operator_: operators) {
         if (min == std::nullopt) {
-            min = operator_.second->position;
+            min = operator_.second.position;
             max = QPointF(min->x() + (kOperatorSize / operatorPresetsView_->width()),
                           min->y() + (kOperatorSize / operatorPresetsView_->height()));
         } else {
-            const auto operatorPos = operator_.second->position;
+            const auto operatorPos = operator_.second.position;
             if (operatorPos.x() < min->x()) {
                 min->setX(operatorPos.x());
             }
