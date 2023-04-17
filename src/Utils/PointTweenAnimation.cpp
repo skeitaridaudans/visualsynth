@@ -22,7 +22,7 @@ void PointTweenAnimation::update() {
     point_ = pointLerp(fromPoint_, toPoint_, tweenAnimation_.value());
 }
 
-const QPointF &PointTweenAnimation::value() {
+const QPointF &PointTweenAnimation::value() const {
     return point_;
 }
 

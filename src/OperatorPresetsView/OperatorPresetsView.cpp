@@ -92,7 +92,7 @@ void OperatorPresetsView::loadPresets() {
     for (const auto &entry: std::filesystem::directory_iterator("presets/")) {
         if (!entry.is_directory()) {
             auto name = QString::fromStdString(entry.path().filename().string()).split(".").at(0);
-            auto preset = loadJsonFileAsObject<Operators>(
+            auto preset = loadJsonFileAsObject<Preset>(
                     entry.path().string());
             auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), name, std::move(preset));
             operatorPresetViews.push_back(std::move(presetView));
@@ -118,17 +118,11 @@ void OperatorPresetsView::addNewPreset() {
                        "Cancel",
                        [this](const QString &presetName) {
                            const auto &controller = Controller::instance;
-                           controller->saveOperators(presetName.toStdString());
+                           controller->savePreset(presetName.toStdString());
 
-                           // Copy operators
-                           Operators preset;
-                           for (const auto &operator_: controller->operators()) {
-                               auto op = std::make_unique<Operator>(*operator_.second);
-                               preset.insert(std::make_pair((int) operator_.first, std::move(op)));
-                           }
-
+                           std::vector<AmpEnvValue> ampEnvValues (std::begin(controller->ampEnvValues()), std::end(controller->ampEnvValues()));
                            auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), presetName,
-                                                                std::move(preset));
+                                                                Preset(controller->operators(), ampEnvValues));
                            operatorPresetViews_->push_back(std::move(presetView));
                        });
 }

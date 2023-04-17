@@ -5,14 +5,12 @@
 #ifndef QTQUICKTEST_OPERATOR_H
 #define QTQUICKTEST_OPERATOR_H
 
-#include "json.hpp"
 #include "src/Utils/PointTweenAnimation.h"
 #include <vector>
 #include <QPoint>
 #include <chrono>
 #include <QObject>
-
-using json = nlohmann::json;
+#include "src/Utils/Utils.h"
 
 enum class DraggingState {
     None,
@@ -49,7 +47,7 @@ public:
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
-    Q_INVOKABLE QColor getColorForOperator(); //Operator *operator_
+    Q_INVOKABLE QColor getColorForOperator() const; //Operator *operator_
 };
 
 void to_json(json& j, const Operator& o);
