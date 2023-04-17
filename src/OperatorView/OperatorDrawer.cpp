@@ -15,6 +15,11 @@ const double kDragSensitivity = 2.0;
 const double kCornerRadius = 5.0;
 const double kMinDistanceBetweenOperators = kBoxSize + 10.0;
 const double kFixOperatorPositionAnimTime = 100.0;
+const double kOperatorSizeMultiplier = 1.0;
+const double kOperatorDraggingSizeMultiplier = 1.2;
+const double kOperatorOpacity = 1.0;
+const double kOperatorDraggingOpacity = 0.6;
+const double kOperatorDragStateChangeAnimTime = 300.0;
 
 OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(operatorView) {
 }
@@ -23,33 +28,60 @@ void OperatorDrawer::update(Operator &operator_) {
     const auto touchPointPos = operatorView_->touchPoint().position;
     const auto &controller = Controller::instance;
 
-    if (operator_.moveOperatorAnimation.has_value()) {
-        operator_.moveOperatorAnimation->update();
+    // Update all animations
+    if (operator_.operatorViewState.moveOperatorAnimation.has_value()) {
+        operator_.operatorViewState.moveOperatorAnimation->update();
 
-        if (operator_.moveOperatorAnimation->isAtEnd()) {
-            operator_.moveOperatorAnimation = std::nullopt;
+        if (operator_.operatorViewState.moveOperatorAnimation->isAtEnd()) {
+            operator_.operatorViewState.moveOperatorAnimation = std::nullopt;
         }
+    }
+    if (operator_.operatorViewState.sizeMultiplierAnim.has_value()) {
+        operator_.operatorViewState.sizeMultiplierAnim->update();
+    }
+    if (operator_.operatorViewState.opacityAnim.has_value()) {
+        operator_.operatorViewState.opacityAnim->update();
     }
 
     // The initial click
-    if (operator_.draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) &&
+    if (operator_.operatorViewState.draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) &&
         operatorView_->touchPoint().isPressed && !isPointBeingDragged_) {
-        operator_.initialDragCursorPos = touchPointPos;
-        operator_.draggingState = DraggingState::Holding;
-        operator_.moveOperatorAnimation = std::nullopt;
+        operator_.operatorViewState.initialDragCursorPos = touchPointPos;
+        operator_.operatorViewState.draggingState = DraggingState::Holding;
+        operator_.operatorViewState.moveOperatorAnimation = std::nullopt;
         // Is any point being dragged, used to make sure only one point can be dragged at once
         isPointBeingDragged_ = true;
         operatorView_->touchPressHandledState_ = TouchEventHandledState::Handled;
     }
-        // While holding down when the operator hasn't been moved
-    else if (operator_.draggingState == DraggingState::Holding) {
-        const auto moveVector = operator_.initialDragCursorPos.value() - touchPointPos;
+
+    // While holding down when the operator hasn't been moved
+    else if (operator_.operatorViewState.draggingState == DraggingState::Holding) {
+        const auto moveVector = operator_.operatorViewState.initialDragCursorPos.value() - touchPointPos;
         const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
 
         // Start dragging
         if (cursorMoveDistance >= kDragSensitivity) {
-            operator_.draggingState = DraggingState::Dragging;
-            operator_.initialDragCursorPos = std::nullopt;
+            operator_.operatorViewState.draggingState = DraggingState::Dragging;
+            operator_.operatorViewState.initialDragCursorPos = std::nullopt;
+
+            if (!operator_.operatorViewState.sizeMultiplierAnim.has_value()) {
+                operator_.operatorViewState.sizeMultiplierAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
+                                                                                &operator_.operatorViewState.sizeMultiplier,
+                                                                                AnimationCurves::easeOutBack,
+                                                                                kOperatorSizeMultiplier,
+                                                                                kOperatorDraggingSizeMultiplier);
+            }
+            if (!operator_.operatorViewState.opacityAnim.has_value()) {
+                operator_.operatorViewState.opacityAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
+                                                                         &operator_.operatorViewState.opacity,
+                                                                         AnimationCurves::easeOut,
+                                                                         kOperatorOpacity,
+                                                                         kOperatorDraggingOpacity);
+            }
+
+            operator_.operatorViewState.sizeMultiplierAnim->setForward();
+            operator_.operatorViewState.opacityAnim->setForward();
+
             controller->deselectOperator();
         }
 
@@ -72,12 +104,13 @@ void OperatorDrawer::update(Operator &operator_) {
                 controller->selectOperator(operator_.id);
             }
 
-            operator_.draggingState = DraggingState::None;
+            operator_.operatorViewState.draggingState = DraggingState::None;
             isPointBeingDragged_ = false;
         }
     }
+
     // While dragging the operator
-    if (operator_.draggingState == DraggingState::Dragging && operatorView_->touchPoint().isPressed) {
+    if (operator_.operatorViewState.draggingState == DraggingState::Dragging && operatorView_->touchPoint().isPressed) {
         const auto operatorPos = operatorView_->fromViewCoords(
                 QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
         operator_.position.setX(operatorPos.x());
@@ -92,9 +125,10 @@ void OperatorDrawer::update(Operator &operator_) {
             controller->removeCarrier(operator_.id);
         }
     }
-        // When the operator is released
-    else if (operator_.draggingState == DraggingState::Dragging) {
-        operator_.draggingState = DraggingState::None;
+
+    // When the operator is released
+    else if (operator_.operatorViewState.draggingState == DraggingState::Dragging) {
+        operator_.operatorViewState.draggingState = DraggingState::None;
         isPointBeingDragged_ = false;
 
         // If cursor is inside delete box
@@ -103,6 +137,9 @@ void OperatorDrawer::update(Operator &operator_) {
         } else {
             fixOperatorPositionAfterDrop(operator_);
         }
+
+        operator_.operatorViewState.sizeMultiplierAnim->setReverse();
+        operator_.operatorViewState.opacityAnim->setReverse();
     }
 }
 
@@ -110,21 +147,22 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
     drawBox(painter, operator_);
 
     // Draw modulator lines
-    const auto&controller = Controller::instance;
+    const auto &controller = Controller::instance;
     for (const auto opId: operator_.modulatedBy) {
         const auto &modulatedOp = controller->getOperatorById(opId);
         const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position);
         const auto modulatorOpPos = operatorView_->toViewCoords(modulatedOp.position);
 
-        const auto modulatorPosition = closestPointInBox(modulatorOpPos, modulatedOpPos, kBoxSize, kBoxSize);
-        const auto modulatedPosition = closestPointInBox(modulatedOpPos, modulatorOpPos, kBoxSize, kBoxSize);
+        const auto boxSize = kBoxSize * operator_.operatorViewState.sizeMultiplier;
+        const auto modulatorPosition = closestPointInBox(modulatorOpPos, modulatedOpPos, boxSize, boxSize);
+        const auto modulatedPosition = closestPointInBox(modulatedOpPos, modulatorOpPos, boxSize, boxSize);
 
         painter->setPen(controller->getOperatorById(opId).getColorForOperator());
         painter->drawLine(modulatorPosition, modulatedPosition);
     }
 }
 
-void OperatorDrawer::drawBox(QPainter *painter, const Operator& operator_) {
+void OperatorDrawer::drawBox(QPainter *painter, const Operator &operator_) {
     auto color = operator_.getColorForOperator();
     const auto operatorPos = operatorView_->toViewCoords(operator_.position);
 
@@ -137,8 +175,11 @@ void OperatorDrawer::drawBox(QPainter *painter, const Operator& operator_) {
         painter->setPen(Qt::PenStyle::NoPen);
     }
 
-    painter->drawRoundedRect(QRectF(operatorPos, QSize(kBoxSize, kBoxSize)),
+    painter->setOpacity(operator_.operatorViewState.opacity);
+    const auto boxSize = kBoxSize * operator_.operatorViewState.sizeMultiplier;
+    painter->drawRoundedRect(QRectF(operatorPos, QSize(boxSize, boxSize)),
                              kCornerRadius, kCornerRadius);
+    painter->setOpacity(1.0);
 }
 
 bool OperatorDrawer::isInsideBox(const Operator &operator_, const QPointF &coords) {
@@ -152,8 +193,9 @@ bool OperatorDrawer::isInsideBox(const Operator &operator_, const QPointF &coord
 void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float moveMultiplier) {
     const auto &controller = Controller::instance;
 
-    const auto operatorPos = operator_.moveOperatorAnimation.has_value() ? operator_.moveOperatorAnimation->toPoint_
-                                                                          : operator_.position;
+    const auto operatorPos = operator_.operatorViewState.moveOperatorAnimation.has_value()
+                             ? operator_.operatorViewState.moveOperatorAnimation->toPoint_
+                             : operator_.position;
     for (const auto &otherOp: controller->operators()) {
         if (otherOp.second.id == operator_.id) continue;
 
@@ -174,13 +216,14 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float mov
 
             const auto newPosition = operatorPos + difference;
 
-            if (operator_.moveOperatorAnimation.has_value()) {
-                operator_.moveOperatorAnimation->toPoint_ = newPosition;
+            if (operator_.operatorViewState.moveOperatorAnimation.has_value()) {
+                operator_.operatorViewState.moveOperatorAnimation->toPoint_ = newPosition;
             } else {
-                operator_.moveOperatorAnimation.emplace(PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position,
-                                                                       operatorPos, newPosition,
-                                                                       AnimationCurves::easeOutBack));
-                operator_.moveOperatorAnimation->setForward();
+                operator_.operatorViewState.moveOperatorAnimation.emplace(
+                        PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position,
+                                            operatorPos, newPosition,
+                                            AnimationCurves::easeOutBack));
+                operator_.operatorViewState.moveOperatorAnimation->setForward();
             }
 
             fixOperatorPositionAfterDrop(operator_, moveMultiplier + 0.1f);
@@ -209,12 +252,13 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float mov
     }
 
     if (positionUpdated) {
-        if (operator_.moveOperatorAnimation.has_value()) {
-            operator_.moveOperatorAnimation->toPoint_ = updatedPosition;
+        if (operator_.operatorViewState.moveOperatorAnimation.has_value()) {
+            operator_.operatorViewState.moveOperatorAnimation->toPoint_ = updatedPosition;
         } else {
-            operator_.moveOperatorAnimation.emplace(PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position, operatorPos,
-                                                                   updatedPosition, AnimationCurves::easeOutBack));
-            operator_.moveOperatorAnimation->setForward();
+            operator_.operatorViewState.moveOperatorAnimation.emplace(
+                    PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position, operatorPos,
+                                        updatedPosition, AnimationCurves::easeOutBack));
+            operator_.operatorViewState.moveOperatorAnimation->setForward();
         }
     }
 }

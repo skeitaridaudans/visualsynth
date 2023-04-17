@@ -55,6 +55,6 @@ bool AddOperatorBox::isInsideBox(const QPointF &coords) {
 
 bool AddOperatorBox::isAnyPointBeingDragged() {
     const auto& controller = Controller::instance;
-    return q20::ranges::any_of(controller->operators().begin(), controller->operators().end(), [] (const auto& kv) { return kv.second.isBeingDragged; });
+    return q20::ranges::any_of(controller->operators().begin(), controller->operators().end(), [] (const auto& kv) { return kv.second.operatorViewState.isBeingDragged; });
 }
 
