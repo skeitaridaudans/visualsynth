@@ -33,10 +33,11 @@ private:
     void updateSizes();
     void addNewPreset();
 
-    std::optional<std::vector<OperatorPresetView>> operatorPresetViews_;
+    std::optional<std::vector<std::unique_ptr<OperatorPresetView>>> operatorPresetViews_;
     QSizeF presetBoxSize;
     ColorTweenAnimation addPresetBackgroundAnim_;
     TouchPoint lastTouchPoint_;
+    QColor addPresetBackgroundColor_;
 };
 
 

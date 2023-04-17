@@ -25,7 +25,9 @@ const QColor kAddPresetBackgroundHoverColor = QColor(0x161616);
 const double kAddPresetBackgroundAnimTime = 100.0;
 
 OperatorPresetsView::OperatorPresetsView(QQuickItem *parent) : QQuickPaintedItem(parent),
+                                                               addPresetBackgroundColor_(kAddPresetBackgroundColor),
                                                                addPresetBackgroundAnim_(kAddPresetBackgroundAnimTime,
+                                                                                        &addPresetBackgroundColor_,
                                                                                         kAddPresetBackgroundColor,
                                                                                         kAddPresetBackgroundHoverColor) {
     setAcceptTouchEvents(true);
@@ -47,8 +49,8 @@ void OperatorPresetsView::paint(QPainter *painter) {
         for (int j = 0; j < std::min((int) operatorPresetViews_->size() - i * kColumnCount, kColumnCount); j++) {
             const auto x = kOuterPaddingX + (j * (presetBoxSize.width() + kBetweenPaddingX));
             const auto y = kOuterPaddingY + (i * (presetBoxSize.height() + kBetweenPaddingX));
-            operatorPresetViews_->at((i * 3) + j).update(QPointF(x, y), presetBoxSize);
-            operatorPresetViews_->at((i * 3) + j).paint(painter, QPointF(x, y), presetBoxSize);
+            operatorPresetViews_->at((i * 3) + j)->update(QPointF(x, y), presetBoxSize);
+            operatorPresetViews_->at((i * 3) + j)->paint(painter, QPointF(x, y), presetBoxSize);
         }
     }
 
@@ -65,7 +67,7 @@ void OperatorPresetsView::paintAddPresetButton(QPainter *painter, const QPointF 
     const auto buttonRect = QRectF(pos, QSizeF(presetBoxSize.width(), (presetBoxSize.height() / 3.0) * 2.0));
 
     painter->setPen(Qt::PenStyle::NoPen);
-    painter->setBrush(addPresetBackgroundAnim_.value());
+    painter->setBrush(addPresetBackgroundColor_);
     painter->drawRoundedRect(buttonRect, 8, 8);
 
     painter->setPen(QColor(255, 255, 255));
@@ -88,18 +90,16 @@ void OperatorPresetsView::loadPresets() {
         return;
     }
 
-    std::vector<OperatorPresetView> operatorPresetViews;
+    operatorPresetViews_ = std::vector<std::unique_ptr<OperatorPresetView>>();
     for (const auto &entry: std::filesystem::directory_iterator("presets/")) {
         if (!entry.is_directory()) {
             auto name = QString::fromStdString(entry.path().filename().string()).split(".").at(0);
             auto preset = loadJsonFileAsObject<Preset>(
                     entry.path().string());
-            auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), name, std::move(preset));
-            operatorPresetViews.push_back(std::move(presetView));
+            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), name, std::move(preset));
+            operatorPresetViews_->push_back(std::move(presetView));
         }
     }
-
-    operatorPresetViews_ = std::move(operatorPresetViews);
 }
 
 void OperatorPresetsView::updateSizes() {
@@ -121,7 +121,7 @@ void OperatorPresetsView::addNewPreset() {
                            controller->savePreset(presetName.toStdString());
 
                            std::vector<AmpEnvValue> ampEnvValues (std::begin(controller->ampEnvValues()), std::end(controller->ampEnvValues()));
-                           auto presetView = OperatorPresetView(const_cast<OperatorPresetsView *>(this), presetName,
+                           auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
                                                                 Preset(controller->operators(), ampEnvValues));
                            operatorPresetViews_->push_back(std::move(presetView));
                        });

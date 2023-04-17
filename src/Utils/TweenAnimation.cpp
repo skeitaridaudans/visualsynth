@@ -6,7 +6,7 @@
 
 #include <utility>
 
-TweenAnimation::TweenAnimation(double ms, std::function<double (double x)> animationCurve, double from, double to) : animTimeMs_(ms), animationCurve_(std::move(animationCurve)), fromValue_(from), toValue_(to) {
+TweenAnimation::TweenAnimation(double ms, double* value, std::function<double (double x)> animationCurve, double from, double to) : animTimeMs_(ms), animationCurve_(std::move(animationCurve)), value_(value), fromValue_(from), toValue_(to) {
 
 }
 
@@ -59,20 +59,16 @@ void TweenAnimation::update() {
     const auto timeElapsed = std::chrono::duration<double, std::milli>(currentTime - startTime_.value()).count();
 
     if (timeElapsed >= animTimeMs_) {
-        value_ = animationState_ == TweenAnimationState::Forward ? toValue_ : fromValue_;
+        *value_ = animationState_ == TweenAnimationState::Forward ? toValue_ : fromValue_;
         animationState_ = TweenAnimationState::Stop;
         return;
     }
 
-    value_ = animationCurve_(timeElapsed / animTimeMs_) * (toValue_ - fromValue_) + fromValue_;
+    *value_ = animationCurve_(timeElapsed / animTimeMs_) * (toValue_ - fromValue_) + fromValue_;
 
     if (animationState_ == TweenAnimationState::Reverse) {
-        value_ = toValue_ - (value_ - fromValue_);
+        *value_ = toValue_ - (*value_ - fromValue_);
     }
-}
-
-double TweenAnimation::value() {
-    return value_;
 }
 
 bool TweenAnimation::isRunning() {
@@ -80,10 +76,13 @@ bool TweenAnimation::isRunning() {
 }
 
 bool TweenAnimation::isAtStart() {
-    return value_ == fromValue_;
+    return *value_ == fromValue_;
 }
 
 bool TweenAnimation::isAtEnd() {
-    return value_ == toValue_;
+    return *value_ == toValue_;
 }
 
+void TweenAnimation::setValuePtr(double *value) {
+    value_ = value;
+}

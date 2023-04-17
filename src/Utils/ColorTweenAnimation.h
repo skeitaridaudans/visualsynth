@@ -11,19 +11,22 @@
 
 class ColorTweenAnimation {
 public:
-    ColorTweenAnimation(double ms, QColor from, QColor to, std::function<double(double x)> animationCurve = AnimationCurves::linear);
+    ColorTweenAnimation(double ms, QColor *color, QColor from, QColor to,
+                        std::function<double(double x)> animationCurve = AnimationCurves::linear);
+    ColorTweenAnimation(const ColorTweenAnimation &colorTweenAnimation);
+
     void setForward();
     void setReverse();
     void stop();
     void update();
-    const QColor& value();
     bool isRunning();
     bool isAtStart();
     bool isAtEnd();
 
 private:
     TweenAnimation tweenAnimation_;
-    QColor color_;
+    double fraction_;
+    QColor *color_;
     QColor fromColor_;
     QColor toColor_;
 };

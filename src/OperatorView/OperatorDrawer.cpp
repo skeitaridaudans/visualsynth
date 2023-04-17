@@ -27,7 +27,6 @@ void OperatorDrawer::update(Operator &operator_) {
         operator_.moveOperatorAnimation->update();
 
         if (operator_.moveOperatorAnimation->isAtEnd()) {
-            operator_.position = operator_.moveOperatorAnimation->value();
             operator_.moveOperatorAnimation = std::nullopt;
         }
     }
@@ -114,12 +113,8 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
     const auto&controller = Controller::instance;
     for (const auto opId: operator_.modulatedBy) {
         const auto &modulatedOp = controller->getOperatorById(opId);
-        const auto modulatedOpPos = operatorView_->toViewCoords(
-                !operator_.moveOperatorAnimation.has_value() ? operator_.position
-                                                              : operator_.moveOperatorAnimation->value());
-        const auto modulatorOpPos = operatorView_->toViewCoords(
-                !modulatedOp.moveOperatorAnimation.has_value() ? modulatedOp.position
-                                                                : modulatedOp.moveOperatorAnimation->value());
+        const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position);
+        const auto modulatorOpPos = operatorView_->toViewCoords(modulatedOp.position);
 
         const auto modulatorPosition = closestPointInBox(modulatorOpPos, modulatedOpPos, kBoxSize, kBoxSize);
         const auto modulatedPosition = closestPointInBox(modulatedOpPos, modulatorOpPos, kBoxSize, kBoxSize);
@@ -131,9 +126,7 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
 
 void OperatorDrawer::drawBox(QPainter *painter, const Operator& operator_) {
     auto color = operator_.getColorForOperator();
-    const auto operatorPos = operatorView_->toViewCoords(
-            !operator_.moveOperatorAnimation.has_value() ? operator_.position
-                                                          : operator_.moveOperatorAnimation->value());
+    const auto operatorPos = operatorView_->toViewCoords(operator_.position);
 
     painter->setBrush(QBrush(color));
 
@@ -184,9 +177,9 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float mov
             if (operator_.moveOperatorAnimation.has_value()) {
                 operator_.moveOperatorAnimation->toPoint_ = newPosition;
             } else {
-                operator_.moveOperatorAnimation = PointTweenAnimation(kFixOperatorPositionAnimTime,
+                operator_.moveOperatorAnimation.emplace(PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position,
                                                                        operatorPos, newPosition,
-                                                                       AnimationCurves::easeOutBack);
+                                                                       AnimationCurves::easeOutBack));
                 operator_.moveOperatorAnimation->setForward();
             }
 
@@ -219,8 +212,8 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float mov
         if (operator_.moveOperatorAnimation.has_value()) {
             operator_.moveOperatorAnimation->toPoint_ = updatedPosition;
         } else {
-            operator_.moveOperatorAnimation = PointTweenAnimation(kFixOperatorPositionAnimTime, operatorPos,
-                                                                   updatedPosition, AnimationCurves::easeOutBack);
+            operator_.moveOperatorAnimation.emplace(PointTweenAnimation(kFixOperatorPositionAnimTime, &operator_.position, operatorPos,
+                                                                   updatedPosition, AnimationCurves::easeOutBack));
             operator_.moveOperatorAnimation->setForward();
         }
     }
