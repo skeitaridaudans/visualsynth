@@ -8,13 +8,11 @@
 
 // Operator view state
 
-OperatorViewState::OperatorViewState() : isBeingDragged(false) {
+OperatorViewState::OperatorViewState() {
 
 }
 
-OperatorViewState::OperatorViewState(const OperatorViewState &operatorViewState) : isBeingDragged(
-        operatorViewState.isBeingDragged),
-                                                                                   draggingState(
+OperatorViewState::OperatorViewState(const OperatorViewState &operatorViewState) : draggingState(
                                                                                            operatorViewState.draggingState),
                                                                                    initialDragCursorPos(
                                                                                            operatorViewState.initialDragCursorPos) {

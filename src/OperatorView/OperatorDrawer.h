@@ -23,7 +23,8 @@ private:
 
 
     OperatorView *operatorView_;
-    bool isPointBeingDragged_ = false;
+    bool isAnyOperatorBeingDragged_ = false;
+    int draggedOperatorId_ = -1;
 };
 
 

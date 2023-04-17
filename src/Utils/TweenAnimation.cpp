@@ -6,7 +6,9 @@
 
 #include <utility>
 
-TweenAnimation::TweenAnimation(double ms, double* value, std::function<double (double x)> animationCurve, double from, double to) : animTimeMs_(ms), animationCurve_(std::move(animationCurve)), value_(value), fromValue_(from), toValue_(to) {
+TweenAnimation::TweenAnimation(double ms, double *value, std::function<double(double x)> animationCurve, double from,
+                               double to, bool loop) : animTimeMs_(ms), animationCurve_(std::move(animationCurve)), value_(value),
+                                            fromValue_(from), toValue_(to), loop_(loop) {
 
 }
 
@@ -20,8 +22,7 @@ void TweenAnimation::setForward() {
         const auto timeElapsed = std::chrono::duration<double, std::milli>(currentTime - startTime_.value()).count();
         const auto timeRemaining = (int) (animTimeMs_ - timeElapsed);
         startTime_ = std::chrono::high_resolution_clock::now() - std::chrono::duration<int, std::milli>(timeRemaining);
-    }
-    else {
+    } else {
         startTime_ = std::chrono::high_resolution_clock::now();
     }
 
@@ -38,8 +39,7 @@ void TweenAnimation::setReverse() {
         const auto timeElapsed = std::chrono::duration<double, std::milli>(currentTime - startTime_.value()).count();
         const auto timeRemaining = (int) (animTimeMs_ - timeElapsed);
         startTime_ = std::chrono::high_resolution_clock::now() - std::chrono::duration<int, std::milli>(timeRemaining);
-    }
-    else {
+    } else {
         startTime_ = std::chrono::high_resolution_clock::now();
     }
 
@@ -59,8 +59,19 @@ void TweenAnimation::update() {
     const auto timeElapsed = std::chrono::duration<double, std::milli>(currentTime - startTime_.value()).count();
 
     if (timeElapsed >= animTimeMs_) {
+        const auto previousAnimationState = animationState_;
+
         *value_ = animationState_ == TweenAnimationState::Forward ? toValue_ : fromValue_;
         animationState_ = TweenAnimationState::Stop;
+
+        if (loop_) {
+            if (previousAnimationState == TweenAnimationState::Forward) {
+                setReverse();
+            }
+            else {
+                setForward();
+            }
+        }
         return;
     }
 

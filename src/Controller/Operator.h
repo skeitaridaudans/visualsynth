@@ -23,7 +23,6 @@ struct OperatorViewState {
     OperatorViewState();
     OperatorViewState(const OperatorViewState &operatorViewState);
 
-    bool isBeingDragged{};
     std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
     DraggingState draggingState = DraggingState::None;
     std::optional<QPointF> initialDragCursorPos;
@@ -32,6 +31,8 @@ struct OperatorViewState {
     std::optional<TweenAnimation> sizeMultiplierAnim;
     double opacity = 1.0;
     std::optional<TweenAnimation> opacityAnim;
+    double connectIconOpacity = 0.3;
+    std::optional<TweenAnimation> connectIconOpacityAnim;
 };
 
 struct Operator:public QObject {
