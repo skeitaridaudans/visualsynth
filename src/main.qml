@@ -46,7 +46,7 @@ Window {
             opContainer.visible = true
 
             var color = selectedOperator.getColorForOperator();
-//            opDrag.color = color
+            //            opDrag.color = color
 
             waveView.setFrequency(operator.freqProp);
             waveView.setAmplitude(operator.ampProp);
@@ -57,11 +57,11 @@ Window {
         }
 
         function onOperatorDeselected(deselected){
-                opContainer.enabled = false;
-                opContainer.visible = false;
+            opContainer.enabled = false;
+            opContainer.visible = false;
 
-                waveView.setFrequency(0);
-                waveView.setAmplitude(0);
+            waveView.setFrequency(0);
+            waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
@@ -70,7 +70,7 @@ Window {
             opWaveView.setFrequency(freq);
 
             var color = selectedOperator.getColorForOperator();
-//            opDrag.color = color
+            //            opDrag.color = color
             opWaveView.setColor(color);
 
         }
@@ -81,7 +81,7 @@ Window {
             waveView.setAmplitude(amp);
 
             var color = selectedOperator.getColorForOperator();
-//            opDrag.color = color
+            //            opDrag.color = color
             opWaveView.setColor(color);
         }
     }
@@ -248,98 +248,98 @@ Window {
 
 
         // Box title
-            Rectangle {
-                id: opContainer
-                enabled: selectedOperator ? true : false
-                visible: selectedOperator ? true : false
-                color: parent.color
-                width: parent.width - 2
-                height: parent.height - 2
+        Rectangle {
+            id: opContainer
+            enabled: selectedOperator ? true : false
+            visible: selectedOperator ? true : false
+            color: parent.color
+            width: parent.width - 2
+            height: parent.height - 2
 
+            Text{
+                id: freqText
+                x: 1064
+                y: 342
+                width: 12
+                height: 10
+                text: "0"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.horizontalCenter: opDrag.horizontalCenter
+                anchors.rightMargin: 319
+                anchors.leftMargin: 510
+                color: "gray"
+                font.pixelSize: 16
+                font.family: "Noto Sans"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 Text{
-                    id: freqText
-                    x: 1064
-                    y: 342
-                    width: 12
-                    height: 10
-                    text: "0"
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.horizontalCenter: opDrag.horizontalCenter
-                    anchors.rightMargin: 319
-                    anchors.leftMargin: 510
-                    color: "gray"
+                    id: plusFreq
+                    x: 82
+                    y: -3
+                    width: 50
+                    height: 21
+                    text: "+"
                     font.pixelSize: 16
+                    color: parent.color
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    Text{
-                        id: plusFreq
-                        x: 82
-                        y: -3
-                        width: 50
-                        height: 21
-                        text: "+"
-                        font.pixelSize: 16
-                        color: parent.color
-                        font.family: "Noto Sans"
-                         horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
 
-                    }
-                    Text{
-                        id: minFreq
-                        x: -94
-                        y: -3
-                        width: 50
-                        height: 21
-                        text: "-"
-                        font.pixelSize: 16
-                        color: parent.color
-                        font.family: "Noto Sans"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-
-                    }
                 }
+                Text{
+                    id: minFreq
+                    x: -94
+                    y: -3
+                    width: 50
+                    height: 21
+                    text: "-"
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                }
+            }
+            Text {
+                id: ampText
+                x: 828
+                y: 189
+                text: "0"
+                color: "gray"
+                font.pixelSize: 16
+                font.family: "Noto Sans"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
                 Text {
-                    id: ampText
-                    x: 828
-                    y: 189
-                    text: "0"
-                    color: "gray"
+                    id: ampPlus
+                    x: 0
+                    y: -60
+                    width: 9
+                    height: 22
+                    text: qsTr("+")
                     font.pixelSize: 16
+
+                    color: parent.color
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-
-                    Text {
-                        id: ampPlus
-                        x: 0
-                        y: -60
-                        width: 9
-                        height: 22
-                        text: qsTr("+")
-                        font.pixelSize: 16
-
-                        color: parent.color
-                        font.family: "Noto Sans"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    Text {
-                        id: ampMin
-                        x: 2
-                        y: 72
-                        text: qsTr("-")
-                        font.pixelSize: 16
-                        color: parent.color
-                        font.family: "Noto Sans"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
                 }
+
+                Text {
+                    id: ampMin
+                    x: 2
+                    y: 72
+                    text: qsTr("-")
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
 
             Text {
                 id: operatorName
@@ -349,149 +349,220 @@ Window {
                 color: "#f0f0f0"
                 font.pixelSize: 32
                 font.underline: true
-                }
-                // Operator box
+            }
+            // Operator box
+            Rectangle {
+                id: opDrag
+                x: 224
+                y: 63
+                width: 598
+                height: 273
+                color: "lightgray" // Placeholder while colors are off on the wave
+                //color: "#414141"
+
+
                 Rectangle {
-                    id: opDrag
-                    x: 224
-                    y: 63
-                    width: 598
-                    height: 273
-                    color: "lightgray" // Placeholder while colors are off on the wave
-                    //color: "#414141"
-
-
-                    Rectangle {
-                        id: opsinewaverectangle
-                        x: 0
-                        y: 0
-                        width: parent.width
-                        height: parent.height
-                        color: parent.color
+                    id: opsinewaverectangle
+                    x: 0
+                    y: 0
+                    width: parent.width
+                    height: parent.height
+                    color: parent.color
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: -3
+                    radius: 3
+                    SinWaveItem {
+                        id: opWaveView
+                        anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -3
-                        radius: 3
-                        SinWaveItem {
-                            id: opWaveView
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-        //    		        anchors.rightMargin: 20
-                            anchors.bottomMargin: -50
-                                //                            anchors.bottomMargin: 10
-                            width: parent.width - 3
-                            height: parent.height - 3
-                        }
+                        //    		        anchors.rightMargin: 20
+                        anchors.bottomMargin: -50
+                        //                            anchors.bottomMargin: 10
+                        width: parent.width - 3
+                        height: parent.height - 3
                     }
+                }
 
-                    // Make it respond to geastures
-                    MultiPointTouchArea{
-                        anchors.fill: parent
-                        anchors.rightMargin: 8
-                        anchors.bottomMargin: 0
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 0
-                        property var drag: parent
-                        property var offset : null
-                        property bool horiDrag: false
-                        property bool vertiDrag: false
-                        property real lastX: 0
-                        property real lastY: 0
-                        touchPoints: [
-                            TouchPoint {id: touch1}
-                        ]
+                // Make it respond to geastures
+                MultiPointTouchArea{
+                    anchors.fill: parent
+                    anchors.rightMargin: 8
+                    anchors.bottomMargin: 0
+                    anchors.leftMargin: 0
+                    anchors.topMargin: 0
+                    property var drag: parent
+                    property var offset : null
+                    property bool horiDrag: false
+                    property bool vertiDrag: false
+                    property real lastX: 0
+                    property real lastY: 0
+                    touchPoints: [
+                        TouchPoint {id: touch1}
+                    ]
 
-                        onTouchUpdated: {
-                            if (selectedOperator) {
-                                // TODO add multipliers !
-                                var freq = selectedOperator.getFreq();
-                                var amp = selectedOperator.getAmp();
-                                if(touchPoints.length > 0){
+                    onTouchUpdated: {
+                        if (selectedOperator) {
+                            // TODO add multipliers !
+                            var freq = selectedOperator.getFreq();
+                            var amp = selectedOperator.getAmp();
+                            if(touchPoints.length > 0){
 
-                                    var touchPoint = touchPoints[0]
-                                    var xDelta = touchPoint.sceneX - lastX;
-                                    var yDelta = touchPoint.sceneY - lastY;
-                                    lastX = touchPoint.sceneX;
-                                    lastY = touchPoint.sceneY;
+                                var touchPoint = touchPoints[0]
+                                var xDelta = touchPoint.sceneX - lastX;
+                                var yDelta = touchPoint.sceneY - lastY;
+                                lastX = touchPoint.sceneX;
+                                lastY = touchPoint.sceneY;
 
 
-                                    if (!horiDrag && !vertiDrag){
-                                        if (Math.abs(xDelta) > Math.abs(yDelta)){
-                                            horiDrag = true
-                                        } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
-                                            vertiDrag = true;
-                                        }
-                                    } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)){
+                                if (!horiDrag && !vertiDrag){
+                                    if (Math.abs(xDelta) > Math.abs(yDelta)){
+                                        horiDrag = true
+                                    } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
                                         vertiDrag = true;
-                                        horiDrag = false;
-                                    } else if ( vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)){
-                                        horiDrag = true;
-                                        vertiDrag = false;
                                     }
+                                } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)){
+                                    vertiDrag = true;
+                                    horiDrag = false;
+                                } else if ( vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)){
+                                    horiDrag = true;
+                                    vertiDrag = false;
+                                }
 
-                                    if(horiDrag) {
-                                        if (xDelta > 0){
-                                            console.log(xDelta)
-                                            if (Math.abs(xDelta) > 10){
-                                                selectedOperator.setFrequency(10)
-                                            }
-                                            else{
-                                                selectedOperator.setFrequency(1)
-                                            }
-                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-
-                                        } else if (xDelta < 0){
-                                            if (Math.abs(xDelta) < -10){
-                                                selectedOperator.setFrequency(-10)
-                                            }
-                                            else{
-                                                selectedOperator.setFrequency(-1)
-                                            }
-                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                if(horiDrag) {
+                                    if (xDelta > 0){
+                                        console.log(xDelta)
+                                        if (Math.abs(xDelta) > 10){
+                                            selectedOperator.setFrequency(10)
                                         }
-                                    } else if(vertiDrag) {
-                                        if (yDelta < 0) {
-                                            selectedOperator.setAmplitude(1)
-                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
-
-                                        } else if (yDelta > 0){
-                                            selectedOperator.setAmplitude(-1)
-                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                        else{
+                                            selectedOperator.setFrequency(1)
                                         }
+                                        controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+
+                                    } else if (xDelta < 0){
+                                        if (Math.abs(xDelta) < -10){
+                                            selectedOperator.setFrequency(-10)
+                                        }
+                                        else{
+                                            selectedOperator.setFrequency(-1)
+                                        }
+                                        controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                    }
+                                } else if(vertiDrag) {
+                                    if (yDelta < 0) {
+                                        selectedOperator.setAmplitude(1)
+                                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+
+                                    } else if (yDelta > 0){
+                                        selectedOperator.setAmplitude(-1)
+                                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
                                     }
                                 }
                             }
                         }
+                    }
 
 
 
-                        onPressed: {
-                            var point = touchPoints[0]
+                    onPressed: {
+                        var point = touchPoints[0]
 
-                            parent.border.color = "pink"
-                            parent.border.width = 3
-                            parent.width = parent.width + 1
-                            parent.height = parent.height + 1
-                            offset = Qt.point(point.x, point.y);
-                            point.startSceneX = touchPoint.sceneX
-                            point.startSceneY = touchPoint.sceneY
-                            lastX = point.sceneX
-                            lastY = point.sceneY
-                        }
+                        parent.border.color = "pink"
+                        parent.border.width = 3
+                        parent.width = parent.width + 1
+                        parent.height = parent.height + 1
+                        offset = Qt.point(point.x, point.y);
+                        point.startSceneX = touchPoint.sceneX
+                        point.startSceneY = touchPoint.sceneY
+                        lastX = point.sceneX
+                        lastY = point.sceneY
+                    }
 
-                        onReleased: {
-                            parent.border.width = 0
-                            parent.width = parent.width - 1
-                            parent.height = parent.height - 1
-                            horiDrag = false;
-                            vertiDrag = false;
-
-                        }
+                    onReleased: {
+                        parent.border.width = 0
+                        parent.width = parent.width - 1
+                        parent.height = parent.height - 1
+                        horiDrag = false;
+                        vertiDrag = false;
 
                     }
 
                 }
 
             }
+
+
+            Rectangle {
+                id: fine
+                x: 70
+                y: 202
+                width: 80
+                height: 32
+                color: "#323232"
+                anchors.horizontalCenterOffset: -320
+                anchors.horizontalCenter: parent.horizontalCenter
+                //          anchors.verticalCenter: parent.verticalCenter
+                MultiPointTouchArea{
+                    id: fineToggle
+                    anchors.fill: parent
+                }
+                Rectangle {
+                    id: light2
+                    x: 8
+                    y: 8
+                    width: 6
+                    height: 16
+                    color: "#7f7c7b"
+                }
+
+                Text {
+                    id: text3
+                    x: 27
+                    y: 8
+                    width: 40
+                    height: 17
+                    color: "#f0f0f0"
+                    text: qsTr("Fine")
+                    font.pixelSize: 12
+                }
+
+            }
+
+
+            Rectangle {
+                id: coarse
+                x: 70
+                y: 142
+                width: 80
+                height: 32
+                color: "#323232"
+                anchors.horizontalCenterOffset: -320
+                anchors.horizontalCenter: parent.horizontalCenter
+                //                    anchors.verticalCenter: parent.verticalCenter
+                MultiPointTouchArea{
+                    id: cearseToggle
+                    anchors.fill: parent
+                }
+                Rectangle {
+                    id: light1
+                    x: 8
+                    y: 8
+                    width: 6
+                    height: 16
+                    color: "#ff00ff"
+                }
+
+                Text {
+                    id: text2
+                    x: 27
+                    y: 8
+                    text: qsTr("Coarse")
+                    color: "#f0f0f0"
+                    font.pixelSize: 12
+                }
+            }
+
+        }
     }
 
 
@@ -553,17 +624,17 @@ Window {
     }
 
 
-//    AmpEnvGraphItem{
-//        id: ampEnvGraphView
-//            anchors.right: parent.right
-//            anchors.bottom: parent.bottom
-//            anchors.rightMargin:0
-//            anchors.bottomMargin: 310+bW
+    //    AmpEnvGraphItem{
+    //        id: ampEnvGraphView
+    //            anchors.right: parent.right
+    //            anchors.bottom: parent.bottom
+    //            anchors.rightMargin:0
+    //            anchors.bottomMargin: 310+bW
 
 
-//           width: ampEnvGraphView.W
-//           height: ampEnvGraphView.H
-//    }
+    //           width: ampEnvGraphView.W
+    //           height: ampEnvGraphView.H
+    //    }
 
 
     Rectangle {
