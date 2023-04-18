@@ -245,9 +245,9 @@ Window {
         border.width: 3
         radius: 3
         property int operatorId: selectedOperator ? selectedOperator.idProp : 0
-        property bool coarseSelected: true
-        property bool fineSelected: false
 
+        property bool fineCheck: false
+        property bool coarseCheck: true
 
         // Box title
         Rectangle {
@@ -432,13 +432,13 @@ Window {
 
                                 if(horiDrag) {
                                     if (xDelta > 0){
-                                        if(!fineSelected){
-//                                            if (Math.abs(xDelta) > 10){
-//                                                selectedOperator.setFrequency(10)
-//                                            }
-//                                            else{
+                                        if(operatorInfo.fineCheck){
+                                            if (Math.abs(xDelta) > 10){
+                                                selectedOperator.setFrequency(10)
+                                            }
+                                            else{
                                                 selectedOperator.setFrequency(0.5)
-//                                            }
+                                            }
                                         } else {
                                             selectedOperator.setFrequency(20)
                                         }
@@ -446,15 +446,15 @@ Window {
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
 
                                     } else if (xDelta < 0){
-                                        if(!fineSelected){
-//                                            if (Math.abs(xDelta) < -10){
-//                                                selectedOperator.setFrequency(-10)
-//                                            }
-//                                            else{
+                                        if(operatorInfo.fineCheck){
+                                            if (Math.abs(xDelta) < -10){
+                                                selectedOperator.setFrequency(-10)
+                                            }
+                                            else{
                                                 selectedOperator.setFrequency(-0.5)
-//                                            }
+                                             }
                                         } else {
-                                            selectedOperator.setFrequency(20)
+                                            selectedOperator.setFrequency(-20)
                                         }
 
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
@@ -501,6 +501,7 @@ Window {
                 }
 
             }
+
             Rectangle {
                 id: fine
                 x: 70
@@ -520,8 +521,8 @@ Window {
                         coarse.border.width = 0
                         light2.color =  "#ff00ff";
                         light1.color = "#7f7c7b";
-                        coarseSelected = false;
-                        fineSelected = true;
+                        operatorInfo.coarseCheck = false;
+                        operatorInfo.fineCheck = true;
                         console.log(fineSelected)
                     }
                     onReleased: {
@@ -572,8 +573,8 @@ Window {
                         fine.border.width = 0
                         light1.color =  "#ff00ff";
                         light2.color = "#7f7c7b";
-                        coarseSelected = true
-                        fineSelected = false
+                        operatorInfo.coarseCheck = true
+                        operatorInfo.fineCheck = false
                     }
                     onReleased: {
                         parent.border.width = 1;
@@ -616,17 +617,17 @@ Window {
     }*/
 
 
-    //    AmpEnvGraphItem{
-    //        id: ampEnvGraphView
-    //            anchors.right: parent.right
-    //            anchors.bottom: parent.bottom
-    //            anchors.rightMargin:0
-    //            anchors.bottomMargin: 310+bW
+        AmpEnvGraphItem{
+            id: ampEnvGraphView
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin:0
+                anchors.bottomMargin: 310+bW
 
 
-    //           width: ampEnvGraphView.W
-    //           height: ampEnvGraphView.H
-    //    }
+               width: ampEnvGraphView.W
+               height: ampEnvGraphView.H
+        }
 
 
     Rectangle {
