@@ -264,6 +264,7 @@ Window {
                     text: "0"
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    anchors.horizontalCenter: opDrag.horizontalCenter
                     anchors.rightMargin: 370
                     anchors.leftMargin: 459
                     color: "#f0f0f0"
@@ -295,10 +296,49 @@ Window {
                         font.pixelSize: 16
                         color: "#f0f0f0"
                         font.family: "Noto Sans"
-                         horizontalAlignment: Text.AlignHCenter
+                        horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
 
                     }
+                }
+                Text {
+                    id: ampText
+                    x: 791
+                    y: 179
+                    text: "0"
+                    color: "#f0f0f0"
+                    font.pixelSize: 16
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    Text {
+                        id: ampPlus
+                        x: 0
+                        y: -60
+                        width: 9
+                        height: 22
+                        text: qsTr("+")
+                        font.pixelSize: 16
+                        color: "#f0f0f0"
+                        font.family: "Noto Sans"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    Text {
+                        id: ampMin
+                        x: 2
+                        y: 72
+                        text: qsTr("-")
+                        font.pixelSize: 16
+                        color: "#f0f0f0"
+                        font.family: "Noto Sans"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+
                 }
 
             Text {
@@ -432,6 +472,8 @@ Window {
                 }
 
             }
+
+
 
         }
     }
