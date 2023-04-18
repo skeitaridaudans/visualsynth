@@ -245,6 +245,8 @@ Window {
         border.width: 3
         radius: 3
         property int operatorId: selectedOperator ? selectedOperator.idProp : 0
+        property bool coarseSelected: true
+        property bool fineSelected: false
 
 
         // Box title
@@ -363,13 +365,13 @@ Window {
 
                 Rectangle {
                     id: opsinewaverectangle
-                    x: 0
-                    y: 0
-                    width: parent.width
-                    height: parent.height
+                    x: 2
+                    y: 1
+                    width: parent.width - 2
+                    height: parent.height - 2
                     color: parent.color
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: -3
+                    anchors.bottomMargin: 1
                     radius: 3
                     SinWaveItem {
                         id: opWaveView
@@ -430,22 +432,31 @@ Window {
 
                                 if(horiDrag) {
                                     if (xDelta > 0){
-                                        console.log(xDelta)
-                                        if (Math.abs(xDelta) > 10){
-                                            selectedOperator.setFrequency(10)
+                                        if(!fineSelected){
+//                                            if (Math.abs(xDelta) > 10){
+//                                                selectedOperator.setFrequency(10)
+//                                            }
+//                                            else{
+                                                selectedOperator.setFrequency(0.5)
+//                                            }
+                                        } else {
+                                            selectedOperator.setFrequency(20)
                                         }
-                                        else{
-                                            selectedOperator.setFrequency(1)
-                                        }
+
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
 
                                     } else if (xDelta < 0){
-                                        if (Math.abs(xDelta) < -10){
-                                            selectedOperator.setFrequency(-10)
+                                        if(!fineSelected){
+//                                            if (Math.abs(xDelta) < -10){
+//                                                selectedOperator.setFrequency(-10)
+//                                            }
+//                                            else{
+                                                selectedOperator.setFrequency(-0.5)
+//                                            }
+                                        } else {
+                                            selectedOperator.setFrequency(20)
                                         }
-                                        else{
-                                            selectedOperator.setFrequency(-1)
-                                        }
+
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                     }
                                 } else if(vertiDrag) {
@@ -467,10 +478,10 @@ Window {
                     onPressed: {
                         var point = touchPoints[0]
 
-                        parent.border.color = "pink"
-                        parent.border.width = 3
-                        parent.width = parent.width + 1
-                        parent.height = parent.height + 1
+                        opDrag.border.color = "pink"
+                        opDrag.border.width = 3
+                        opDrag.width = parent.width + 1
+                        opDrag.height = parent.height + 1
                         offset = Qt.point(point.x, point.y);
                         point.startSceneX = touchPoint.sceneX
                         point.startSceneY = touchPoint.sceneY
@@ -479,9 +490,9 @@ Window {
                     }
 
                     onReleased: {
-                        parent.border.width = 0
-                        parent.width = parent.width - 1
-                        parent.height = parent.height - 1
+                        opDrag.border.width = 0
+                        opDrag.width = parent.width - 1
+                        opDrag.height = parent.height - 1
                         horiDrag = false;
                         vertiDrag = false;
 
@@ -490,8 +501,6 @@ Window {
                 }
 
             }
-
-
             Rectangle {
                 id: fine
                 x: 70
@@ -501,10 +510,24 @@ Window {
                 color: "#323232"
                 anchors.horizontalCenterOffset: -320
                 anchors.horizontalCenter: parent.horizontalCenter
-                //          anchors.verticalCenter: parent.verticalCenter
+
                 MultiPointTouchArea{
                     id: fineToggle
                     anchors.fill: parent
+                    onPressed : {
+                        parent.border.width = 2;
+                        parent.border.color = "white";
+                        coarse.border.width = 0
+                        light2.color =  "#ff00ff";
+                        light1.color = "#7f7c7b";
+                        coarseSelected = false;
+                        fineSelected = true;
+                        console.log(fineSelected)
+                    }
+                    onReleased: {
+                        parent.border.width = 1;
+                        parent.border.color = "pink"
+                    }
                 }
                 Rectangle {
                     id: light2
@@ -528,7 +551,6 @@ Window {
 
             }
 
-
             Rectangle {
                 id: coarse
                 x: 70
@@ -536,12 +558,27 @@ Window {
                 width: 80
                 height: 32
                 color: "#323232"
+                border.width: 1
+                border.color: "pink"
                 anchors.horizontalCenterOffset: -320
                 anchors.horizontalCenter: parent.horizontalCenter
                 //                    anchors.verticalCenter: parent.verticalCenter
                 MultiPointTouchArea{
                     id: cearseToggle
                     anchors.fill: parent
+                    onPressed: {
+                        parent.border.width = 2
+                        parent.border.color = "white"
+                        fine.border.width = 0
+                        light1.color =  "#ff00ff";
+                        light2.color = "#7f7c7b";
+                        coarseSelected = true
+                        fineSelected = false
+                    }
+                    onReleased: {
+                        parent.border.width = 1;
+                        parent.border.color = "pink"
+                    }
                 }
                 Rectangle {
                     id: light1
@@ -577,51 +614,6 @@ Window {
         font.pixelSize: 18
 
     }*/
-
-    Rectangle {
-        id: rectangle1
-        y: 965
-        width: 510
-        height: 53
-        color: "#f44336"
-        radius: 10
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 62
-        anchors.horizontalCenter: parent.horizontalCenter
-        state: alertController.alertVisibleState
-
-        states: [
-            State {
-                name: "invisible"
-                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
-            },
-            State {
-                name: "visible"
-                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
-            }
-        ]
-
-        transitions: [
-            Transition {
-                to: "invisible"
-                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
-            },
-            Transition {
-                to: "visible"
-                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
-            }
-        ]
-
-        Text {
-            id: text1
-            color: "#ffffff"
-            text: alertController.alertText
-            anchors.fill: parent
-            font.pixelSize: 22
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-    }
 
 
     //    AmpEnvGraphItem{
