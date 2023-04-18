@@ -3,7 +3,6 @@
 //
 
 #include "OperatorDrawer.h"
-#include <QOpenGLFunctions>
 #include <QCursor>
 #include <QGuiApplication>
 #include "src/Controller/Controller.h"
@@ -25,6 +24,8 @@ const double kOperatorDragStateChangeAnimTime = 300.0;
 const double kOperatorConnectIconPulseAnimationTime = 300.0;
 const double KOperatorConnectIconMinOpacity = 0.3;
 const double KOperatorConnectIconMaxOpacity = 1.0;
+const double kModulatorArrowTriangleSize = 8.0;
+const double kModulatorLineWidth = 4.0;
 
 OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(operatorView) {
 }
@@ -53,7 +54,7 @@ void OperatorDrawer::update(Operator &operator_) {
         onTouchDown(operator_);
     }
 
-    // While holding down when the operator hasn't been moved
+        // While holding down when the operator hasn't been moved
     else if (operator_.operatorViewState.draggingState == DraggingState::Holding) {
         const auto moveVector = operator_.operatorViewState.initialDragCursorPos.value() - primaryTouchPointPos;
         const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
@@ -79,7 +80,7 @@ void OperatorDrawer::update(Operator &operator_) {
         updateOperatorDrag(operator_);
     }
 
-    // When the operator is released
+        // When the operator is released
     else if (operator_.operatorViewState.draggingState == DraggingState::Dragging) {
         releaseOperator(operator_);
     }
@@ -235,17 +236,40 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
     // Draw modulator lines
     const auto &controller = Controller::instance;
     for (const auto opId: operator_.modulatedBy) {
-        const auto &modulatedOp = controller->getOperatorById(opId);
-        const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position);
-        const auto modulatorOpPos = operatorView_->toViewCoords(modulatedOp.position);
+        const auto &modulatorOp = controller->getOperatorById(opId);
+        const auto modulatorOpPos = operatorView_->toViewCoords(modulatorOp.position);
+        // Subtract 0.05x the size of the operator from the position so the arrow isn't touching the box from the top/left
+        const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position) - QPointF(1, 1) * (kBoxSize * operator_.operatorViewState.sizeMultiplier * 0.05);
 
-        const auto boxSize = kBoxSize * operator_.operatorViewState.sizeMultiplier;
-        const auto modulatorPosition = closestPointInBox(modulatorOpPos, modulatedOpPos, boxSize, boxSize);
-        const auto modulatedPosition = closestPointInBox(modulatedOpPos, modulatorOpPos, boxSize, boxSize);
+        const auto modulatorBoxSize = kBoxSize * modulatorOp.operatorViewState.sizeMultiplier;
+        // Multiply by 1.1 so that the arrow isn't fully touching the box
+        const auto modulatedBoxSize = kBoxSize * operator_.operatorViewState.sizeMultiplier * 1.1;
+        const auto modulatorPos = closestPointInBox(modulatedOpPos, modulatorOpPos, modulatorBoxSize, modulatorBoxSize);
+        const auto modulatedPos = closestPointInBox(modulatorOpPos, modulatedOpPos, modulatedBoxSize, modulatedBoxSize);
 
-        painter->setPen(controller->getOperatorById(opId).getColorForOperator());
-        painter->drawLine(modulatorPosition, modulatedPosition);
+        drawModulatorLine(painter, operator_, modulatorPos, modulatedPos);
     }
+}
+
+void OperatorDrawer::drawModulatorLine(QPainter *painter, const Operator &modulatorOp, const QPointF &modulatorPos,
+                                       const QPointF &modulatedPos) {
+    const auto backwardVector = vectorBetweenPoints(modulatedPos, modulatorPos);
+    const auto perpToLine = QVector2D(-backwardVector.normalized().y(), backwardVector.normalized().x());
+    const auto pointA = pointToVector(modulatedPos) + (backwardVector.normalized() * kModulatorArrowTriangleSize) +
+                        (perpToLine * kModulatorArrowTriangleSize);
+    const auto pointB = pointToVector(modulatedPos) + (backwardVector.normalized() * kModulatorArrowTriangleSize) -
+                        (perpToLine * kModulatorArrowTriangleSize);
+
+    const QPointF arrowEndTrianglePoints[3] = {
+            modulatedPos,
+            vectorToPoint(pointA),
+            vectorToPoint(pointB),
+    };
+
+    painter->setPen(QPen(modulatorOp.getColorForOperator(), kModulatorLineWidth));
+    painter->setBrush(modulatorOp.getColorForOperator());
+    painter->drawLine(modulatorPos, modulatedPos);
+    painter->drawPolygon(arrowEndTrianglePoints, 3);
 }
 
 void OperatorDrawer::drawBox(QPainter *painter, const Operator &operator_) {

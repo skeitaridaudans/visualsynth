@@ -17,9 +17,15 @@ public:
     void update(Operator& operator_);
     void draw(QPainter *painter, const Operator& operator_);
 private:
-    void updateAnimations(Operator &operator_);
+    void toggleModulator(Operator &operator_, int modulatorId);
+    void onTouchDown(Operator &operator_);
     void startDragging(Operator &operator_);
+    void onOperatorPressed(Operator &operator_);
+    void updateOperatorDrag(Operator &operator_);
+    void releaseOperator(Operator &operator_);
+    void updateAnimations(Operator &operator_);
     void drawBox(QPainter *painter, const Operator &operator_);
+    void drawModulatorLine(QPainter *painter, const Operator& modulatorOp, const QPointF &modulatorPos, const QPointF &modulatedPos);
     bool isInsideBox(const Operator& operator_, const QPointF& coords);
     void fixOperatorPositionAfterDrop(Operator& operator_, float moveMultiplier = 1.1f);
 
@@ -27,16 +33,6 @@ private:
     OperatorView *operatorView_;
     DraggingState currentDraggingOperatorState_ = DraggingState::None;
     std::optional<int> draggedOperatorId_ = std::nullopt;
-
-    void toggleModulator(Operator &operator_, int modulatorId);
-
-    void onTouchDown(Operator &operator_);
-
-    void onOperatorPressed(Operator &operator_);
-
-    void updateOperatorDrag(Operator &operator_);
-
-    void releaseOperator(Operator &operator_);
 };
 
 

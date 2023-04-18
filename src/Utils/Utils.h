@@ -50,6 +50,10 @@ inline QVector2D pointToVector(const QPointF& point) {
     return {(float) point.x(), (float) point.y()};
 }
 
+inline QPointF vectorToPoint(const QVector2D& vector) {
+    return {vector.x(), vector.y()};
+}
+
 inline QVector2D vectorBetweenPoints(const QPointF& from, const QPointF& to) {
     return pointToVector(to) - pointToVector(from);
 }
