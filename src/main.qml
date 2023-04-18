@@ -40,7 +40,7 @@ Window {
         function onOperatorSelected(operator) {
             selectedOperator = operator
             freqText.text = operator.freqProp + ""
-            //ampValueText.text = operator.ampProp + ""
+            ampText.text = operator.ampProp + ""
 
             opContainer.enabled = true
             opContainer.visible = true
@@ -76,7 +76,7 @@ Window {
         }
 
         function onAmpChanged(amp) {
-            //ampValueText.text = amp + ""
+            ampText.text = amp + ""
             opWaveView.setAmplitude(amp);
             waveView.setAmplitude(amp);
 
@@ -255,19 +255,20 @@ Window {
                 color: parent.color
                 width: parent.width - 2
                 height: parent.height - 2
+
                 Text{
                     id: freqText
                     x: 1064
-                    y: 345
+                    y: 342
                     width: 12
                     height: 10
                     text: "0"
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.horizontalCenter: opDrag.horizontalCenter
-                    anchors.rightMargin: 370
-                    anchors.leftMargin: 459
-                    color: "#f0f0f0"
+                    anchors.rightMargin: 319
+                    anchors.leftMargin: 510
+                    color: "gray"
                     font.pixelSize: 16
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
@@ -280,7 +281,7 @@ Window {
                         height: 21
                         text: "+"
                         font.pixelSize: 16
-                        color: "#f0f0f0"
+                        color: parent.color
                         font.family: "Noto Sans"
                          horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -294,7 +295,7 @@ Window {
                         height: 21
                         text: "-"
                         font.pixelSize: 16
-                        color: "#f0f0f0"
+                        color: parent.color
                         font.family: "Noto Sans"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -303,10 +304,10 @@ Window {
                 }
                 Text {
                     id: ampText
-                    x: 791
-                    y: 179
+                    x: 828
+                    y: 189
                     text: "0"
-                    color: "#f0f0f0"
+                    color: "gray"
                     font.pixelSize: 16
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
@@ -320,7 +321,8 @@ Window {
                         height: 22
                         text: qsTr("+")
                         font.pixelSize: 16
-                        color: "#f0f0f0"
+
+                        color: parent.color
                         font.family: "Noto Sans"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -332,45 +334,54 @@ Window {
                         y: 72
                         text: qsTr("-")
                         font.pixelSize: 16
-                        color: "#f0f0f0"
+                        color: parent.color
                         font.family: "Noto Sans"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
-
                 }
 
             Text {
                 id: operatorName
-                x: 27
-                y: 14
+                x: 8
+                y: 8
                 text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
                 color: "#f0f0f0"
                 font.pixelSize: 32
-
+                font.underline: true
+                }
                 // Operator box
                 Rectangle {
                     id: opDrag
-                    x: 158
-                    y: 46
+                    x: 224
+                    y: 63
                     width: 598
                     height: 273
-//                    color: "lightgray" // Placeholder while colors are off on the wave
+                    color: "lightgray" // Placeholder while colors are off on the wave
                     //color: "#414141"
 
 
-                    SinWaveItem {
-                        id: opWaveView
-                        //anchors.bottom: parent.bottom
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-//                        anchors.rightMargin: 20
-//                        anchors.bottomMargin: 10
-                        width: parent.width-3
-                        height: parent.height-3
+                    Rectangle {
+                        id: opsinewaverectangle
+                        x: 0
+                        y: 0
+                        width: parent.width
+                        height: parent.height
+                        color: parent.color
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: -3
+                        radius: 3
+                        SinWaveItem {
+                            id: opWaveView
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+        //    		        anchors.rightMargin: 20
+                            anchors.bottomMargin: -50
+                                //                            anchors.bottomMargin: 10
+                            width: parent.width - 3
+                            height: parent.height - 3
+                        }
                     }
-
 
                     // Make it respond to geastures
                     MultiPointTouchArea{
@@ -388,7 +399,6 @@ Window {
                         touchPoints: [
                             TouchPoint {id: touch1}
                         ]
-                        //                property var currentOp: null
 
                         onTouchUpdated: {
                             if (selectedOperator) {
@@ -419,16 +429,26 @@ Window {
                                     }
 
                                     if(horiDrag) {
-                                            console.log("here")
                                         if (xDelta > 0){
-                                            selectedOperator.setFrequency(1)
+                                            console.log(xDelta)
+                                            if (Math.abs(xDelta) > 10){
+                                                selectedOperator.setFrequency(10)
+                                            }
+                                            else{
+                                                selectedOperator.setFrequency(1)
+                                            }
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+
                                         } else if (xDelta < 0){
-                                            selectedOperator.setFrequency(-1)
+                                            if (Math.abs(xDelta) < -10){
+                                                selectedOperator.setFrequency(-10)
+                                            }
+                                            else{
+                                                selectedOperator.setFrequency(-1)
+                                            }
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         }
                                     } else if(vertiDrag) {
-                                            console.log("there");
                                         if (yDelta < 0) {
                                             selectedOperator.setAmplitude(1)
                                             controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
@@ -472,10 +492,6 @@ Window {
                 }
 
             }
-
-
-
-        }
     }
 
 

@@ -26,7 +26,7 @@ void Operator::setFrequency(long step) {
 }
 
 void Operator::setAmplitude(long step) {
-    if(((this->amplitude + step) <= 100) && ((this->amplitude + step) >= 0)){
+    if(((this->amplitude + step) <= 200) && ((this->amplitude + step) >= 0)){
         this->amplitude = this->amplitude+step;
     }
 }
