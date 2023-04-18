@@ -39,6 +39,9 @@ private:
 
     void drawOperatorConnectIcon(QPainter *painter, const QRectF &operatorBoxRect, const Operator &operator_,
                                  const int selectedOperatorId);
+
+    void drawCurvedModulatorLine(QPainter *painter, const Operator &modulatorOp, const QPointF &modulatorPos,
+                                 const QPointF &modulatedPos);
 };
 
 

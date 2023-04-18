@@ -10,10 +10,13 @@
 #include "src/Utils/Utils.h"
 #include "src/FontAwesome.h"
 
+// Operator appearance
 const double kBoxSize = 70.0;
+const double kCornerRadius = 5.0;
+
+// Dragging options
 const double kDragSensitivity = 5.0;
 const double kOperatorHoldToDragTime = 400.0;
-const double kCornerRadius = 5.0;
 const double kMinDistanceBetweenOperators = kBoxSize + 10.0;
 const double kFixOperatorPositionAnimTime = 100.0;
 const double kOperatorSizeMultiplier = 1.0;
@@ -21,11 +24,19 @@ const double kOperatorDraggingSizeMultiplier = 1.2;
 const double kOperatorOpacity = 1.0;
 const double kOperatorDraggingOpacity = 0.6;
 const double kOperatorDragStateChangeAnimTime = 300.0;
+
+// Plus/minus icon on operator
 const double kOperatorConnectIconPulseAnimationTime = 300.0;
 const double KOperatorConnectIconMinOpacity = 0.3;
 const double KOperatorConnectIconMaxOpacity = 1.0;
+
+// Modulator line
 const double kModulatorArrowTriangleSize = 8.0;
 const double kModulatorLineWidth = 4.0;
+const int kModulatorCurvedLinePointCount = 20;
+const double kModulatorLineCurve = 30.0;
+const double kCurvedLineMargin = 6.0;
+
 
 OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(operatorView) {
 }
@@ -54,7 +65,7 @@ void OperatorDrawer::update(Operator &operator_) {
         onTouchDown(operator_);
     }
 
-        // While holding down when the operator hasn't been moved
+    // While holding down when the operator hasn't been moved
     else if (operator_.operatorViewState.draggingState == DraggingState::Holding) {
         const auto moveVector = operator_.operatorViewState.initialDragCursorPos.value() - primaryTouchPointPos;
         const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
@@ -80,7 +91,7 @@ void OperatorDrawer::update(Operator &operator_) {
         updateOperatorDrag(operator_);
     }
 
-        // When the operator is released
+    // When the operator is released
     else if (operator_.operatorViewState.draggingState == DraggingState::Dragging) {
         releaseOperator(operator_);
     }
@@ -254,17 +265,22 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
         const auto modulatorPos = closestPointInBox(modulatedOpPos, modulatorOpPos, modulatorBoxSize, modulatorBoxSize);
         const auto modulatedPos = closestPointInBox(modulatorOpPos, modulatedOpPos, modulatedBoxSize, modulatedBoxSize);
 
-        drawModulatorLine(painter, operator_, modulatorPos, modulatedPos);
+        if (std::count(modulatorOp.modulatedBy.begin(), modulatorOp.modulatedBy.end(), operator_.id) != 0) {
+            drawCurvedModulatorLine(painter, operator_, modulatorPos, modulatedPos);
+        }
+        else {
+            drawModulatorLine(painter, operator_, modulatorPos, modulatedPos);
+        }
     }
 }
 
 void OperatorDrawer::drawModulatorLine(QPainter *painter, const Operator &modulatorOp, const QPointF &modulatorPos,
                                        const QPointF &modulatedPos) {
-    const auto backwardVector = vectorBetweenPoints(modulatedPos, modulatorPos);
-    const auto perpToLine = QVector2D(-backwardVector.normalized().y(), backwardVector.normalized().x());
-    const auto pointA = pointToVector(modulatedPos) + (backwardVector.normalized() * kModulatorArrowTriangleSize) +
+    const auto backwardVector = vectorBetweenPoints(modulatedPos, modulatorPos).normalized();
+    const auto perpToLine = QVector2D(-backwardVector.y(), backwardVector.x());
+    const auto pointA = pointToVector(modulatedPos) + (backwardVector * kModulatorArrowTriangleSize) +
                         (perpToLine * kModulatorArrowTriangleSize);
-    const auto pointB = pointToVector(modulatedPos) + (backwardVector.normalized() * kModulatorArrowTriangleSize) -
+    const auto pointB = pointToVector(modulatedPos) + (backwardVector * kModulatorArrowTriangleSize) -
                         (perpToLine * kModulatorArrowTriangleSize);
 
     const QPointF arrowEndTrianglePoints[3] = {
@@ -276,6 +292,44 @@ void OperatorDrawer::drawModulatorLine(QPainter *painter, const Operator &modula
     painter->setPen(QPen(modulatorOp.getColorForOperator(), kModulatorLineWidth));
     painter->setBrush(modulatorOp.getColorForOperator());
     painter->drawLine(modulatorPos, modulatedPos);
+    painter->drawPolygon(arrowEndTrianglePoints, 3);
+}
+
+void
+OperatorDrawer::drawCurvedModulatorLine(QPainter *painter, const Operator &modulatorOp, const QPointF &modulatorPos,
+                                        const QPointF &modulatedPos) {
+    const auto lineVector = vectorBetweenPoints(modulatorPos, modulatedPos);
+    const auto perpToLine = QVector2D(-lineVector.normalized().y(), lineVector.normalized().x());
+    const auto curveControlPoint = pointToVector(modulatorPos) + lineVector * 0.5 + perpToLine * (lineVector.length() / 4);
+
+    const auto startPoint = pointToVector(modulatorPos) + perpToLine * kCurvedLineMargin;
+    const auto endPoint = pointToVector(modulatedPos) + perpToLine * kCurvedLineMargin;
+
+    std::vector<QPointF> linePoints;
+    for (int i = 0; i < kModulatorCurvedLinePointCount-1; i++) {
+        const double fraction = static_cast<double>(i) / static_cast<double>(kModulatorCurvedLinePointCount-1);
+        linePoints.push_back(vectorToPoint(bezierCurve(startPoint, curveControlPoint, endPoint, fraction)));
+    }
+    // The curve sometimes doesn't go through the end point, so we just add the end point to make sure it always does
+    linePoints.push_back(vectorToPoint(endPoint));
+
+    painter->setPen(QPen(modulatorOp.getColorForOperator(), kModulatorLineWidth));
+    painter->setBrush(modulatorOp.getColorForOperator());
+    painter->drawPolyline(linePoints.data(), kModulatorCurvedLinePointCount);
+
+    // Draw arrow at end of line
+    const auto backwardVector = vectorBetweenPoints(linePoints[linePoints.size()-1], linePoints[linePoints.size()-2]).normalized();
+    const auto perpToEndOfLine = QVector2D(-backwardVector.y(), backwardVector.x());
+    const auto pointA = endPoint + (backwardVector * kModulatorArrowTriangleSize) +
+                        (perpToEndOfLine * kModulatorArrowTriangleSize);
+    const auto pointB = endPoint + (backwardVector * kModulatorArrowTriangleSize) -
+                        (perpToEndOfLine * kModulatorArrowTriangleSize);
+
+    const QPointF arrowEndTrianglePoints[3] = {
+            vectorToPoint(endPoint),
+            vectorToPoint(pointA),
+            vectorToPoint(pointB),
+    };
     painter->drawPolygon(arrowEndTrianglePoints, 3);
 }
 

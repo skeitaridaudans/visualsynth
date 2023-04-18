@@ -67,6 +67,10 @@ inline QPointF operator +(const QPointF& point, const QVector2D& vector) {
     return { point.x() + vector.x(), point.y() + vector.y() };
 }
 
+inline QVector2D bezierCurve(const QVector2D& p0, const QVector2D& p1, const QVector2D p2, const double t) {
+    return std::pow(1.0 - t, 2) * p0 + 2.0 * (1.0 - t) * t * p1 + std::pow(t, 2) * p2;
+}
+
 inline QColor colorLerp(const QColor& from, const QColor& to, const double fraction) {
     const auto red = (int) ((to.red() - from.red()) * fraction + from.red());
     const auto green = (int) ((to.green() - from.green()) * fraction + from.green());
