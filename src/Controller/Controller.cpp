@@ -126,7 +126,6 @@ void Controller::sendOperator(int operatorId) {
     const auto& op = operators_[operatorId];
     // Núverandi range 0 - 200 20 er lægsta nóta sem heyrist hæsta er 175 þá er 100 byrjunar nóta.
     float freq = std::pow(1.90366, (float)(op->frequency - 100)/20.0);
-    std::cout << "Ayy: " << freq << std::endl;
     float amp = std::pow(1.6, (float)(op->amplitude - 50)/20.0) - 0.3;
     api.sendOperatorValue(op->id, 0, 1, freq, amp);
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/200.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0))-0.3);

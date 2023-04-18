@@ -39,38 +39,50 @@ Window {
         target: controller
         function onOperatorSelected(operator) {
             selectedOperator = operator
-            freqValueText.text = operator.freqProp + ""
-            ampValueText.text = operator.ampProp + ""
+            freqText.text = operator.freqProp + ""
+            //ampValueText.text = operator.ampProp + ""
+
             opContainer.enabled = true
             opContainer.visible = true
+
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
+//            opDrag.color = color
+
             waveView.setFrequency(operator.freqProp);
             waveView.setAmplitude(operator.ampProp);
+
+            opWaveView.setFrequency(operator.freqProp);
+            opWaveView.setAmplitude(operator.ampProp);
+            opWaveView.setColor(color);
         }
 
         function onOperatorDeselected(deselected){
-                opContainer.enabled = false
-                opContainer.visible = false
+                opContainer.enabled = false;
+                opContainer.visible = false;
+
                 waveView.setFrequency(0);
                 waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
-            freqValueText.text = freq + ""
+            freqText.text = freq + ""
             waveView.setFrequency(freq);
+            opWaveView.setFrequency(freq);
 
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
+//            opDrag.color = color
+            opWaveView.setColor(color);
 
         }
 
         function onAmpChanged(amp) {
-            ampValueText.text = amp + ""
+            //ampValueText.text = amp + ""
+            opWaveView.setAmplitude(amp);
             waveView.setAmplitude(amp);
 
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
+//            opDrag.color = color
+            opWaveView.setColor(color);
         }
     }
 
@@ -223,7 +235,7 @@ Window {
     Rectangle {
         // Operator info box
         id: operatorInfo
-        x: 1063
+        x: 1065
         y: 0
         width: 857
         height: 377
@@ -233,12 +245,59 @@ Window {
         border.width: 3
         radius: 3
         property int operatorId: selectedOperator ? selectedOperator.idProp : 0
+
+
         // Box title
             Rectangle {
                 id: opContainer
                 enabled: selectedOperator ? true : false
                 visible: selectedOperator ? true : false
 
+                Text{
+                    id: freqText
+                    x: 1064
+                    y: 345
+                    width: 12
+                    height: 15
+                    text: "0"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.rightMargin: -499
+                    anchors.leftMargin: 459
+                    color: "#f0f0f0"
+                    font.pixelSize: 16
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    Text{
+                        id: plusFreq
+                        x: 82
+                        y: -3
+                        width: 50
+                        height: 21
+                        text: "+"
+                        font.pixelSize: 16
+                        color: "#f0f0f0"
+                        font.family: "Noto Sans"
+                         horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+
+                    }
+                    Text{
+                        id: minFreq
+                        x: -94
+                        y: -3
+                        width: 50
+                        height: 21
+                        text: "-"
+                        font.pixelSize: 16
+                        color: "#f0f0f0"
+                        font.family: "Noto Sans"
+                         horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+
+                    }
+                }
 
             Text {
                 id: operatorName
@@ -248,106 +307,33 @@ Window {
                 color: "#f0f0f0"
                 font.pixelSize: 32
 
-                // Frequency text
-                Text {
-                    id: freqText
-                    x: 12
-                    y: 79
-                    width: 80
-                    height: 49
-                    color: "#f0f0f0"
-                    text: qsTr("Freq: ")
-                    font.family: "Noto Sans"
-                    font.pixelSize: 32
-
-                }
-                // Frequency amount
-                Rectangle {
-                    id: freqValueBox
-                    x: 98
-                    y: 79
-                    width: 219
-                    height: 65
-                    color: "#222222"
-                    border.color: "#f0f0f0"
-                    border.width: 3
-
-                    TextInput {
-                        id: freqValueText
-                        x: 8
-                        y: 8
-                        width: 203
-                        height: 49
-                        horizontalAlignment: Text.AlignRight
-                        activeFocusOnPress: true
-                        font.pixelSize: 32
-                        color: "#f0f0f0"
-                        readOnly: false
-                        validator: RegularExpressionValidator{
-                            regularExpression: /([1-9]|[1-9][0-9]|1[0-9]{2}|200)/
-                        }
-                        onEditingFinished: {
-                            var values = freqValueText.text
-                            controller.changeFrequency(selectedOperator.idProp, values);
-                        }
-                    }
-
-                }
-
-                // Amplitude text
-                Text {
-                    id: ampText
-                    x: 12
-                    y: 208
-                    width: 80
-                    height: 43
-                    text: qsTr("Amp:")
-                    font.pixelSize: 32
-                    color: "#f0f0f0"
-                }
-                // Amp value box
-                Rectangle {
-                    id: ampValueBox
-                    x: 98
-                    y: 200
-                    width: 219
-                    height: 65
-                    color: "#222222"
-                    border.color: "#f0f0f0"
-                    border.width: 3
-                    // Amp value text
-                    TextInput {
-                        horizontalAlignment: Text.AlignRight
-                        id: ampValueText
-                        x: 8
-                        y: 8
-                        width: 203
-                        height: 49
-                        font.pixelSize: 32
-                        color: "#f0f0f0"
-                        readOnly: false
-                        validator: RegularExpressionValidator{
-                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
-                        }
-                        onEditingFinished: {
-                            var values = ampValueText.text
-                            controller.changeAmplitude(selectedOperator.idProp, values);
-                        }
-                    }
-                }
                 // Operator box
                 Rectangle {
                     id: opDrag
-                    x: 350
-                    y: 22
-                    width: 450
-                    height: 300
-                    color: "#ff323f"
+                    x: 158
+                    y: 46
+                    width: 598
+                    height: 273
+//                    color: "lightgray" // Placeholder while colors are off on the wave
+                    //color: "#414141"
+
+
+                    SinWaveItem {
+                        id: opWaveView
+                        //anchors.bottom: parent.bottom
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+//                        anchors.rightMargin: 20
+//                        anchors.bottomMargin: 10
+                        width: parent.width-3
+                        height: parent.height-3
+                    }
+
 
                     // Make it respond to geastures
                     MultiPointTouchArea{
                         anchors.fill: parent
-                        anchors.rightMargin: 0
+                        anchors.rightMargin: 8
                         anchors.bottomMargin: 0
                         anchors.leftMargin: 0
                         anchors.topMargin: 0
@@ -391,16 +377,16 @@ Window {
                                     }
 
                                     if(horiDrag) {
-                                        if (xDelta > 0){
                                             console.log("here")
+                                        if (xDelta > 0){
                                             selectedOperator.setFrequency(1)
-                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                           ontroller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         } else if (xDelta < 0){
-                                            console.log("there");
                                             selectedOperator.setFrequency(-1)
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         }
                                     } else if(vertiDrag) {
+                                            console.log("there");
                                         if (yDelta < 0) {
                                             selectedOperator.setAmplitude(1)
                                             controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
@@ -421,8 +407,8 @@ Window {
 
                             parent.border.color = "pink"
                             parent.border.width = 3
-                            parent.width = parent.width + 5
-                            parent.height = parent.height + 5
+                            parent.width = parent.width + 1
+                            parent.height = parent.height + 1
                             offset = Qt.point(point.x, point.y);
                             point.startSceneX = touchPoint.sceneX
                             point.startSceneY = touchPoint.sceneY
@@ -432,8 +418,8 @@ Window {
 
                         onReleased: {
                             parent.border.width = 0
-                            parent.width = parent.width - 5
-                            parent.height = parent.height - 5
+                            parent.width = parent.width - 1
+                            parent.height = parent.height - 1
                             horiDrag = false;
                             vertiDrag = false;
 
@@ -507,17 +493,17 @@ Window {
     }
 
 
-    AmpEnvGraphItem{
-        id: ampEnvGraphView
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin:0
-            anchors.bottomMargin: 310+bW
+//    AmpEnvGraphItem{
+//        id: ampEnvGraphView
+//            anchors.right: parent.right
+//            anchors.bottom: parent.bottom
+//            anchors.rightMargin:0
+//            anchors.bottomMargin: 310+bW
 
 
-           width: ampEnvGraphView.W
-           height: ampEnvGraphView.H
-    }
+//           width: ampEnvGraphView.W
+//           height: ampEnvGraphView.H
+//    }
 
 
     Rectangle {

@@ -9,7 +9,7 @@ SinWaveItem::SinWaveItem(QQuickItem *parent) : QQuickPaintedItem(parent) {
 }
 
 void SinWaveItem::paint(QPainter *painter) {
-    painter->setPen(QPen(QColor(0xFB00C4), 3));
+    painter->setPen(QPen(color_, 3));
 
     const auto incrementStep = 0.001;
     for (float p = 0.0; p < 1.0; p += incrementStep) {
@@ -37,3 +37,7 @@ void SinWaveItem::setAmplitude(qreal amplitude) {
 qreal SinWaveItem::amplitude() {
     return amplitude_;
 }
+
+void SinWaveItem::setColor(QColor color){
+    color_ = color;
+    }
