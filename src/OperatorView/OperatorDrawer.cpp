@@ -266,10 +266,10 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
         const auto modulatedPos = closestPointInBox(modulatorOpPos, modulatedOpPos, modulatedBoxSize, modulatedBoxSize);
 
         if (std::count(modulatorOp.modulatedBy.begin(), modulatorOp.modulatedBy.end(), operator_.id) != 0) {
-            drawCurvedModulatorLine(painter, operator_, modulatorPos, modulatedPos);
+            drawCurvedModulatorLine(painter, modulatorOp, modulatorPos, modulatedPos);
         }
         else {
-            drawModulatorLine(painter, operator_, modulatorPos, modulatedPos);
+            drawModulatorLine(painter, modulatorOp, modulatorPos, modulatedPos);
         }
     }
 }
