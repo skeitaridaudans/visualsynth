@@ -403,3 +403,7 @@ void OperatorDrawer::fixOperatorPositionAfterDrop(Operator &operator_, float mov
         }
     }
 }
+
+const std::optional<int> &OperatorDrawer::draggedOperatorId() {
+    return draggedOperatorId_;
+}

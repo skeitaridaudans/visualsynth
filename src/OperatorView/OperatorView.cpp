@@ -33,7 +33,16 @@ void OperatorView::paint(QPainter *painter) {
     deleteOperatorBox_->draw(painter);
     drawCarrierLine(painter);
     for (const auto& operator_: controller->operators()) {
+        if (operator_.second.operatorViewState.draggingState != DraggingState::None) {
+            continue;
+        }
+
         operatorDrawer_->draw(painter, operator_.second);
+    }
+    // Draw the operator that is being dragged last so that it is on top of the other operators
+    if (operatorDrawer_->draggedOperatorId().has_value()) {
+        const auto& selectedOperator = controller->getOperatorById(operatorDrawer_->draggedOperatorId().value());
+        operatorDrawer_->draw(painter, selectedOperator);
     }
 
     // Make a copy of all operator ids that should be deleted, then delete them in another loop.

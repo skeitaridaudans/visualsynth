@@ -16,6 +16,9 @@ public:
     OperatorDrawer(OperatorView *operatorView);
     void update(Operator& operator_);
     void draw(QPainter *painter, const Operator& operator_);
+
+    const std::optional<int>& draggedOperatorId();
+
 private:
     void toggleModulator(Operator &operator_, int modulatorId);
     void onTouchDown(Operator &operator_);
