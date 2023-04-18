@@ -252,17 +252,19 @@ Window {
                 id: opContainer
                 enabled: selectedOperator ? true : false
                 visible: selectedOperator ? true : false
-
+                color: parent.color
+                width: parent.width - 2
+                height: parent.height - 2
                 Text{
                     id: freqText
                     x: 1064
                     y: 345
                     width: 12
-                    height: 15
+                    height: 10
                     text: "0"
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.rightMargin: -499
+                    anchors.rightMargin: 370
                     anchors.leftMargin: 459
                     color: "#f0f0f0"
                     font.pixelSize: 16
@@ -380,7 +382,7 @@ Window {
                                             console.log("here")
                                         if (xDelta > 0){
                                             selectedOperator.setFrequency(1)
-                                           ontroller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                         } else if (xDelta < 0){
                                             selectedOperator.setFrequency(-1)
                                             controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
