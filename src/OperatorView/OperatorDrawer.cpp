@@ -197,6 +197,8 @@ void OperatorDrawer::releaseOperator(Operator &operator_) {
 }
 
 void OperatorDrawer::updateAnimations(Operator &operator_) {
+    const auto &controller = Controller::instance;
+
     // Move operator animation (used when correcting the operator position)
     if (operator_.operatorViewState.moveOperatorAnimation.has_value()) {
         operator_.operatorViewState.moveOperatorAnimation->update();
@@ -215,8 +217,12 @@ void OperatorDrawer::updateAnimations(Operator &operator_) {
     }
 
     // Pulse animation
-    if (currentDraggingOperatorState_ == DraggingState::Dragging &&
-        operator_.operatorViewState.draggingState == DraggingState::None) {
+    if ((!operatorView_->isUsingMouse() &&
+         currentDraggingOperatorState_ == DraggingState::Dragging &&
+         operator_.operatorViewState.draggingState == DraggingState::None) ||
+        (operatorView_->isUsingMouse() &&
+         controller->selectedOperatorId().has_value() &&
+         controller->selectedOperatorId().value() != operator_.id)) {
         if (!operator_.operatorViewState.connectIconOpacityAnim.has_value()) {
             operator_.operatorViewState.connectIconOpacityAnim = TweenAnimation(
                     kOperatorConnectIconPulseAnimationTime, &operator_.operatorViewState.connectIconOpacity,
@@ -239,7 +245,8 @@ void OperatorDrawer::draw(QPainter *painter, const Operator &operator_) {
         const auto &modulatorOp = controller->getOperatorById(opId);
         const auto modulatorOpPos = operatorView_->toViewCoords(modulatorOp.position);
         // Subtract 0.05x the size of the operator from the position so the arrow isn't touching the box from the top/left
-        const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position) - QPointF(1, 1) * (kBoxSize * operator_.operatorViewState.sizeMultiplier * 0.05);
+        const auto modulatedOpPos = operatorView_->toViewCoords(operator_.position) -
+                                    QPointF(1, 1) * (kBoxSize * operator_.operatorViewState.sizeMultiplier * 0.05);
 
         const auto modulatorBoxSize = kBoxSize * modulatorOp.operatorViewState.sizeMultiplier;
         // Multiply by 1.1 so that the arrow isn't fully touching the box
@@ -291,18 +298,29 @@ void OperatorDrawer::drawBox(QPainter *painter, const Operator &operator_) {
     painter->drawRoundedRect(operatorBoxRect, kCornerRadius, kCornerRadius);
     painter->setOpacity(1.0);
 
-    if (currentDraggingOperatorState_ == DraggingState::Dragging &&
+    if (!operatorView_->isUsingMouse() &&
+        currentDraggingOperatorState_ == DraggingState::Dragging &&
         operator_.operatorViewState.draggingState == DraggingState::None) {
-        const auto isModulatedByDragged =
-                std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(), draggedOperatorId_) != 0;
-
-        painter->setPen(QPen(QColor(255, 255, 255)));
-        painter->setOpacity(operator_.operatorViewState.connectIconOpacity);
-        painter->setFont(fontAwesome()->font(fa::fa_solid, 24));
-        painter->drawText(operatorBoxRect, Qt::AlignCenter,
-                          QString(!isModulatedByDragged ? fa::fa_plus_circle : fa::fa_minus_circle));
-        painter->setOpacity(1.0);
+        drawOperatorConnectIcon(painter, operatorBoxRect, operator_, draggedOperatorId_.value());
+    } else if (operatorView_->isUsingMouse() &&
+               controller->selectedOperatorId().has_value() &&
+               controller->selectedOperatorId().value() != operator_.id) {
+        drawOperatorConnectIcon(painter, operatorBoxRect, operator_, controller->selectedOperatorId().value());
     }
+}
+
+void
+OperatorDrawer::drawOperatorConnectIcon(QPainter *painter, const QRectF &operatorBoxRect, const Operator &operator_,
+                                        const int selectedOperatorId) {
+    const auto isModulatedByDragged =
+            std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(), selectedOperatorId) != 0;
+
+    painter->setPen(QPen(QColor(255, 255, 255)));
+    painter->setOpacity(operator_.operatorViewState.connectIconOpacity);
+    painter->setFont(fontAwesome()->font(fa::fa_solid, 24));
+    painter->drawText(operatorBoxRect, Qt::AlignCenter,
+                      QString(!isModulatedByDragged ? fa::fa_plus_circle : fa::fa_minus_circle));
+    painter->setOpacity(1.0);
 }
 
 bool OperatorDrawer::isInsideBox(const Operator &operator_, const QPointF &coords) {

@@ -33,6 +33,9 @@ private:
     OperatorView *operatorView_;
     DraggingState currentDraggingOperatorState_ = DraggingState::None;
     std::optional<int> draggedOperatorId_ = std::nullopt;
+
+    void drawOperatorConnectIcon(QPainter *painter, const QRectF &operatorBoxRect, const Operator &operator_,
+                                 const int selectedOperatorId);
 };
 
 
