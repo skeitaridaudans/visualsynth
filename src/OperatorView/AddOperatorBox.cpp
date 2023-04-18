@@ -23,7 +23,7 @@ void AddOperatorBox::update() {
 
     const auto pos = operatorView_->primaryTouchPoint().position;
 
-    if (isInsideBox(pos) && operatorView_->primaryTouchPoint().isPressed && !operatorCreated_) {
+    if (isInsideBox(pos) && operatorView_->primaryTouchPoint().isPressed && !operatorCreated_ && !isAnyOperatorBeingDragged()) {
         const auto newOperatorPos = operatorView_->fromViewCoords(QPointF(pos.x() - kBoxSize / 2.0, pos.y() - kBoxSize / 2.0));
         operatorView_->addOperator(newOperatorPos.x(), newOperatorPos.y());
         operatorCreated_ = true;
@@ -53,8 +53,8 @@ bool AddOperatorBox::isInsideBox(const QPointF &coords) {
     return coords.x() >= boxPos_.x() && coords.x() < boxPos_.x() + kBoxSize && coords.y() >= boxPos_.y() && coords.y() < boxPos_.y() + kBoxSize;
 }
 
-bool AddOperatorBox::isAnyPointBeingDragged() {
+bool AddOperatorBox::isAnyOperatorBeingDragged() {
     const auto& controller = Controller::instance;
-    return q20::ranges::any_of(controller->operators().begin(), controller->operators().end(), [] (const auto& kv) { return kv.second.operatorViewState.draggingState == DraggingState::Dragging; });
+    return q20::ranges::any_of(controller->operators().begin(), controller->operators().end(), [] (const auto& kv) { return kv.second.operatorViewState.draggingState != DraggingState::None; });
 }
 

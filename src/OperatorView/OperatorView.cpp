@@ -23,11 +23,11 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
 void OperatorView::paint(QPainter *painter) {
     auto& controller = Controller::instance;
 
-    newBox_->update();
     deleteOperatorBox_->update();
     for (auto& operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second);
     }
+    newBox_->update();
 
     newBox_->draw(painter);
     deleteOperatorBox_->draw(painter);
