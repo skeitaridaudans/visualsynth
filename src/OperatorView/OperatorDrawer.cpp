@@ -306,12 +306,11 @@ OperatorDrawer::drawCurvedModulatorLine(QPainter *painter, const Operator &modul
     const auto endPoint = pointToVector(modulatedPos) + perpToLine * kCurvedLineMargin;
 
     std::vector<QPointF> linePoints;
-    for (int i = 0; i < kModulatorCurvedLinePointCount-1; i++) {
+    for (int i = 0; i < kModulatorCurvedLinePointCount; i++) {
+        // Divide by number of points - 1, since that is the index of the last point
         const double fraction = static_cast<double>(i) / static_cast<double>(kModulatorCurvedLinePointCount-1);
         linePoints.push_back(vectorToPoint(bezierCurve(startPoint, curveControlPoint, endPoint, fraction)));
     }
-    // The curve sometimes doesn't go through the end point, so we just add the end point to make sure it always does
-    linePoints.push_back(vectorToPoint(endPoint));
 
     painter->setPen(QPen(modulatorOp.getColorForOperator(), kModulatorLineWidth));
     painter->setBrush(modulatorOp.getColorForOperator());
