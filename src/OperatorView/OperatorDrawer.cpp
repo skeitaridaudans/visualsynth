@@ -163,8 +163,9 @@ void OperatorDrawer::onOperatorPressed(Operator &operator_) {
 void OperatorDrawer::updateOperatorDrag(Operator &operator_) {
     const auto &controller = Controller::instance;
     const auto touchPointPos = operatorView_->primaryTouchPoint().position;
+    const auto scaledBoxSize = kBoxSize * operator_.operatorViewState.sizeMultiplier;
     const auto operatorPos = operatorView_->fromViewCoords(
-            QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
+            QPointF(touchPointPos.x() - scaledBoxSize / 2.0, touchPointPos.y() - scaledBoxSize / 2.0));
     operator_.position.setX(operatorPos.x());
     operator_.position.setY(operatorPos.y());
 
