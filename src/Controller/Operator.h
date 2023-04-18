@@ -23,7 +23,7 @@ struct OperatorViewState {
     OperatorViewState();
     OperatorViewState(const OperatorViewState &operatorViewState);
 
-    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
+    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> initialClickTime = std::nullopt;
     DraggingState draggingState = DraggingState::None;
     std::optional<QPointF> initialDragCursorPos;
     std::optional<PointTweenAnimation> moveOperatorAnimation;

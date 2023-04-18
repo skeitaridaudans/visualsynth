@@ -13,6 +13,7 @@
 
 const double kBoxSize = 70.0;
 const double kDragSensitivity = 5.0;
+const double kOperatorHoldToDragTime = 400.0;
 const double kCornerRadius = 5.0;
 const double kMinDistanceBetweenOperators = kBoxSize + 10.0;
 const double kFixOperatorPositionAnimTime = 100.0;
@@ -29,10 +30,172 @@ OperatorDrawer::OperatorDrawer(OperatorView *operatorView) : operatorView_(opera
 }
 
 void OperatorDrawer::update(Operator &operator_) {
-    const auto touchPointPos = operatorView_->primaryTouchPoint().position;
+    const auto primaryTouchPointPos = operatorView_->primaryTouchPoint().position;
+
+    updateAnimations(operator_);
+
+    // Handle adding modulator by pressing with secondary touch point
+    if (currentDraggingOperatorState_ == DraggingState::Dragging) {
+        auto &secondaryTouchPoint = operatorView_->secondaryTouchPoint();
+
+        if (secondaryTouchPoint.isPressed && !secondaryTouchPoint.initialPressHandled &&
+            isInsideBox(operator_, secondaryTouchPoint.position)) {
+            toggleModulator(operator_, draggedOperatorId_.value());
+
+            secondaryTouchPoint.initialPressHandled = true;
+        }
+    }
+
+    // When the operator is initially pressed
+    if (operator_.operatorViewState.draggingState == DraggingState::None &&
+        isInsideBox(operator_, primaryTouchPointPos) &&
+        operatorView_->primaryTouchPoint().isPressed && currentDraggingOperatorState_ == DraggingState::None) {
+        onTouchDown(operator_);
+    }
+
+    // While holding down when the operator hasn't been moved
+    else if (operator_.operatorViewState.draggingState == DraggingState::Holding) {
+        const auto moveVector = operator_.operatorViewState.initialDragCursorPos.value() - primaryTouchPointPos;
+        const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
+
+        const auto currentTime = std::chrono::high_resolution_clock::now();
+        const auto timeElapsedSinceClick = std::chrono::duration<double, std::milli>(
+                currentTime - operator_.operatorViewState.initialClickTime.value()).count();
+
+        // Start dragging
+        if (cursorMoveDistance >= kDragSensitivity || timeElapsedSinceClick > kOperatorHoldToDragTime) {
+            startDragging(operator_);
+        }
+
+        // When operator is pressed (touch is released before dragging starts)
+        if (isInsideBox(operator_, primaryTouchPointPos) && !operatorView_->primaryTouchPoint().isPressed) {
+            onOperatorPressed(operator_);
+        }
+    }
+
+    // While dragging the operator
+    if (operator_.operatorViewState.draggingState == DraggingState::Dragging &&
+        operatorView_->primaryTouchPoint().isPressed) {
+        updateOperatorDrag(operator_);
+    }
+
+    // When the operator is released
+    else if (operator_.operatorViewState.draggingState == DraggingState::Dragging) {
+        releaseOperator(operator_);
+    }
+}
+
+void OperatorDrawer::toggleModulator(Operator &operator_, int modulatorId) {
     const auto &controller = Controller::instance;
 
-    // Update all animations
+    if (std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(),
+                   modulatorId) == 0) {
+        controller->addModulator(operator_.id, modulatorId);
+    } else {
+        controller->removeModulator(operator_.id, modulatorId);
+    }
+}
+
+void OperatorDrawer::onTouchDown(Operator &operator_) {
+    operator_.operatorViewState.initialDragCursorPos = operatorView_->primaryTouchPoint().position;
+    operator_.operatorViewState.draggingState = DraggingState::Holding;
+    operator_.operatorViewState.moveOperatorAnimation = std::nullopt;
+    operator_.operatorViewState.initialClickTime = std::chrono::high_resolution_clock::now();
+
+    // This is so that other operators can know that this operator is being dragged
+    currentDraggingOperatorState_ = DraggingState::Holding;
+    draggedOperatorId_ = operator_.id;
+
+    operatorView_->touchPressHandledState_ = TouchEventHandledState::Handled;
+}
+
+void OperatorDrawer::startDragging(Operator &operator_) {
+    const auto &controller = Controller::instance;
+
+    operator_.operatorViewState.draggingState = DraggingState::Dragging;
+    operator_.operatorViewState.initialDragCursorPos = std::nullopt;
+    operator_.operatorViewState.initialClickTime = std::nullopt;
+
+    currentDraggingOperatorState_ = DraggingState::Dragging;
+
+    if (!operator_.operatorViewState.sizeMultiplierAnim.has_value()) {
+        operator_.operatorViewState.sizeMultiplierAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
+                                                                        &operator_.operatorViewState.sizeMultiplier,
+                                                                        AnimationCurves::easeOutBack,
+                                                                        kOperatorSizeMultiplier,
+                                                                        kOperatorDraggingSizeMultiplier);
+    }
+    if (!operator_.operatorViewState.opacityAnim.has_value()) {
+        operator_.operatorViewState.opacityAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
+                                                                 &operator_.operatorViewState.opacity,
+                                                                 AnimationCurves::easeOut,
+                                                                 kOperatorOpacity,
+                                                                 kOperatorDraggingOpacity);
+    }
+
+    operator_.operatorViewState.sizeMultiplierAnim->setForward();
+    operator_.operatorViewState.opacityAnim->setForward();
+
+    controller->deselectOperator();
+}
+
+void OperatorDrawer::onOperatorPressed(Operator &operator_) {
+    const auto &controller = Controller::instance;
+    const auto selectedOperatorId = controller->selectedOperatorId();
+
+    if (selectedOperatorId.has_value() && selectedOperatorId.value() == operator_.id) {
+        controller->deselectOperator();
+    } else if (operatorView_->isUsingMouse() && selectedOperatorId.has_value()) {
+        // Allow adding modulator when using a mouse, if we are using touch screen,
+        // then adding modulator should be done while dragging
+        toggleModulator(operator_, selectedOperatorId.value());
+
+        controller->deselectOperator();
+    } else {
+        controller->selectOperator(operator_.id);
+    }
+
+    operator_.operatorViewState.draggingState = DraggingState::None;
+    currentDraggingOperatorState_ = DraggingState::None;
+    draggedOperatorId_ = std::nullopt;
+}
+
+void OperatorDrawer::updateOperatorDrag(Operator &operator_) {
+    const auto &controller = Controller::instance;
+    const auto touchPointPos = operatorView_->primaryTouchPoint().position;
+    const auto operatorPos = operatorView_->fromViewCoords(
+            QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
+    operator_.position.setX(operatorPos.x());
+    operator_.position.setY(operatorPos.y());
+
+    const auto carrierLinePoints = operatorView_->carrierLineEndPoints();
+    if (isRectInsideLine(QRectF(operatorView_->toViewCoords(operator_.position), QSizeF(kBoxSize, kBoxSize)),
+                         carrierLinePoints.first, carrierLinePoints.second)) {
+        controller->addCarrier(operator_.id);
+        operator_.position.setY((carrierLinePoints.first.y() - kBoxSize / 2.0) / operatorView_->height());
+    } else {
+        controller->removeCarrier(operator_.id);
+    }
+}
+
+void OperatorDrawer::releaseOperator(Operator &operator_) {
+    operator_.operatorViewState.draggingState = DraggingState::None;
+    currentDraggingOperatorState_ = DraggingState::None;
+    draggedOperatorId_ = std::nullopt;
+
+    // If cursor is inside delete box
+    if (operatorView_->deleteOperatorBox()->isInsideBox(operatorView_->primaryTouchPoint().position)) {
+        operator_.scheduleForRemoval = true;
+    } else {
+        fixOperatorPositionAfterDrop(operator_);
+    }
+
+    operator_.operatorViewState.sizeMultiplierAnim->setReverse();
+    operator_.operatorViewState.opacityAnim->setReverse();
+}
+
+void OperatorDrawer::updateAnimations(Operator &operator_) {
+    // Move operator animation (used when correcting the operator position)
     if (operator_.operatorViewState.moveOperatorAnimation.has_value()) {
         operator_.operatorViewState.moveOperatorAnimation->update();
 
@@ -40,6 +203,8 @@ void OperatorDrawer::update(Operator &operator_) {
             operator_.operatorViewState.moveOperatorAnimation = std::nullopt;
         }
     }
+
+    // Dragging start/end animation
     if (operator_.operatorViewState.sizeMultiplierAnim.has_value()) {
         operator_.operatorViewState.sizeMultiplierAnim->update();
     }
@@ -47,131 +212,9 @@ void OperatorDrawer::update(Operator &operator_) {
         operator_.operatorViewState.opacityAnim->update();
     }
 
-    // Press with secondary touch point (connect operators while dragging)
-    // Add modulator by pressing with secondary touch point
-    if (isAnyOperatorBeingDragged_) {
-        auto &secondaryTouchPoint = operatorView_->secondaryTouchPoint();
-
-        if (secondaryTouchPoint.isPressed && !secondaryTouchPoint.initialPressHandled &&
-            isInsideBox(operator_, secondaryTouchPoint.position)) {
-            if (std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(),
-                           draggedOperatorId_) == 0) {
-                controller->addModulator(operator_.id, draggedOperatorId_);
-            } else {
-                controller->removeModulator(operator_.id, draggedOperatorId_);
-            }
-
-            secondaryTouchPoint.initialPressHandled = true;
-        }
-    }
-
-    // The initial click
-    if (operator_.operatorViewState.draggingState == DraggingState::None && isInsideBox(operator_, touchPointPos) &&
-        operatorView_->primaryTouchPoint().isPressed && !isAnyOperatorBeingDragged_) {
-        operator_.operatorViewState.initialDragCursorPos = touchPointPos;
-        operator_.operatorViewState.draggingState = DraggingState::Holding;
-        operator_.operatorViewState.moveOperatorAnimation = std::nullopt;
-        // Is any point being dragged, used to make sure only one point can be dragged at once
-        isAnyOperatorBeingDragged_ = true;
-        draggedOperatorId_ = operator_.id;
-        operatorView_->touchPressHandledState_ = TouchEventHandledState::Handled;
-    }
-
-        // While holding down when the operator hasn't been moved
-    else if (operator_.operatorViewState.draggingState == DraggingState::Holding) {
-        const auto moveVector = operator_.operatorViewState.initialDragCursorPos.value() - touchPointPos;
-        const auto cursorMoveDistance = std::sqrt(QPointF::dotProduct(moveVector, moveVector));
-
-        // Start dragging
-        if (cursorMoveDistance >= kDragSensitivity) {
-            operator_.operatorViewState.draggingState = DraggingState::Dragging;
-            operator_.operatorViewState.initialDragCursorPos = std::nullopt;
-
-            if (!operator_.operatorViewState.sizeMultiplierAnim.has_value()) {
-                operator_.operatorViewState.sizeMultiplierAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
-                                                                                &operator_.operatorViewState.sizeMultiplier,
-                                                                                AnimationCurves::easeOutBack,
-                                                                                kOperatorSizeMultiplier,
-                                                                                kOperatorDraggingSizeMultiplier);
-            }
-            if (!operator_.operatorViewState.opacityAnim.has_value()) {
-                operator_.operatorViewState.opacityAnim = TweenAnimation(kOperatorDragStateChangeAnimTime,
-                                                                         &operator_.operatorViewState.opacity,
-                                                                         AnimationCurves::easeOut,
-                                                                         kOperatorOpacity,
-                                                                         kOperatorDraggingOpacity);
-            }
-
-            operator_.operatorViewState.sizeMultiplierAnim->setForward();
-            operator_.operatorViewState.opacityAnim->setForward();
-
-            controller->deselectOperator();
-        }
-
-        // Click
-        if (isInsideBox(operator_, touchPointPos) && !operatorView_->primaryTouchPoint().isPressed) {
-            const auto selectedOperatorId = controller->selectedOperatorId();
-
-            if (selectedOperatorId.has_value() && selectedOperatorId.value() == operator_.id) {
-                controller->deselectOperator();
-            } else if (operatorView_->isUsingMouse() && selectedOperatorId.has_value()) {
-                // Allow adding modulator when using a mouse, if we are using touch screen,
-                // then adding modulator should be done while dragging
-                if (std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(),
-                               selectedOperatorId.value()) == 0) {
-                    controller->addModulator(operator_.id, selectedOperatorId.value());
-                } else {
-                    controller->removeModulator(operator_.id, selectedOperatorId.value());
-                }
-
-                controller->deselectOperator();
-            } else {
-                controller->selectOperator(operator_.id);
-            }
-
-            operator_.operatorViewState.draggingState = DraggingState::None;
-            isAnyOperatorBeingDragged_ = false;
-            draggedOperatorId_ = -1;
-        }
-    }
-
-    // While dragging the operator
-    if (operator_.operatorViewState.draggingState == DraggingState::Dragging &&
-        operatorView_->primaryTouchPoint().isPressed) {
-        const auto operatorPos = operatorView_->fromViewCoords(
-                QPointF(touchPointPos.x() - kBoxSize / 2.0, touchPointPos.y() - kBoxSize / 2.0));
-        operator_.position.setX(operatorPos.x());
-        operator_.position.setY(operatorPos.y());
-
-        const auto carrierLinePoints = operatorView_->carrierLineEndPoints();
-        if (isRectInsideLine(QRectF(operatorView_->toViewCoords(operator_.position), QSizeF(kBoxSize, kBoxSize)),
-                             carrierLinePoints.first, carrierLinePoints.second)) {
-            controller->addCarrier(operator_.id);
-            operator_.position.setY((carrierLinePoints.first.y() - kBoxSize / 2.0) / operatorView_->height());
-        } else {
-            controller->removeCarrier(operator_.id);
-        }
-    }
-
-        // When the operator is released
-    else if (operator_.operatorViewState.draggingState == DraggingState::Dragging) {
-        operator_.operatorViewState.draggingState = DraggingState::None;
-        isAnyOperatorBeingDragged_ = false;
-        draggedOperatorId_ = -1;
-
-        // If cursor is inside delete box
-        if (operatorView_->deleteOperatorBox()->isInsideBox(touchPointPos)) {
-            operator_.scheduleForRemoval = true;
-        } else {
-            fixOperatorPositionAfterDrop(operator_);
-        }
-
-        operator_.operatorViewState.sizeMultiplierAnim->setReverse();
-        operator_.operatorViewState.opacityAnim->setReverse();
-    }
-
     // Pulse animation
-    if (isAnyOperatorBeingDragged_ && operator_.operatorViewState.draggingState == DraggingState::None) {
+    if (currentDraggingOperatorState_ == DraggingState::Dragging &&
+        operator_.operatorViewState.draggingState == DraggingState::None) {
         if (!operator_.operatorViewState.connectIconOpacityAnim.has_value()) {
             operator_.operatorViewState.connectIconOpacityAnim = TweenAnimation(
                     kOperatorConnectIconPulseAnimationTime, &operator_.operatorViewState.connectIconOpacity,
@@ -223,7 +266,8 @@ void OperatorDrawer::drawBox(QPainter *painter, const Operator &operator_) {
     painter->drawRoundedRect(operatorBoxRect, kCornerRadius, kCornerRadius);
     painter->setOpacity(1.0);
 
-    if (isAnyOperatorBeingDragged_ && operator_.operatorViewState.draggingState == DraggingState::None) {
+    if (currentDraggingOperatorState_ == DraggingState::Dragging &&
+        operator_.operatorViewState.draggingState == DraggingState::None) {
         const auto isModulatedByDragged =
                 std::count(operator_.modulatedBy.begin(), operator_.modulatedBy.end(), draggedOperatorId_) != 0;
 
