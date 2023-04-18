@@ -5,6 +5,7 @@
 #include "Operator.h"
 #include "qcolor.h"
 #include <iostream>
+#include <utility>
 
 // Operator view state
 
@@ -13,7 +14,7 @@ OperatorViewState::OperatorViewState() {
 }
 
 OperatorViewState::OperatorViewState(const OperatorViewState &operatorViewState) : draggingState(
-                                                                                           operatorViewState.draggingState),
+        operatorViewState.draggingState),
                                                                                    initialDragCursorPos(
                                                                                            operatorViewState.initialDragCursorPos) {
 
@@ -56,6 +57,13 @@ long Operator::getFreq() {
 QColor Operator::getColorForOperator() const {
     return QColor((int) ((log10((double) this->frequency) / 4.38) * 255.0), 20,
                   (int) ((log10((double) this->amplitude) / 4.38) * 255.0));
+}
+
+Operator::Operator(int id, long frequency, long amplitude, bool isModulator, bool isCarrier,
+                   std::vector<int> modulatedBy, QPointF position, QObject *parent)
+        : id(id), frequency(frequency), amplitude(amplitude), isModulator(isModulator), isCarrier(isCarrier),
+          modulatedBy(std::move(modulatedBy)), position(position) {
+
 }
 
 void to_json(json &j, const Operator &o) {

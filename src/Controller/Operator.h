@@ -40,6 +40,7 @@ struct Operator:public QObject {
 public:
     Operator();
     Operator(int id, QObject* parent=0);
+    Operator(int id, long frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
     Operator(const Operator& operator_);
 
     int id;
