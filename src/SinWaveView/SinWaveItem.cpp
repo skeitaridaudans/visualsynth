@@ -31,9 +31,9 @@ void SinWaveItem::paint(QPainter *painter) {
 
         // Scale the amplitude based on the height of the rectangle
         const auto yOffset = height()/2 - amplitude() * 5;
-        const auto y = yOffset + qSin(sinStartX_ + p * frequency()) * amplitude() * 20;
+        const auto y = yOffset + qSin(-sinStartX_ + p * frequency()) * amplitude() * 20;
 
-        const auto nextY = yOffset + qSin(sinStartX_ + (p + incrementStep) * frequency()) * amplitude() * 20;
+        const auto nextY = yOffset + qSin(-sinStartX_ + (p + incrementStep) * frequency()) * amplitude() * 20;
         painter->drawLine(QPointF(x, y), QPointF(nextX, nextY));
     }
     sinStartX_ += 0.1;

@@ -62,8 +62,6 @@ Window {
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
-
-//            opDrag.color = color;
         }
 
         function onAmpChanged(amp) {
@@ -73,7 +71,6 @@ Window {
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
-
         }
     }
 
@@ -128,7 +125,6 @@ Window {
                 radius: connectedRoundButton.radius
                 color: "#55ff00"
             }
-
         }
 
         Text {
@@ -246,9 +242,12 @@ Window {
             enabled: selectedOperator ? true : false
             visible: selectedOperator ? true : false
             color: parent.color
-            width: parent.width - 2
-            height: parent.height - 2
-
+            width: parent.width - 4
+            height: parent.height - 4
+            anchors.fill: parent
+            border.color: "gray"
+            border.width: 3
+            radius: 3
             Text{
                 id: freqText
                 x: 1064
@@ -278,16 +277,43 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    MultiPointTouchArea{
-                        id: freqPlusButton
-                        anchors.fill: parent
-                        onPressed : {
-                            parent.border.width = 2;
-                            parent.border.color = "white";
-                            selectedOperator.setFrequency(1)
+
+                    Rectangle {
+                        id: freqPlusTouchpoint
+                        x: 0
+                        y: 0
+                        width: 50
+                        height: 32
+                        color: "#ffffff"
+                        opacity: 0
+
+                        Timer {
+                            id: freqIncTimer
+                            interval: 500
+                            repeat: true
+
+                            onTriggered: {
+                                selectedOperator.setFrequency(5)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp)
+                                interval = 100
+                            }
                         }
-                        onReleased: {
-                            parent.border.width = 0;
+
+                        MultiPointTouchArea{
+                            id: freqPlusButton
+                            anchors.fill: parent
+                            onPressed : {
+                                plusFreq.color = "pink"
+                                selectedOperator.setFrequency(1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                freqIncTimer.start()
+
+                            }
+                            onReleased: {
+                                plusFreq.color = plusFreq.parent.color
+                                freqIncTimer.interval = 500
+                                freqIncTimer.stop()
+                            }
                         }
                     }
                 }
@@ -303,16 +329,40 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    MultiPointTouchArea{
-                        id: freqMinButton
-                        anchors.fill: parent
-                        onPressed : {
-                            parent.border.width = 2;
-                            parent.border.color = "white";
-                            selectedOperator.setFrequency(-1)
+                    Timer{
+                        id: freqDecTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setFrequency(-5)
+                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp)
+                            interval = 100
                         }
-                        onReleased: {
-                            parent.border.width = 0;
+                    }
+                    Rectangle {
+                        id: minFreqTouchpoint
+                        x: 0
+                        y: 0
+                        width: 50
+                        height: 26
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: freqMinButton
+                            anchors.fill: parent
+                            onPressed : {
+                                minFreq.color = "pink"
+                                selectedOperator.setFrequency(-1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                freqDecTimer.start()
+
+                            }
+                            onReleased: {
+                                minFreq.color = minFreq.parent.color
+                                freqDecTimer.interval = 500
+                                freqDecTimer.stop()
+                            }
                         }
                     }
                 }
@@ -327,7 +377,6 @@ Window {
                 font.family: "Noto Sans"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-
                 Text {
                     id: ampPlus
                     x: 0
@@ -340,16 +389,42 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    MultiPointTouchArea{
-                        id: ampPlusButton
-                        anchors.fill: parent
-                        onPressed : {
-                            parent.border.width = 2;
-                            parent.border.color = "white";
-                            selectedOperator.setAmplitude(1)
+                    Timer {
+                        id: ampIncTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setAmplitude(2)
+                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp)
+                            interval = 100
                         }
-                        onReleased: {
-                            parent.border.width = 0;
+                    }
+
+                    Rectangle {
+                        id: ampIncTouchpoint
+                        x: -5
+                        y: -7
+                        width: 30
+                        height: 38
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: ampPlusButton
+                            anchors.fill: parent
+                            onPressed : {
+                                ampPlus.color = "pink"
+                                selectedOperator.setAmplitude(1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                ampIncTimer.start()
+
+                            }
+                            onReleased: {
+                                ampPlus.color = ampPlus.parent.color
+                                ampIncTimer.interval = 500
+                                ampIncTimer.stop()
+                            }
+
                         }
                     }
                 }
@@ -364,16 +439,40 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    MultiPointTouchArea{
-                        id: ampMinButton
-                        anchors.fill: parent
-                        onPressed : {
-                            parent.border.width = 2;
-                            parent.border.color = "white";
-                            selectedOperator.setAmplitude(-1)
+                    Timer {
+                        id: ampDecTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setAmplitude(-2)
+                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp)
+                            interval = 100
                         }
-                        onReleased: {
-                            parent.border.width = 0;
+                    }
+                    Rectangle {
+                        id: ampMinTouchPoint
+                        x: -8
+                        y: 0
+                        width: 30
+                        height: 28
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: ampMinButton
+                            anchors.fill: parent
+                            onPressed : {
+                                ampMin.color = "pink"
+                                selectedOperator.setAmplitude(-1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                ampDecTimer.start()
+                            }
+                            onReleased: {
+                                ampMin.color = ampMin.parent.color
+                                ampDecTimer.interval = 500
+                                ampDecTimer.stop()
+                            }
+
                         }
                     }
                 }
@@ -381,7 +480,7 @@ Window {
 
             Text {
                 id: operatorName
-                x: 8
+                x: 58
                 y: 8
                 text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
                 color: "#f0f0f0"
