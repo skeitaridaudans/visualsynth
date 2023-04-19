@@ -42,7 +42,7 @@ void Controller::loadInitialPreset() {
 
 std::optional<int> Controller::addOperator() {
     if (operators_.size() >= kMaxNumberOfOperators) {
-        AlertController::instance->showAlert("Error: Only 8 operators allowed");
+        AlertController::instance->showAlert("Error: Only 8 operators allowed",1);
         return std::nullopt;
     }
 
@@ -232,6 +232,11 @@ void Controller::savePreset(const std::string &name) {
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
     file.close();
+
+
+    QString str = QString("the preset %1 has been saved to presets ").arg( QString::fromStdString(name));
+
+    AlertController::instance->showAlert(str, 0);
 }
 
 void Controller::loadPreset(const std::string &name) {

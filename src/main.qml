@@ -169,13 +169,13 @@ Window {
 
         Button {
             id: button1
-            width: 114
-            height: 42
+            width: 250
+            height: 50
             text: qsTr("Presets")
-            anchors.left: parent.left
+
             anchors.top: parent.top
-            anchors.leftMargin: 62
-            anchors.topMargin: 52
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 50
             onPressed: {
                 controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
@@ -185,8 +185,11 @@ Window {
         Rectangle {
             id: presetsContainer
             visible: controller.showPresets
-            x: 62
-            y: 88
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: button1.height
+
             width: 450
             height: 450
             color: "#323232"
@@ -465,8 +468,8 @@ Window {
         id: rectangle1
         y: 965
         width: 510
-        height: 53
-        color: "#f44336"
+        height: 55
+        color: alertController.alertColor
         radius: 10
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 62

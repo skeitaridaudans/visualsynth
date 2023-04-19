@@ -109,7 +109,7 @@ void OperatorPresetsView::updateSizes() {
 
 void OperatorPresetsView::addNewPreset() {
     if (Controller::instance->operators().empty()) {
-        AlertController::instance->showAlert("Cannot create preset with no operators");
+        AlertController::instance->showAlert("Cannot create preset with no operators",1);
         return;
     }
 
