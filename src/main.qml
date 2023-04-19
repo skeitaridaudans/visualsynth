@@ -1,14 +1,10 @@
-import QtQuick
+import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
 import OperatorPresetsView
-
-import QtQuick 2.15
-
-
 import AmpEnvGraphView
 
 Window {
@@ -26,13 +22,8 @@ Window {
         controller.setAttackAmpEnvelopePoint(3, 1-(dialSustain.value/300), 5);
 
         controller.setReleaseAmpEnvelopeSize(2);
-
         controller.setReleaseAmpEnvelopePoint(0 , dialSustain.value ,0);
         controller.setReleaseAmpEnvelopePoint(1, 0, 1);
-
-
-
-
     }
 
     Connections {
@@ -287,7 +278,18 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-
+                    MultiPointTouchArea{
+                        id: freqPlusButton
+                        anchors.fill: parent
+                        onPressed : {
+                            parent.border.width = 2;
+                            parent.border.color = "white";
+                            selectedOperator.setFrequency(1)
+                        }
+                        onReleased: {
+                            parent.border.width = 0;
+                        }
+                    }
                 }
                 Text{
                     id: minFreq
@@ -301,7 +303,18 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-
+                    MultiPointTouchArea{
+                        id: freqMinButton
+                        anchors.fill: parent
+                        onPressed : {
+                            parent.border.width = 2;
+                            parent.border.color = "white";
+                            selectedOperator.setFrequency(-1)
+                        }
+                        onReleased: {
+                            parent.border.width = 0;
+                        }
+                    }
                 }
             }
             Text {
@@ -323,11 +336,22 @@ Window {
                     height: 22
                     text: qsTr("+")
                     font.pixelSize: 16
-
                     color: parent.color
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    MultiPointTouchArea{
+                        id: ampPlusButton
+                        anchors.fill: parent
+                        onPressed : {
+                            parent.border.width = 2;
+                            parent.border.color = "white";
+                            selectedOperator.setAmplitude(1)
+                        }
+                        onReleased: {
+                            parent.border.width = 0;
+                        }
+                    }
                 }
 
                 Text {
@@ -340,6 +364,18 @@ Window {
                     font.family: "Noto Sans"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    MultiPointTouchArea{
+                        id: ampMinButton
+                        anchors.fill: parent
+                        onPressed : {
+                            parent.border.width = 2;
+                            parent.border.color = "white";
+                            selectedOperator.setAmplitude(-1)
+                        }
+                        onReleased: {
+                            parent.border.width = 0;
+                        }
+                    }
                 }
             }
 
@@ -378,7 +414,6 @@ Window {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         //    		        anchors.rightMargin: 20
-                        anchors.bottomMargin: -50
                         //                            anchors.bottomMargin: 10
                         width: parent.width - 3
                         height: parent.height - 3
@@ -433,28 +468,28 @@ Window {
                                 if(horiDrag) {
                                     if (xDelta > 0){
                                         if(operatorInfo.fineCheck){
-                                            if (Math.abs(xDelta) > 10){
-                                                selectedOperator.setFrequency(10)
-                                            }
-                                            else{
+//                                            if (Math.abs(xDelta) > 10){
+//                                                selectedOperator.setFrequency(10)
+//                                            }
+//                                            else{
                                                 selectedOperator.setFrequency(0.5)
-                                            }
+//                                            }
                                         } else {
-                                            selectedOperator.setFrequency(20)
+                                            selectedOperator.setFrequency(15)
                                         }
 
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
 
                                     } else if (xDelta < 0){
                                         if(operatorInfo.fineCheck){
-                                            if (Math.abs(xDelta) < -10){
-                                                selectedOperator.setFrequency(-10)
-                                            }
-                                            else{
+//                                            if (Math.abs(xDelta) < -10){
+//                                                selectedOperator.setFrequency(-10)
+//                                            }
+//                                            else{
                                                 selectedOperator.setFrequency(-0.5)
-                                             }
+//                                             }
                                         } else {
-                                            selectedOperator.setFrequency(-20)
+                                            selectedOperator.setFrequency(-15)
                                         }
 
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
