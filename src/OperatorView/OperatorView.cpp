@@ -21,26 +21,26 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
 }
 
 void OperatorView::paint(QPainter *painter) {
-    const auto& controller = Controller::instance;
+    auto& controller = Controller::instance;
 
     newBox_->update();
     deleteOperatorBox_->update();
-    for (const auto& operator_: controller->operators()) {
-        operatorDrawer_->update(operator_.second.get());
+    for (auto& operator_: controller->operators()) {
+        operatorDrawer_->update(operator_.second);
     }
 
     newBox_->draw(painter);
     deleteOperatorBox_->draw(painter);
     drawCarrierLine(painter);
     for (const auto& operator_: controller->operators()) {
-        operatorDrawer_->draw(painter, operator_.second.get());
+        operatorDrawer_->draw(painter, operator_.second);
     }
 
     // Make a copy of all operator ids that should be deleted, then delete them in another loop.
     // Since it's not possible to delete elements from unordered_map while iterating over it
     std::vector<int> operatorToDelete;
     for (const auto& operator_ : controller->operators()) {
-        if (operator_.second->scheduleForRemoval) {
+        if (operator_.second.scheduleForRemoval) {
             operatorToDelete.push_back(operator_.first);
         }
     }
@@ -74,12 +74,12 @@ void OperatorView::drawCarrierLine(QPainter *painter) {
 }
 
 void OperatorView::addOperator(double x, double y) {
-    const auto& controller = Controller::instance;
+    auto& controller = Controller::instance;
 
     if (const auto id = controller->addOperator()) {
-        const auto& operator_ = controller->getOperatorById(*id);
+        auto& operator_ = controller->getOperatorById(*id);
 
-        operator_->position = QPointF(x, y);
+        operator_.position = QPointF(x, y);
     }
 }
 

@@ -40,7 +40,7 @@ long Operator::getFreq() {
 }
 
 
-QColor Operator::getColorForOperator() {
+QColor Operator::getColorForOperator() const {
     return QColor((int) ((log10((double) this->frequency) / 4.38) * 255.0), 20,
                   (int) ((log10((double) this->amplitude) / 4.38) * 255.0));
 }
