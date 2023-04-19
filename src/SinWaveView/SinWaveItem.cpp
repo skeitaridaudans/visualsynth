@@ -3,7 +3,7 @@
 //
 
 #include "SinWaveItem.h"
-
+#include <iostream>
 SinWaveItem::SinWaveItem(QQuickItem *parent) : QQuickPaintedItem(parent) {
 
 }
