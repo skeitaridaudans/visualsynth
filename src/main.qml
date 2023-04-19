@@ -46,7 +46,6 @@ Window {
             opContainer.visible = true
 
             var color = selectedOperator.getColorForOperator();
-            //            opDrag.color = color
 
             waveView.setFrequency(operator.freqProp);
             waveView.setAmplitude(operator.ampProp);
@@ -54,6 +53,7 @@ Window {
             opWaveView.setFrequency(operator.freqProp);
             opWaveView.setAmplitude(operator.ampProp);
             opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
         }
 
         function onOperatorDeselected(deselected){
@@ -68,21 +68,21 @@ Window {
             freqText.text = freq + ""
             waveView.setFrequency(freq);
             opWaveView.setFrequency(freq);
-
             var color = selectedOperator.getColorForOperator();
-            //            opDrag.color = color
             opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
 
+//            opDrag.color = color;
         }
 
         function onAmpChanged(amp) {
             ampText.text = amp + ""
             opWaveView.setAmplitude(amp);
             waveView.setAmplitude(amp);
-
             var color = selectedOperator.getColorForOperator();
-            //            opDrag.color = color
             opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
+
         }
     }
 
@@ -506,8 +506,8 @@ Window {
                 id: fine
                 x: 70
                 y: 202
-                width: 80
-                height: 32
+                width: 100
+                height: 40
                 color: "#323232"
                 anchors.horizontalCenterOffset: -320
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -533,7 +533,7 @@ Window {
                 Rectangle {
                     id: light2
                     x: 8
-                    y: 8
+                    y: 12
                     width: 6
                     height: 16
                     color: "#7f7c7b"
@@ -541,8 +541,8 @@ Window {
 
                 Text {
                     id: text3
-                    x: 27
-                    y: 8
+                    x: 30
+                    y: 12
                     width: 40
                     height: 17
                     color: "#f0f0f0"
@@ -556,8 +556,8 @@ Window {
                 id: coarse
                 x: 70
                 y: 142
-                width: 80
-                height: 32
+                width: 100
+                height: 40
                 color: "#323232"
                 border.width: 1
                 border.color: "pink"
@@ -583,8 +583,8 @@ Window {
                 }
                 Rectangle {
                     id: light1
-                    x: 8
-                    y: 8
+                    x: 6
+                    y: 13
                     width: 6
                     height: 16
                     color: "#ff00ff"
@@ -592,8 +592,8 @@ Window {
 
                 Text {
                     id: text2
-                    x: 27
-                    y: 8
+                    x: 31
+                    y: 12
                     text: qsTr("Coarse")
                     color: "#f0f0f0"
                     font.pixelSize: 12
@@ -617,17 +617,17 @@ Window {
     }*/
 
 
-        AmpEnvGraphItem{
-            id: ampEnvGraphView
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.rightMargin:0
-                anchors.bottomMargin: 310+bW
+//        AmpEnvGraphItem{
+//            id: ampEnvGraphView
+//                anchors.right: parent.right
+//                anchors.bottom: parent.bottom
+//                anchors.rightMargin:0
+//                anchors.bottomMargin: 310+bW
 
 
-               width: ampEnvGraphView.W
-               height: ampEnvGraphView.H
-        }
+//               width: ampEnvGraphView.W
+//               height: ampEnvGraphView.H
+//        }
 
 
     Rectangle {
