@@ -50,6 +50,10 @@ inline QVector2D pointToVector(const QPointF& point) {
     return {(float) point.x(), (float) point.y()};
 }
 
+inline QPointF vectorToPoint(const QVector2D& vector) {
+    return {vector.x(), vector.y()};
+}
+
 inline QVector2D vectorBetweenPoints(const QPointF& from, const QPointF& to) {
     return pointToVector(to) - pointToVector(from);
 }
@@ -61,6 +65,10 @@ inline void addVectorToPoint(QPointF& point, const QVector2D& vector) {
 
 inline QPointF operator +(const QPointF& point, const QVector2D& vector) {
     return { point.x() + vector.x(), point.y() + vector.y() };
+}
+
+inline QVector2D bezierCurve(const QVector2D& p0, const QVector2D& p1, const QVector2D p2, const double t) {
+    return std::pow(1.0 - t, 2) * p0 + 2.0 * (1.0 - t) * t * p1 + std::pow(t, 2) * p2;
 }
 
 inline QColor colorLerp(const QColor& from, const QColor& to, const double fraction) {

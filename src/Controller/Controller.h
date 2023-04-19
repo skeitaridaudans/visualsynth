@@ -72,6 +72,8 @@ private:
     AmpEnvValue ampEnvValues_[4] = {AmpEnvValue(0, true), AmpEnvValue(1, true), AmpEnvValue(2, true), AmpEnvValue(3, false)};
     Api api;
     bool showPresets_;
+
+    void loadInitialPreset();
 };
 
 #endif

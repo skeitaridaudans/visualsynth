@@ -8,8 +8,10 @@
 #include <QPointF>
 
 struct TouchPoint {
-    bool isPressed;
+    int id = -1;
+    bool isPressed = false;
     QPointF position;
+    bool initialPressHandled = false;
 };
 
 #endif //MAIN_QML_TOUCHPOINT_H

@@ -26,6 +26,7 @@ private:
     // The range of coordinates that the operators are inside
     std::pair<QPointF, QPointF> operatorsMinMax_;
     ColorTweenAnimation presetBackgroundAnim_;
+    QColor presetBackgroundColor_;
 };
 
 
