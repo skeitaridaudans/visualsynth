@@ -17,7 +17,8 @@ const double kPresetBackgroundAnimTime = 100.0;
 
 OperatorPresetView::OperatorPresetView(OperatorPresetsView *operatorPresetView, QString name, Preset preset)
         : operatorPresetsView_(operatorPresetView), name_(std::move(name)), preset_(std::move(preset)),
-          presetBackgroundAnim_(kPresetBackgroundAnimTime, kPresetBackgroundColor, kPresetBackgroundHoverColor, AnimationCurves::easeOut) {
+          presetBackgroundColor_(kPresetBackgroundColor),
+          presetBackgroundAnim_(kPresetBackgroundAnimTime, &presetBackgroundColor_, kPresetBackgroundColor, kPresetBackgroundHoverColor, AnimationCurves::easeOut) {
     operatorsMinMax_ = findMinMaxOfOperators(preset_.operators);
 }
 
@@ -54,7 +55,7 @@ void OperatorPresetView::paintPreview(QPainter *painter, const QPointF &pos, con
                                  size - (size * kOperatorBoxPadding * 2.0) - QSizeF(kOperatorSize, kOperatorSize));
 
     painter->setPen(Qt::PenStyle::NoPen);
-    painter->setBrush(QColor(presetBackgroundAnim_.value()));
+    painter->setBrush(presetBackgroundColor_);
     painter->drawRoundedRect(QRectF(pos, size), 8, 8);
 
     // Draw the modulator lines

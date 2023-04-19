@@ -31,6 +31,10 @@ namespace AnimationCurves {
         return 1.0 - std::pow(1.0 - x, 2.0);
     }
 
+    inline double easeInOut(double x) {
+        return x < 0.5 ? 2 * std::pow(x, 2.0) : 1 - std::pow(-2 * x + 2, 2) / 2;
+    }
+
     inline double easeOutBack(double x) {
         const auto c1 = 1.70158;
         const auto c3 = c1 + 1.0;
@@ -41,17 +45,17 @@ namespace AnimationCurves {
 
 class TweenAnimation {
 public:
-    explicit TweenAnimation(double ms, std::function<double(double x)> animationCurve = AnimationCurves::linear,
-                            double from = 0.0, double to = 1.0);
+    TweenAnimation(double ms, double* value, std::function<double(double x)> animationCurve = AnimationCurves::linear,
+                   double from = 0.0, double to = 1.0, bool loop = false);
 
     void setForward();
     void setReverse();
     void stop();
     void update();
-    double value();
     bool isRunning();
     bool isAtStart();
     bool isAtEnd();
+    void setValuePtr(double *value);
 
 private:
     std::function<double(double x)> animationCurve_;
@@ -60,7 +64,8 @@ private:
     double animTimeMs_;
     double fromValue_;
     double toValue_;
-    double value_;
+    double* value_;
+    bool loop_;
 };
 
 
