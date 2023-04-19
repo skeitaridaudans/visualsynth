@@ -751,17 +751,17 @@ Window {
     }*/
 
 
-//        AmpEnvGraphItem{
-//            id: ampEnvGraphView
-//                anchors.right: parent.right
-//                anchors.bottom: parent.bottom
-//                anchors.rightMargin:0
-//                anchors.bottomMargin: 310+bW
+        AmpEnvGraphItem{
+            id: ampEnvGraphView
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin:0
+                anchors.bottomMargin: 310+bW
 
 
-//               width: ampEnvGraphView.W
-//               height: ampEnvGraphView.H
-//        }
+               width: ampEnvGraphView.W
+               height: ampEnvGraphView.H
+        }
 
 
     Rectangle {
