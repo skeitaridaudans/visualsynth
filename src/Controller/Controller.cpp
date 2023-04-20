@@ -16,8 +16,12 @@ Controller::Controller(QObject *parent) : QObject(parent){
 }
 
 bool Controller::isConnected(){
-    //Breki - checks if connection to the synth is working
+    //Breki - checks if connection to the synth is working - needs hardcoded ip and port to work
+    //if (api.loveCommunicationTcp_.connectToServer("127.0.0.1", 4893)){                        //til að tengjast locally
+    if (api.loveCommunicationTcp_.connectToServer("10.121.101.205", 4893)){                     //til að tengjast við syntha
     return true;
+    }
+    return false;
 }
 
 std::optional<int> Controller::addOperator() {
