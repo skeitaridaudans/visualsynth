@@ -23,17 +23,26 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
 void OperatorView::paint(QPainter *painter) {
     auto& controller = Controller::instance;
 
-    newBox_->update();
     deleteOperatorBox_->update();
     for (auto& operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second);
     }
+    newBox_->update();
 
     newBox_->draw(painter);
     deleteOperatorBox_->draw(painter);
     drawCarrierLine(painter);
     for (const auto& operator_: controller->operators()) {
+        if (operator_.second.operatorViewState.draggingState != DraggingState::None) {
+            continue;
+        }
+
         operatorDrawer_->draw(painter, operator_.second);
+    }
+    // Draw the operator that is being dragged last so that it is on top of the other operators
+    if (operatorDrawer_->draggedOperatorId().has_value()) {
+        const auto& selectedOperator = controller->getOperatorById(operatorDrawer_->draggedOperatorId().value());
+        operatorDrawer_->draw(painter, selectedOperator);
     }
 
     // Make a copy of all operator ids that should be deleted, then delete them in another loop.
@@ -115,24 +124,49 @@ void OperatorView::touchEvent(QTouchEvent *event) {
     switch (event->type()) {
         case QEvent::TouchBegin:
             if (!points.empty()) {
-                lastTouchPoint_.isPressed = true;
-                lastTouchPoint_.position = points.first().position();
+                primaryTouchPoint_.id = points.first().id();
+                primaryTouchPoint_.isPressed = true;
+                primaryTouchPoint_.initialPressHandled = false;
+                primaryTouchPoint_.position = points.first().position();
                 touchPressHandledState_ = TouchEventHandledState::Unhandled;
+                isUsingMouse_ = false;
+
+                if (points.count() > 1) {
+                    secondaryTouchPoint_.id = points[1].id();
+                    secondaryTouchPoint_.isPressed = true;
+                    secondaryTouchPoint_.initialPressHandled = false;
+                    secondaryTouchPoint_.position = points[1].position();
+                }
+
                 event->accept();
             }
             break;
         case QEvent::TouchUpdate:
-            if (!points.empty()) {
-                lastTouchPoint_.position = points.first().position();
+            // Cancel the event if the first touch point is no longer pressed
+            if (!points.empty() && points.first().id() == primaryTouchPoint_.id) {
+                primaryTouchPoint_.position = points.first().position();
+
+                // The second touch point should be able to change any time
+                if (points.count() > 1 && (!secondaryTouchPoint_.isPressed || secondaryTouchPoint_.id != points[1].id())) {
+                    secondaryTouchPoint_.id = points[1].id();
+                    secondaryTouchPoint_.isPressed = true;
+                    secondaryTouchPoint_.initialPressHandled = false;
+                    secondaryTouchPoint_.position = points[1].position();
+                }
+                else if (points.count() == 1) {
+                    secondaryTouchPoint_.isPressed = false;
+                }
             }
             event->accept();
             break;
         case QEvent::TouchEnd:
-            lastTouchPoint_.isPressed = false;
+            primaryTouchPoint_.isPressed = false;
+            secondaryTouchPoint_.isPressed = false;
             event->accept();
             break;
         case QEvent::TouchCancel:
-            lastTouchPoint_.isPressed = false;
+            primaryTouchPoint_.isPressed = false;
+            secondaryTouchPoint_.isPressed = false;
             event->accept();
             break;
         default:
@@ -142,30 +176,40 @@ void OperatorView::touchEvent(QTouchEvent *event) {
 
 }
 
-const TouchPoint& OperatorView::touchPoint() {
-    return lastTouchPoint_;
+const TouchPoint& OperatorView::primaryTouchPoint() {
+    return primaryTouchPoint_;
+}
+
+TouchPoint &OperatorView::secondaryTouchPoint() {
+    return secondaryTouchPoint_;
 }
 
 void OperatorView::mousePressEvent(QMouseEvent *event) {
     QQuickItem::mousePressEvent(event);
 
-    lastTouchPoint_.isPressed = true;
-    lastTouchPoint_.position = event->position();
+    primaryTouchPoint_.isPressed = true;
+    primaryTouchPoint_.initialPressHandled = false;
+    primaryTouchPoint_.position = event->position();
     touchPressHandledState_ = TouchEventHandledState::Unhandled;
+    isUsingMouse_ = true;
     event->accept();
 }
 
 void OperatorView::mouseMoveEvent(QMouseEvent *event) {
     QQuickItem::mouseMoveEvent(event);
 
-    lastTouchPoint_.position = event->position();
+    primaryTouchPoint_.position = event->position();
     event->accept();
 }
 
 void OperatorView::mouseReleaseEvent(QMouseEvent *event) {
     QQuickItem::mouseReleaseEvent(event);
 
-    lastTouchPoint_.isPressed = false;
-    lastTouchPoint_.position = event->position();
+    primaryTouchPoint_.isPressed = false;
+    primaryTouchPoint_.position = event->position();
     event->accept();
+}
+
+bool OperatorView::isUsingMouse() {
+    return isUsingMouse_;
 }

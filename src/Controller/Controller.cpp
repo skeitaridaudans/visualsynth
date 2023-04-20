@@ -9,10 +9,11 @@
 
 const int kMaxNumberOfOperators = 8;
 
-std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
+std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
 
-Controller::Controller(QObject *parent) : QObject(parent){
+Controller::Controller(QObject *parent) : QObject(parent) {
     resetAvailableOperatorIds();
+    loadInitialPreset();
 }
 
 bool Controller::isConnected(){
@@ -22,6 +23,25 @@ bool Controller::isConnected(){
     return true;
     }
     return false;
+}
+
+void Controller::loadInitialPreset() {
+    Operators defaultOperators;
+    defaultOperators.insert(
+            std::make_pair<int, Operator>(1, Operator(1, 140, 60, false, true, {0}, QPointF(0.4696, 0.894))));
+    defaultOperators.insert(
+            std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
+
+    // TODO: Configure these values better
+    const std::vector<AmpEnvValue> defaultAmpEnv = {
+        AmpEnvValue(0, 0.5328, 0, true),
+                AmpEnvValue(1, 0, 1, false),
+                AmpEnvValue(2, 0.5328, 0.6404, true),
+                AmpEnvValue(3, 0.5328, 5.0, true)
+    };
+
+    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv);
+    changeToPreset(defaultPreset);
 }
 
 std::optional<int> Controller::addOperator() {
@@ -34,7 +54,7 @@ std::optional<int> Controller::addOperator() {
     availableOperatorIds_.erase(id);
 
     auto op = Operator(id);
-    operators_.insert(std::make_pair<int, Operator>((int)id, std::move(op)));
+    operators_.insert(std::make_pair<int, Operator>((int) id, std::move(op)));
 
     return id;
 }
@@ -47,9 +67,12 @@ void Controller::removeOperator(int operatorId) {
     availableOperatorIds_.insert(operatorId);
 
     // Remove operator from all modulatedBy lists
-    for (auto& op : operators_) {
-        if (std::find(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId) != op.second.modulatedBy.end()) {
-            op.second.modulatedBy.erase(std::remove(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId),op.second.modulatedBy.end());
+    for (auto &op: operators_) {
+        if (std::find(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId) !=
+            op.second.modulatedBy.end()) {
+            op.second.modulatedBy.erase(
+                    std::remove(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId),
+                    op.second.modulatedBy.end());
             api.removeModulator(op.second.id, operatorId);
         }
     }
@@ -66,12 +89,13 @@ void Controller::noteOff(int note) {
 void Controller::setAmpEnvelopeSize(int size) {
     api.setAmpEnvelopeSize(size);
 }
-void Controller::setAttackAmpEnvelopePoint(int index, float value, float time){
+
+void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
     api.setAmpEnvelopeAttackValue(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, true);
 }
 
-void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time){
+void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) {
     api.setAmpReleaseEnvelopePoint(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
 }
@@ -89,8 +113,8 @@ void Controller::changeAmplitude(int operatorId, long amplitude) {
 }
 
 void Controller::addModulator(int operatorId, int modulatorId) {
-    auto& op = operators_[operatorId];
-    auto& mod = operators_[modulatorId];
+    auto &op = operators_[operatorId];
+    auto &mod = operators_[modulatorId];
 
     op.modulatedBy.push_back(modulatorId);
     mod.isModulator = true;
@@ -99,15 +123,16 @@ void Controller::addModulator(int operatorId, int modulatorId) {
 }
 
 void Controller::removeModulator(int operatorId, int modulatorId) {
-    auto& op = operators_[operatorId];
-    auto& mod = operators_[modulatorId];
+    auto &op = operators_[operatorId];
+    auto &mod = operators_[modulatorId];
 
     op.modulatedBy.erase(std::remove(op.modulatedBy.begin(), op.modulatedBy.end(), modulatorId), op.modulatedBy.end());
     api.removeModulator(operatorId, modulatorId);
 
     // Check if modulator is modulating any other operator before setting isModulator to false
-    for (const auto& op_ : operators_) {
-        if (std::find(op_.second.modulatedBy.begin(), op_.second.modulatedBy.end(), modulatorId) == op_.second.modulatedBy.end()) {
+    for (const auto &op_: operators_) {
+        if (std::find(op_.second.modulatedBy.begin(), op_.second.modulatedBy.end(), modulatorId) ==
+            op_.second.modulatedBy.end()) {
             return;
         }
     }
@@ -129,15 +154,15 @@ void Controller::removeCarrier(int operatorId) {
 }
 
 void Controller::sendOperator(int operatorId) {
-    const auto& op = operators_[operatorId];
+    const auto &op = operators_[operatorId];
     // Núverandi range 0 - 200 20 er lægsta nóta sem heyrist hæsta er 175 þá er 100 byrjunar nóta.
-    float freq = std::pow(1.90366, (float)(op.frequency - 100)/20.0);
+    float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
     std::cout << "Ayy: " << freq << std::endl;
-    float amp = std::pow(1.6, (float)(op.amplitude - 50)/20.0) - 0.3;
+    float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
     api.sendOperatorValue(op.id, 0, 1, freq, amp);
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/200.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0))-0.3);
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.90366, ((float)op->frequency / 20.0)), std::pow(1.6, (((float)(op->amplitude)-50)/20.0))-0.3);
-   // api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/20000.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0)));
+    // api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/20000.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0)));
 }
 
 void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *visited) {
@@ -149,14 +174,14 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
     }
     visited_->insert(operatorId);
 
-    const auto& operator_ = getOperatorById(operatorId);
+    const auto &operator_ = getOperatorById(operatorId);
     if (operator_.isCarrier) {
         api.addCarrier(operatorId);
     }
 
     sendOperator(operatorId);
 
-    for (const auto& modulatorId : operator_.modulatedBy) {
+    for (const auto &modulatorId: operator_.modulatedBy) {
         api.addModulator(operatorId, modulatorId);
 
         sendAllOperatorInfo(modulatorId, visited_);
@@ -170,7 +195,7 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
 
 void Controller::selectOperator(int id) {
     selectedOperatorId_ = {id};
-    auto& operator_ = operators_[selectedOperatorId_.value()];
+    auto &operator_ = operators_[selectedOperatorId_.value()];
     emit operatorSelected(&operator_);
 }
 
@@ -195,18 +220,17 @@ std::optional<int> Controller::selectedOperatorId() {
     return selectedOperatorId_;
 }
 
-Operator* Controller::getSelectedOperator() {
+Operator *Controller::getSelectedOperator() {
     if (selectedOperatorId_.has_value()) {
-        auto& operator_ = operators_[selectedOperatorId_.value()];
+        auto &operator_ = operators_[selectedOperatorId_.value()];
         return &operator_;
-    }
-    else {
+    } else {
         return nullptr;
     }
 }
 
-void Controller::savePreset(const std::string& name) {
-    std::vector<AmpEnvValue> ampEnvPoints (std::begin(ampEnvValues_), std::end(ampEnvValues_));
+void Controller::savePreset(const std::string &name) {
+    std::vector <AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
     json json(Preset(operators_, ampEnvPoints));
 
     std::ofstream file("presets/" + name + ".json");
@@ -214,22 +238,22 @@ void Controller::savePreset(const std::string& name) {
     file.close();
 }
 
-void Controller::loadPreset(const std::string& name) {
+void Controller::loadPreset(const std::string &name) {
     auto preset = loadJsonFileAsObject<Preset>("presets/" + name + ".json");
 
     resetAvailableOperatorIds();
-    for (const auto& operator_ : operators_) {
+    for (const auto &operator_: operators_) {
         availableOperatorIds_.erase(operator_.first);
     }
 }
 
-void Controller::changeToPreset(const Preset& preset) {
+void Controller::changeToPreset(const Preset &preset) {
     removeAllModulators();
     removeAllCarriers();
     operators_ = preset.operators;
 
     resetAvailableOperatorIds();
-    for (const auto& operator_ : operators_) {
+    for (const auto &operator_: operators_) {
         availableOperatorIds_.erase(operator_.first);
 
         if (operator_.second.isCarrier) {
@@ -237,21 +261,20 @@ void Controller::changeToPreset(const Preset& preset) {
         }
     }
 
-    for (const auto& ampEnvValue : preset.empEnvValues) {
+    for (const auto &ampEnvValue: preset.empEnvValues) {
         if (ampEnvValue.attack) {
             setAttackAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
-        }
-        else {
+        } else {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
 }
 
 void Controller::removeAllModulators() {
-    for (const auto& operator_ : operators_) {
+    for (const auto &operator_: operators_) {
         const auto modulatedBy = operator_.second.modulatedBy;
 
-        for (const auto& modulator : modulatedBy) {
+        for (const auto &modulator: modulatedBy) {
             removeModulator(operator_.first, modulator);
         }
     }
@@ -260,13 +283,13 @@ void Controller::removeAllModulators() {
 void Controller::removeAllModulatorsForOperator(int operatorId) {
     const auto modulatedBy = getOperatorById(operatorId).modulatedBy;
 
-    for (const auto& modulator : modulatedBy) {
+    for (const auto &modulator: modulatedBy) {
         removeModulator(operatorId, modulator);
     }
 }
 
 void Controller::removeAllCarriers() {
-    for (const auto& operator_ : operators_) {
+    for (const auto &operator_: operators_) {
         if (operator_.second.isCarrier) {
             removeCarrier(operator_.first);
         }

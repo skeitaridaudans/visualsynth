@@ -17,7 +17,7 @@ public:
     void draw(QPainter* qPainter);
 private:
     bool isInsideBox(const QPointF& coords);
-    bool isAnyPointBeingDragged();
+    bool isAnyOperatorBeingDragged();
 
     QPointF boxPos_;
     OperatorView *operatorView_;

@@ -5,22 +5,27 @@
 #include "ColorTweenAnimation.h"
 #include "Utils.h"
 
-ColorTweenAnimation::ColorTweenAnimation(double ms, QColor from, QColor to,
-                                         std::function<double(double x)> animationCurve) : tweenAnimation_(ms,
+ColorTweenAnimation::ColorTweenAnimation(double ms, QColor* color, QColor from, QColor to,
+                                         std::function<double(double x)> animationCurve) : tweenAnimation_(ms, &fraction_,
                                                                                                            animationCurve),
                                                                                            fromColor_(from),
                                                                                            toColor_(to),
-                                                                                           color_(from) {
+                                                                                           color_(color) {
 
+}
+
+ColorTweenAnimation::ColorTweenAnimation(const ColorTweenAnimation &colorTweenAnimation) :fraction_(colorTweenAnimation.fraction_),
+                                                                                    tweenAnimation_(colorTweenAnimation.tweenAnimation_),
+                                                                                    fromColor_(colorTweenAnimation.fromColor_),
+                                                                                    toColor_(colorTweenAnimation.fromColor_),
+                                                                                    color_(colorTweenAnimation.color_) {
+    // Memory location of fraction_ changes when ColorTweenAnimation is copied, so we need to update it in tweenAnimation_
+    tweenAnimation_.setValuePtr(&fraction_);
 }
 
 void ColorTweenAnimation::update() {
     tweenAnimation_.update();
-    color_ = colorLerp(fromColor_, toColor_, tweenAnimation_.value());
-}
-
-const QColor &ColorTweenAnimation::value() {
-    return color_;
+    *color_ = colorLerp(fromColor_, toColor_, fraction_);
 }
 
 void ColorTweenAnimation::setForward() {

@@ -37,7 +37,9 @@ public:
     const std::unique_ptr<DeleteOperatorBox>& deleteOperatorBox();
     QPointF toViewCoords(const QPointF& pos);
     QPointF fromViewCoords(const QPointF& pos);
-    const TouchPoint &touchPoint();
+    const TouchPoint &primaryTouchPoint();
+    TouchPoint &secondaryTouchPoint();
+    bool isUsingMouse();
 
     TouchEventHandledState touchPressHandledState_ = TouchEventHandledState::None;
 protected:
@@ -50,7 +52,9 @@ private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<AddOperatorBox> newBox_;
     std::unique_ptr<DeleteOperatorBox> deleteOperatorBox_;
-    TouchPoint lastTouchPoint_;
+    TouchPoint primaryTouchPoint_;
+    TouchPoint secondaryTouchPoint_;
+    bool isUsingMouse_;
 
     void drawCarrierLine(QPainter *painter);
 };

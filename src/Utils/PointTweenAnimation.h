@@ -11,22 +11,25 @@
 
 class PointTweenAnimation {
 public:
-    PointTweenAnimation(double ms, QPointF from, QPointF to,
+    PointTweenAnimation(double ms, QPointF *point, QPointF from, QPointF to,
                         std::function<double(double x)> animationCurve = AnimationCurves::linear);
+    PointTweenAnimation(const PointTweenAnimation& pointTweenAnimation);
+
     void setForward();
     void setReverse();
     void stop();
     void update();
-    const QPointF &value() const;
     bool isRunning();
     bool isAtStart();
     bool isAtEnd();
+    PointTweenAnimation& operator=(const PointTweenAnimation& other);
 
     QPointF fromPoint_;
     QPointF toPoint_;
 private:
     TweenAnimation tweenAnimation_;
-    QPointF point_;
+    double fraction_;
+    QPointF *point_;
 };
 
 

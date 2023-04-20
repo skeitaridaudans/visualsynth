@@ -18,11 +18,29 @@ enum class DraggingState {
     Dragging
 };
 
+// All state that is specifically just for the operator view
+struct OperatorViewState {
+    OperatorViewState();
+    OperatorViewState(const OperatorViewState &operatorViewState);
+
+    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> initialClickTime = std::nullopt;
+    DraggingState draggingState = DraggingState::None;
+    std::optional<QPointF> initialDragCursorPos;
+    std::optional<PointTweenAnimation> moveOperatorAnimation;
+    double sizeMultiplier = 1.0;
+    std::optional<TweenAnimation> sizeMultiplierAnim;
+    double opacity = 1.0;
+    std::optional<TweenAnimation> opacityAnim;
+    double connectIconOpacity = 0.3;
+    std::optional<TweenAnimation> connectIconOpacityAnim;
+};
+
 struct Operator:public QObject {
     Q_OBJECT
 public:
     Operator();
     Operator(int id, QObject* parent=0);
+    Operator(int id, long frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
     Operator(const Operator& operator_);
 
     int id;
@@ -32,8 +50,7 @@ public:
     bool isCarrier;
     std::vector<int> modulatedBy;
     QPointF position;
-    bool isBeingDragged;
-    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> timeSinceClick = std::nullopt;
+    OperatorViewState operatorViewState;
     Q_PROPERTY(int idProp MEMBER id)
     Q_PROPERTY(long freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)
@@ -41,9 +58,6 @@ public:
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(long step);
     Q_INVOKABLE void setAmplitude(long step);
-    DraggingState draggingState = DraggingState::None;
-    std::optional<QPointF> initialDragCursorPos;
-    std::optional<PointTweenAnimation> moveOperatorAnimation;
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
@@ -52,8 +66,5 @@ public:
 
 void to_json(json& j, const Operator& o);
 void from_json(const json& j, Operator& o);
-
-void to_json(json& j, const std::unique_ptr<Operator>& o);
-void from_json(const json& j, std::unique_ptr<Operator>& o);
 
 #endif //QTQUICKTEST_OPERATOR_H
