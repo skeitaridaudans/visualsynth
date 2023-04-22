@@ -8,6 +8,7 @@
 #include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
+const double kGraphicsFrequencyFactor = 40.0;
 
 std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
 
@@ -303,4 +304,34 @@ void Controller::resetAvailableOperatorIds() {
 void Controller::hidePresets() {
     showPresets_ = false;
     showPresetsChanged(false);
+}
+
+double Controller::getOperatorModulationValue(int operatorId, int offset) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.visitedCount++;
+
+    double modulationSum = 0.0;
+    for (const auto modulatorId : operator_.modulatedBy) {
+        const auto& modulator = getOperatorById(modulatorId);
+        if (modulator.visitedCount < 2) {
+            modulationSum += getOperatorModulationValue(modulatorId, offset);
+        }
+    }
+    operator_.visitedCount--;
+
+    double frequency = (double) operator_.frequency / 100.0;
+    double amplitude = (double) operator_.amplitude / 100.0;
+    return sin(modulationSum - (double) (offset) * M_PI * 2 * frequency / kGraphicsFrequencyFactor) * amplitude;
+}
+
+double Controller::getCarrierOutput(int offset) {
+    double totalSample = 0.0;
+
+    for (const auto& operator_ : operators_) {
+        if (operator_.second.isCarrier) {
+            totalSample += getOperatorModulationValue(operator_.first, offset);
+        }
+    }
+
+    return totalSample;
 }

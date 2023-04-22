@@ -8,6 +8,7 @@
 #include "src/Alert/AlertController.h"
 #include "src/Dialog/DialogController.h"
 #include "src/OperatorPresetsView/OperatorPresetsView.h"
+#include "src/OutputWaveView/OutputWaveView.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<OperatorView>("OperatorView", 1, 0, "OperatorView");
     qmlRegisterType<AmpEnvGraphView>("AmpEnvGraphView",1,0,"AmpEnvGraphItem");
     qmlRegisterType<OperatorPresetsView>("OperatorPresetsView", 1, 0, "OperatorPresetsView");
+    qmlRegisterType<OutputWaveView>("OutputWaveView", 1, 0, "OutputWaveView");
 
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/VisualSynth/src/main.qml"_qs);

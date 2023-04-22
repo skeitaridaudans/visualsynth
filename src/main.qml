@@ -6,6 +6,7 @@ import SinViewItem
 import OperatorView
 import OperatorPresetsView
 import AmpEnvGraphView
+import OutputWaveView
 
 Window {
     id: window
@@ -38,9 +39,6 @@ Window {
 
             var color = selectedOperator.getColorForOperator();
 
-            waveView.setFrequency(operator.freqProp);
-            waveView.setAmplitude(operator.ampProp);
-
             opWaveView.setFrequency(operator.freqProp);
             opWaveView.setAmplitude(operator.ampProp);
             opWaveView.setColor(color);
@@ -50,14 +48,10 @@ Window {
         function onOperatorDeselected(deselected){
             opContainer.enabled = false;
             opContainer.visible = false;
-
-            waveView.setFrequency(0);
-            waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
             freqText.text = freq + ""
-            waveView.setFrequency(freq);
             opWaveView.setFrequency(freq);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
@@ -67,7 +61,6 @@ Window {
         function onAmpChanged(amp) {
             ampText.text = amp + ""
             opWaveView.setAmplitude(amp);
-            waveView.setAmplitude(amp);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
@@ -99,8 +92,8 @@ Window {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -3
         radius: 3
-        SinWaveItem {
-            id: waveView
+        OutputWaveView {
+            id: outputWaveView
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.rightMargin: 20

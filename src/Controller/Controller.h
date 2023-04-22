@@ -47,6 +47,9 @@ public:
     Q_INVOKABLE Operator *getSelectedOperator();
     void changeToPreset(const Preset& preset);
     Q_INVOKABLE void hidePresets();
+    double getOperatorModulationValue(int operatorId, int offset);
+    double getCarrierOutput(int offset);
+
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
 
 

@@ -14,7 +14,7 @@
 Api::Api() {
 #ifdef USE_INTERSYNTH
 
-    // loveCommunicationTcp_.connectToServer("10.121.101.205", 4893);
+    loveCommunicationTcp_.connectToServer("10.121.101.205", 4893);
 
     loveCommunicationTcp_.removeCarrier(0); // All operators removed in the beginning
     loveCommunicationTcp_.removeCarrier(1); // All operators removed in the beginning
