@@ -10,6 +10,7 @@
 using Operators = std::unordered_map<int, Operator>;
 
 struct Preset {
+    QString name;
     Operators operators;
     std::vector<AmpEnvValue> empEnvValues;
 
@@ -17,7 +18,7 @@ struct Preset {
 
     }
 
-    Preset(Operators operators, std::vector<AmpEnvValue> ampEnvValues) : operators(std::move(operators)), empEnvValues(std::move(ampEnvValues)) {
+    Preset(Operators operators, std::vector<AmpEnvValue> ampEnvValues, QString pname) : operators(std::move(operators)), empEnvValues(std::move(ampEnvValues)), name(pname) {
 
     }
 };

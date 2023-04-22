@@ -28,6 +28,8 @@ void Controller::loadInitialPreset() {
     defaultOperators.insert(
             std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
 
+    QString defaultname = "default";
+
     // TODO: Configure these values better
     const std::vector<AmpEnvValue> defaultAmpEnv = {
         AmpEnvValue(0, 0.5328, 0, true),
@@ -36,7 +38,7 @@ void Controller::loadInitialPreset() {
                 AmpEnvValue(3, 0.5328, 5.0, true)
     };
 
-    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv);
+    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
     changeToPreset(defaultPreset);
 }
 
@@ -227,15 +229,15 @@ Operator *Controller::getSelectedOperator() {
 
 void Controller::savePreset(const std::string &name) {
     std::vector <AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
-    json json(Preset(operators_, ampEnvPoints));
+    json json(Preset(operators_, ampEnvPoints,QString::fromStdString(name)));
 
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
     file.close();
 
 
-    QString str = QString("the preset %1 has been saved to presets ").arg( QString::fromStdString(name));
-
+    //Alert that a preset has been saved
+    QString str = QString("the preset '%1' has been saved to presets ").arg( QString::fromStdString(name));
     AlertController::instance->showAlert(str, 0);
 }
 
@@ -269,6 +271,11 @@ void Controller::changeToPreset(const Preset &preset) {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
+
+    //Alert that a preset has been loaded
+    QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
+    AlertController::instance->showAlert(str, 0);
+
 }
 
 void Controller::removeAllModulators() {

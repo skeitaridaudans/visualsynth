@@ -188,7 +188,7 @@ Window {
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: button1.height
+            anchors.topMargin: button1.height*2
 
             width: 450
             height: 450
@@ -197,7 +197,7 @@ Window {
 
             OperatorPresetsView {
                 id: presetsView
-                anchors.left: parent.left
+               anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.fill: parent
                 enabled: controller.showPresets
