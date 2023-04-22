@@ -14,7 +14,12 @@ TweenAnimation::TweenAnimation(double ms, double *value, std::function<double(do
 
 void TweenAnimation::setForward() {
     if (animationState_ == TweenAnimationState::Forward || isAtEnd()) {
-        animationState_ = TweenAnimationState::Stop;
+        if (loop_) {
+            setReverse();
+        }
+        else {
+            animationState_ = TweenAnimationState::Stop;
+        }
         return;
     }
 
@@ -32,7 +37,12 @@ void TweenAnimation::setForward() {
 
 void TweenAnimation::setReverse() {
     if (animationState_ == TweenAnimationState::Reverse || isAtStart()) {
-        animationState_ = TweenAnimationState::Stop;
+        if (loop_) {
+            setForward();
+        }
+        else {
+            animationState_ = TweenAnimationState::Stop;
+        }
         return;
     }
 
