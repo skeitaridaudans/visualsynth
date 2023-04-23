@@ -22,7 +22,6 @@ public:
 
     Controller(QObject *parent = 0);
 
-    Q_INVOKABLE bool isConnected();     //Breki - checks if connection to the synth is working
     Q_INVOKABLE std::optional<int> addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
     Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
@@ -51,7 +50,7 @@ public:
     double getCarrierOutput(int offset);
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
-
+    Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);
 
 signals:
     // Signals for operators
@@ -60,6 +59,8 @@ signals:
     Q_SIGNAL void ampChanged(long amp);
     Q_SIGNAL void freqChanged(long freq);
     Q_SIGNAL void showPresetsChanged(bool showPresets);
+    Q_SIGNAL void isConnectedChanged(bool isConnected);
+
 
 private:
     void sendOperator(int operatorId);
@@ -68,13 +69,15 @@ private:
     void removeAllModulators();
     void removeAllCarriers();
     void removeAllModulatorsForOperator(int operatorId);
+    void onConnectionStateChanged(QTcpSocket::SocketState state);
 
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     AmpEnvValue ampEnvValues_[4] = {AmpEnvValue(0, true), AmpEnvValue(1, true), AmpEnvValue(2, true), AmpEnvValue(3, false)};
-    Api api;
+    std::unique_ptr<Api> api;
     bool showPresets_;
+    bool isConnected_;
 
     void loadInitialPreset();
 };

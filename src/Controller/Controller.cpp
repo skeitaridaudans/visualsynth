@@ -13,13 +13,12 @@ const double kGraphicsFrequencyFactor = 40.0;
 std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
 
 Controller::Controller(QObject *parent) : QObject(parent) {
+    api = std::make_unique<Api>([this] (auto state) {
+        onConnectionStateChanged(state);
+    });
+
     resetAvailableOperatorIds();
     loadInitialPreset();
-}
-
-bool Controller::isConnected() {
-    //Breki - checks if connection to the synth is working
-    return true;
 }
 
 void Controller::loadInitialPreset() {
@@ -70,30 +69,30 @@ void Controller::removeOperator(int operatorId) {
             op.second.modulatedBy.erase(
                     std::remove(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId),
                     op.second.modulatedBy.end());
-            api.removeModulator(op.second.id, operatorId);
+            api->removeModulator(op.second.id, operatorId);
         }
     }
 }
 
 void Controller::noteOn(int note) {
-    api.noteOn(note);
+    api->noteOn(note);
 }
 
 void Controller::noteOff(int note) {
-    api.noteOff(note);
+    api->noteOff(note);
 }
 
 void Controller::setAmpEnvelopeSize(int size) {
-    api.setAmpEnvelopeSize(size);
+    api->setAmpEnvelopeSize(size);
 }
 
 void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
-    api.setAmpEnvelopeAttackValue(index, value, time);
+    api->setAmpEnvelopeAttackValue(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, true);
 }
 
 void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) {
-    api.setAmpReleaseEnvelopePoint(index, value, time);
+    api->setAmpReleaseEnvelopePoint(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
 }
 
@@ -124,7 +123,7 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
     auto &mod = operators_[modulatorId];
 
     op.modulatedBy.erase(std::remove(op.modulatedBy.begin(), op.modulatedBy.end(), modulatorId), op.modulatedBy.end());
-    api.removeModulator(operatorId, modulatorId);
+    api->removeModulator(operatorId, modulatorId);
 
     // Check if modulator is modulating any other operator before setting isModulator to false
     for (const auto &op_: operators_) {
@@ -147,7 +146,7 @@ void Controller::removeCarrier(int operatorId) {
     if (!operators_[operatorId].isCarrier) return;
 
     operators_[operatorId].isCarrier = false;
-    api.removeCarrier(operatorId);
+    api->removeCarrier(operatorId);
 }
 
 void Controller::sendOperator(int operatorId) {
@@ -156,7 +155,7 @@ void Controller::sendOperator(int operatorId) {
 
     float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
     float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
-    api.sendOperatorValue(op.id, 0, 1, freq, amp);
+    api->sendOperatorValue(op.id, 0, 1, freq, amp);
 
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/200.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0))-0.3);
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.90366, ((float)op->frequency / 20.0)), std::pow(1.6, (((float)(op->amplitude)-50)/20.0))-0.3);
@@ -174,13 +173,13 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
 
     const auto &operator_ = getOperatorById(operatorId);
     if (operator_.isCarrier) {
-        api.addCarrier(operatorId);
+        api->addCarrier(operatorId);
     }
 
     sendOperator(operatorId);
 
     for (const auto &modulatorId: operator_.modulatedBy) {
-        api.addModulator(operatorId, modulatorId);
+        api->addModulator(operatorId, modulatorId);
 
         sendAllOperatorInfo(modulatorId, visited_);
     }
@@ -335,3 +334,9 @@ double Controller::getCarrierOutput(int offset) {
 
     return totalSample;
 }
+
+void Controller::onConnectionStateChanged(QTcpSocket::SocketState state) {
+    isConnected_ = state == QTcpSocket::SocketState::ConnectedState;
+    isConnectedChanged(isConnected_);
+}
+
