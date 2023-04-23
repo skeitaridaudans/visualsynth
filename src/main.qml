@@ -15,6 +15,7 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
     property var selectedOperator: null
+    property var isSynthConnected: controller.isConnected()
 
     Component.onCompleted: {
         controller.setAmpEnvelopeSize(3); // controller.setReleaseAmpEnvelopeSize(3); ???
@@ -99,6 +100,7 @@ Window {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -3
         radius: 3
+
         SinWaveItem {
             id: waveView
             anchors.right: parent.right
@@ -109,23 +111,31 @@ Window {
             height: 100
         }
 
-        RoundButton {
+
+        Rectangle {
             id: connectedRoundButton
             x: 88
-            //state: connected ? "Synth_connected" : "Synth_not_connected"    // trying to make color change
             y: 94
             width: 34
             height: 34
-            text: ""
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             anchors.leftMargin: 88
-            anchors.bottomMargin: 54 //
-            background: Rectangle {
-                radius: connectedRoundButton.radius
-                color: "#55ff00"
-            }
+            anchors.bottomMargin: 54
+            color: "red"
+            radius: 50
+
+            states: State {
+                       name: "connectedstate"; when: isSynthConnected
+                       PropertyChanges {
+                           connectedRoundButton {
+                               color: "green"
+                           }
+                       }
+                    }
         }
+
+
 
         Text {
             id: connectedText
@@ -145,6 +155,8 @@ Window {
         }
 
     }
+
+
 
     Rectangle {
         id: operatorrectangle
@@ -199,21 +211,6 @@ Window {
                 enabled: controller.showPresets
             }
         }
-
-        // ComboBox {
-
-        //var bleBle = qsTr(presets.getName() + "hello");
-        //var bleBle = text()"helloooo";
-        // id: presetDropdown
-        // x: 412
-        // y: 57
-        // width: 262
-        // height: 36
-        //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
-        // textRole: "key"
-        // model: controller.loadAvailablePresets()
-
-        // }
 
 
     }
@@ -737,18 +734,50 @@ Window {
         }
     }
 
+    Rectangle {
+        id: rectangle1
+        y: 965
+        width: 510
+        height: 53
+        color: "#f44336"
+        radius: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 62
+        anchors.horizontalCenter: parent.horizontalCenter
+        state: alertController.alertVisibleState
 
-    /*Text {
-        id: presetsText
-        x: 347
-        y: 62
-        width: 68
-        height: 27
-        color: "#ffffff"
-        text: qsTr("Presets")
-        font.pixelSize: 18
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
+            },
+            State {
+                name: "visible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
+            }
+        ]
 
-    }*/
+        transitions: [
+            Transition {
+                to: "invisible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            },
+            Transition {
+                to: "visible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            }
+        ]
+
+        Text {
+            id: text1
+            color: "#ffffff"
+            text: alertController.alertText
+            anchors.fill: parent
+            font.pixelSize: 22
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
 
 
         AmpEnvGraphItem{

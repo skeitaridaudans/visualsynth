@@ -23,10 +23,10 @@ public:
     void setAmpEnvelopeSize(int size);
     void setAmpReleaseEnvelopePoint(int index, float value, float time);
     void setAmpReleaseEnvelopeSize(int size);
-
+    LoveCommunicationTcp loveCommunicationTcp_; //prófa að hafa public til að kalla í frá qml
 
 private:
-    LoveCommunicationTcp loveCommunicationTcp_;
+    //LoveCommunicationTcp loveCommunicationTcp_;
 };
 
 

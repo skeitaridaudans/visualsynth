@@ -48,7 +48,7 @@ public:
     void changeToPreset(const Preset& preset);
     Q_INVOKABLE void hidePresets();
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
-
+    Api api; //prófa að kalla í þetta í controller
 
 signals:
     // Signals for operators
@@ -57,6 +57,7 @@ signals:
     Q_SIGNAL void ampChanged(long amp);
     Q_SIGNAL void freqChanged(long freq);
     Q_SIGNAL void showPresetsChanged(bool showPresets);
+
 
 private:
     void sendOperator(int operatorId);
@@ -70,7 +71,7 @@ private:
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
     AmpEnvValue ampEnvValues_[4] = {AmpEnvValue(0, true), AmpEnvValue(1, true), AmpEnvValue(2, true), AmpEnvValue(3, false)};
-    Api api;
+    //Api api;
     bool showPresets_;
 
     void loadInitialPreset();
