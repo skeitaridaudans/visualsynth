@@ -96,6 +96,7 @@ void OperatorPresetsView::loadPresets() {
             auto name = QString::fromStdString(entry.path().filename().string()).split(".").at(0);
             auto preset = loadJsonFileAsObject<Preset>(
                     entry.path().string());
+            preset.name = name;
             auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), name, std::move(preset));
             operatorPresetViews_->push_back(std::move(presetView));
         }
@@ -109,7 +110,7 @@ void OperatorPresetsView::updateSizes() {
 
 void OperatorPresetsView::addNewPreset() {
     if (Controller::instance->operators().empty()) {
-        AlertController::instance->showAlert("Cannot create preset with no operators");
+        AlertController::instance->showAlert("Cannot create preset with no operators",1);
         return;
     }
 
@@ -122,7 +123,7 @@ void OperatorPresetsView::addNewPreset() {
 
                            std::vector<AmpEnvValue> ampEnvValues (std::begin(controller->ampEnvValues()), std::end(controller->ampEnvValues()));
                            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
-                                                                Preset(controller->operators(), ampEnvValues));
+                                                                Preset(controller->operators(), ampEnvValues,presetName));
                            operatorPresetViews_->push_back(std::move(presetView));
                        });
 }
