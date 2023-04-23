@@ -51,6 +51,7 @@ public:
     std::vector<int> modulatedBy;
     QPointF position;
     OperatorViewState operatorViewState;
+    int visitedCount = 0;
     Q_PROPERTY(int idProp MEMBER id)
     Q_PROPERTY(long freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)

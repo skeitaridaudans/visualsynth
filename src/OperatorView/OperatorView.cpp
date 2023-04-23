@@ -4,35 +4,61 @@
 
 #include "OperatorView.h"
 #include "src/Controller/Controller.h"
+#include "src/FontAwesome.h"
 
 const int kCarrierLineTextLeftMargin = 20;
 const int kCarrierLineLeftMargin = 10;
 const int kCarrierLineRightMargin = 20;
 const int kCarrierLineBottomMargin = 40;
-const QString kCarrierText = "Carrier";
-const QFont kCarrierFont("Noto Sans", 25);
+const double kCarrierBoxSize = 70.0;
+const double kCarrierLinePulseAnimTime = 450.0;
+const double kCarrierLinePulseAnimMin = 0.4;
+const double kCarrierLinePulseAnimMax = 1.0;
+const QString kCarrierIcon (fa::fa_music);
+const QColor kOperatorLineColor (0xFFFFFF);
 
 OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
-                                                 newBox_(std::make_unique<AddOperatorBox>(const_cast<OperatorView *>(this))),
-                                                 deleteOperatorBox_(std::make_unique<DeleteOperatorBox>(const_cast<OperatorView *>(this))),
-                                                 operatorDrawer_(std::make_unique<OperatorDrawer>(const_cast<OperatorView *>(this))) {
+                                                 newBox_(std::make_unique<AddOperatorBox>(
+                                                         const_cast<OperatorView *>(this))),
+                                                 deleteOperatorBox_(std::make_unique<DeleteOperatorBox>(
+                                                         const_cast<OperatorView *>(this))),
+                                                 operatorDrawer_(std::make_unique<OperatorDrawer>(
+                                                         const_cast<OperatorView *>(this))),
+                                                 carrierLinePulseAnim_(kCarrierLinePulseAnimTime,
+                                                                       &carrierLineBoxOpacity_,
+                                                                       AnimationCurves::easeInOut,
+                                                                       kCarrierLinePulseAnimMin,
+                                                                       kCarrierLinePulseAnimMax, true) {
     setAcceptTouchEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 void OperatorView::paint(QPainter *painter) {
-    auto& controller = Controller::instance;
+    auto &controller = Controller::instance;
 
     deleteOperatorBox_->update();
-    for (auto& operator_: controller->operators()) {
+    for (auto &operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second);
     }
     newBox_->update();
 
+    if (operatorDrawer_->draggedOperatorId().has_value()) {
+        if (!carrierLinePulseAnim_.isRunning()) {
+            carrierLinePulseAnim_.setForward();
+        }
+        carrierLinePulseAnim_.update();
+    }
+    else {
+        if (carrierLinePulseAnim_.isRunning()) {
+            carrierLinePulseAnim_.stop();
+            carrierLineBoxOpacity_ = 1.0;
+        }
+    }
+
     newBox_->draw(painter);
     deleteOperatorBox_->draw(painter);
     drawCarrierLine(painter);
-    for (const auto& operator_: controller->operators()) {
+    for (const auto &operator_: controller->operators()) {
         if (operator_.second.operatorViewState.draggingState != DraggingState::None) {
             continue;
         }
@@ -41,23 +67,23 @@ void OperatorView::paint(QPainter *painter) {
     }
     // Draw the operator that is being dragged last so that it is on top of the other operators
     if (operatorDrawer_->draggedOperatorId().has_value()) {
-        const auto& selectedOperator = controller->getOperatorById(operatorDrawer_->draggedOperatorId().value());
+        const auto &selectedOperator = controller->getOperatorById(operatorDrawer_->draggedOperatorId().value());
         operatorDrawer_->draw(painter, selectedOperator);
     }
 
     // Make a copy of all operator ids that should be deleted, then delete them in another loop.
     // Since it's not possible to delete elements from unordered_map while iterating over it
     std::vector<int> operatorToDelete;
-    for (const auto& operator_ : controller->operators()) {
+    for (const auto &operator_: controller->operators()) {
         if (operator_.second.scheduleForRemoval) {
             operatorToDelete.push_back(operator_.first);
         }
     }
-    for (const auto& operatorId : operatorToDelete) {
+    for (const auto &operatorId: operatorToDelete) {
         controller->removeOperator(operatorId);
     }
 
-    if (touchPressHandledState_ == TouchEventHandledState::Unhandled)  {
+    if (touchPressHandledState_ == TouchEventHandledState::Unhandled) {
         controller->deselectOperator();
         controller->hidePresets();
 
@@ -72,33 +98,37 @@ void OperatorView::drawCarrierLine(QPainter *painter) {
     const auto carrierLineTextStartPos = QPointF(kCarrierLineTextLeftMargin, (int) height() - 40);
 
     const auto lineEndPoints = carrierLineEndPoints();
-    const auto& carrierLineLeftPoint = lineEndPoints.first;
-    const auto& carrierLineRightPoint = lineEndPoints.second;
+    const auto &carrierLineLeftPoint = lineEndPoints.first;
+    const auto &carrierLineRightPoint = lineEndPoints.second;
 
     // Draw carrier line
-    painter->setFont(kCarrierFont);
-    painter->setPen(QColor(255, 255, 255));
-    painter->drawText(carrierLineTextStartPos, kCarrierText);
+    painter->setFont(fontAwesome()->font(fa::fa_solid, 45));
+    painter->setPen(QPen(kOperatorLineColor, 3));
+    painter->drawText(carrierLineTextStartPos, kCarrierIcon);
+    painter->setOpacity(carrierLineBoxOpacity_);
     painter->drawLine(carrierLineLeftPoint, carrierLineRightPoint);
+    painter->setOpacity(1.0);
 }
 
 void OperatorView::addOperator(double x, double y) {
-    auto& controller = Controller::instance;
+    auto &controller = Controller::instance;
 
     if (const auto id = controller->addOperator()) {
-        auto& operator_ = controller->getOperatorById(*id);
+        auto &operator_ = controller->getOperatorById(*id);
 
         operator_.position = QPointF(x, y);
     }
 }
 
 std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
-    const QFontMetrics fm(kCarrierFont);
-    const auto textWidth = fm.horizontalAdvance(kCarrierText);
+    const QFontMetrics fm(fontAwesome()->font(fa::fa_solid, 45));
+    const auto textWidth = fm.horizontalAdvance(kCarrierIcon);
     const auto textHeight = fm.height();
 
-    const auto carrierLineLeftPoint = QPointF(kCarrierLineTextLeftMargin + textWidth + kCarrierLineLeftMargin, (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
-    const auto carrierLineRightPoint = QPointF((int) width() - kCarrierLineRightMargin, (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
+    const auto carrierLineLeftPoint = QPointF(kCarrierLineTextLeftMargin + textWidth + kCarrierLineLeftMargin,
+                                              (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
+    const auto carrierLineRightPoint = QPointF((int) width() - kCarrierLineRightMargin,
+                                               (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
 
     return {carrierLineLeftPoint, carrierLineRightPoint};
 }
@@ -120,7 +150,7 @@ QPointF OperatorView::fromViewCoords(const QPointF &pos) {
 void OperatorView::touchEvent(QTouchEvent *event) {
     QQuickItem::touchEvent(event);
 
-    const auto& points = event->points();
+    const auto &points = event->points();
     switch (event->type()) {
         case QEvent::TouchBegin:
             if (!points.empty()) {
@@ -147,13 +177,13 @@ void OperatorView::touchEvent(QTouchEvent *event) {
                 primaryTouchPoint_.position = points.first().position();
 
                 // The second touch point should be able to change any time
-                if (points.count() > 1 && (!secondaryTouchPoint_.isPressed || secondaryTouchPoint_.id != points[1].id())) {
+                if (points.count() > 1 &&
+                    (!secondaryTouchPoint_.isPressed || secondaryTouchPoint_.id != points[1].id())) {
                     secondaryTouchPoint_.id = points[1].id();
                     secondaryTouchPoint_.isPressed = true;
                     secondaryTouchPoint_.initialPressHandled = false;
                     secondaryTouchPoint_.position = points[1].position();
-                }
-                else if (points.count() == 1) {
+                } else if (points.count() == 1) {
                     secondaryTouchPoint_.isPressed = false;
                 }
             }
@@ -176,7 +206,7 @@ void OperatorView::touchEvent(QTouchEvent *event) {
 
 }
 
-const TouchPoint& OperatorView::primaryTouchPoint() {
+const TouchPoint &OperatorView::primaryTouchPoint() {
     return primaryTouchPoint_;
 }
 
