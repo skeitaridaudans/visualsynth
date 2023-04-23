@@ -28,6 +28,8 @@ PointTweenAnimation::PointTweenAnimation(const PointTweenAnimation &pointTweenAn
 }
 
 void PointTweenAnimation::update() {
+    if (!isRunning()) return;
+
     tweenAnimation_.update();
     *point_ = pointLerp(fromPoint_, toPoint_, fraction_);
 }

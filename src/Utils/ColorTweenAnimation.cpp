@@ -24,6 +24,8 @@ ColorTweenAnimation::ColorTweenAnimation(const ColorTweenAnimation &colorTweenAn
 }
 
 void ColorTweenAnimation::update() {
+    if (!isRunning()) return;
+
     tweenAnimation_.update();
     *color_ = colorLerp(fromColor_, toColor_, fraction_);
 }
