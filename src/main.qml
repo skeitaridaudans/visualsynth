@@ -622,45 +622,74 @@ Window {
                 width: 100
                 height: 40
                 color: "#323232"
+                radius: 4
                 anchors.horizontalCenterOffset: -320
                 anchors.horizontalCenter: parent.horizontalCenter
+                state: operatorInfo.fineCheck ? "checked" : "unchecked"
+
+                states: [
+                    State {
+                        name: "checked"
+                        PropertyChanges {
+                            target: fine
+                            color: "#28ff00ff"
+                        }
+                        PropertyChanges {
+                            target: light2
+                            color: "#ff00ff"
+                        }
+                    },
+                    State {
+                        name: "unchecked"
+                        PropertyChanges {
+                            target: fine
+                            color: "#323232"
+                        }
+                        PropertyChanges {
+                            target: light2
+                            color: "#7f7c7b"
+                        }
+                    }
+                ]
+
+                transitions: [
+                    Transition {
+                        to: "checked"
+                        ColorAnimation {
+                            easing.type: Easing.OutQuad
+                            duration: 200
+                        }
+                    }
+                ]
 
                 MultiPointTouchArea{
                     id: fineToggle
                     anchors.fill: parent
                     onPressed : {
-                        parent.border.width = 2;
-                        parent.border.color = "white";
-                        coarse.border.width = 0
-                        light2.color =  "#ff00ff";
-                        light1.color = "#7f7c7b";
                         operatorInfo.coarseCheck = false;
                         operatorInfo.fineCheck = true;
-                        console.log(fineSelected)
-                    }
-                    onReleased: {
-                        parent.border.width = 1;
-                        parent.border.color = "pink"
                     }
                 }
                 Rectangle {
                     id: light2
-                    x: 8
-                    y: 12
                     width: 6
                     height: 16
-                    color: "#7f7c7b"
+                    radius: 2
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
                 }
 
                 Text {
                     id: text3
-                    x: 30
-                    y: 12
-                    width: 40
-                    height: 17
                     color: "#f0f0f0"
                     text: qsTr("Fine")
-                    font.pixelSize: 12
+                    font.pixelSize: 13
+                    font.weight: Font.DemiBold
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: light2.right
+                    anchors.leftMargin: 14
                 }
 
             }
@@ -671,45 +700,75 @@ Window {
                 y: 142
                 width: 100
                 height: 40
-                color: "#323232"
-                border.width: 1
-                border.color: "pink"
+                radius: 4
                 anchors.horizontalCenterOffset: -320
                 anchors.horizontalCenter: parent.horizontalCenter
+                state: operatorInfo.coarseCheck ? "checked" : "unchecked"
+
+                states: [
+                    State {
+                        name: "checked"
+                        PropertyChanges {
+                            target: coarse
+                            color: "#28ff00ff"
+                        }
+                        PropertyChanges {
+                            target: light1
+                            color: "#ff00ff"
+                        }
+                    },
+                    State {
+                        name: "unchecked"
+                        PropertyChanges {
+                            target: coarse
+                            color: "#323232"
+                        }
+                        PropertyChanges {
+                            target: light1
+                            color: "#7f7c7b"
+                        }
+                    }
+                ]
+
+                transitions: [
+                    Transition {
+                        to: "checked"
+                        ColorAnimation {
+                            easing.type: Easing.OutQuad
+                            duration: 200
+                        }
+                    }
+                ]
+
                 //                    anchors.verticalCenter: parent.verticalCenter
                 MultiPointTouchArea{
                     id: cearseToggle
                     anchors.fill: parent
                     onPressed: {
-                        parent.border.width = 2
-                        parent.border.color = "white"
-                        fine.border.width = 0
-                        light1.color =  "#ff00ff";
-                        light2.color = "#7f7c7b";
                         operatorInfo.coarseCheck = true
                         operatorInfo.fineCheck = false
-                    }
-                    onReleased: {
-                        parent.border.width = 1;
-                        parent.border.color = "pink"
                     }
                 }
                 Rectangle {
                     id: light1
-                    x: 6
-                    y: 13
                     width: 6
                     height: 16
-                    color: "#ff00ff"
+                    radius: 2
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
                 }
 
                 Text {
                     id: text2
-                    x: 31
-                    y: 12
                     text: qsTr("Coarse")
                     color: "#f0f0f0"
-                    font.pixelSize: 12
+                    font.pixelSize: 13
+                    font.weight: Font.DemiBold
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: light1.right
+                    anchors.leftMargin: 14
                 }
             }
 
