@@ -633,14 +633,14 @@ Window {
                 id: freqControlBox
                 color: "transparent"
                 anchors.top: freqControlTitle.bottom
-                anchors.topMargin: 8
+                anchors.topMargin: 16
                 anchors.left: freqControlTitle.left
                 anchors.leftMargin: 8
                 height: freqControlBoxColumn.height
 
                 Column {
                     id: freqControlBoxColumn
-                    spacing: 16
+                    spacing: 8
 
                     ToggleButton {
                         id: fine
