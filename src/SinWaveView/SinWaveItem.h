@@ -17,12 +17,14 @@ public:
     void paint(QPainter *painter) override;
     qreal frequency();
     qreal amplitude();
+    Q_INVOKABLE void setColor(QColor color);
     Q_INVOKABLE void setFrequency(qreal frequency);
     Q_INVOKABLE void setAmplitude(qreal amplitude);
 private:
     qreal frequency_ = 0;
     qreal amplitude_ = 0;
     float sinStartX_ = 0.0;
+    QColor color_ = QColor(0xFB00C4);
 };
 
 

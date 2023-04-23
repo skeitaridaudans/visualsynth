@@ -1,14 +1,10 @@
-import QtQuick
+import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQml 2.0
 import SinViewItem
 import OperatorView
 import OperatorPresetsView
-
-import QtQuick 2.15
-
-
 import AmpEnvGraphView
 
 Window {
@@ -27,52 +23,55 @@ Window {
         controller.setAttackAmpEnvelopePoint(3, 1-(dialSustain.value/300), 5);
 
         controller.setReleaseAmpEnvelopeSize(2);
-
         controller.setReleaseAmpEnvelopePoint(0 , dialSustain.value ,0);
         controller.setReleaseAmpEnvelopePoint(1, 0, 1);
-
-
-
-
-
     }
 
     Connections {
         target: controller
         function onOperatorSelected(operator) {
             selectedOperator = operator
-            freqValueText.text = operator.freqProp + ""
-            ampValueText.text = operator.ampProp + ""
+            freqText.text = operator.freqProp + ""
+            ampText.text = operator.ampProp + ""
+
             opContainer.enabled = true
             opContainer.visible = true
+
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
+
             waveView.setFrequency(operator.freqProp);
             waveView.setAmplitude(operator.ampProp);
+
+            opWaveView.setFrequency(operator.freqProp);
+            opWaveView.setAmplitude(operator.ampProp);
+            opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
         }
 
         function onOperatorDeselected(deselected){
-                opContainer.enabled = false
-                opContainer.visible = false
-                waveView.setFrequency(0);
-                waveView.setAmplitude(0);
+            opContainer.enabled = false;
+            opContainer.visible = false;
+
+            waveView.setFrequency(0);
+            waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
-            freqValueText.text = freq + ""
+            freqText.text = freq + ""
             waveView.setFrequency(freq);
-
+            opWaveView.setFrequency(freq);
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
-
+            opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
         }
 
         function onAmpChanged(amp) {
-            ampValueText.text = amp + ""
+            ampText.text = amp + ""
+            opWaveView.setAmplitude(amp);
             waveView.setAmplitude(amp);
-
             var color = selectedOperator.getColorForOperator();
-            opDrag.color = color
+            opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
         }
     }
 
@@ -220,7 +219,7 @@ Window {
     Rectangle {
         // Operator info box
         id: operatorInfo
-        x: 1063
+        x: 1065
         y: 0
         width: 857
         height: 377
@@ -230,216 +229,506 @@ Window {
         border.width: 3
         radius: 3
         property int operatorId: selectedOperator ? selectedOperator.idProp : 0
-        // Box title
-            Rectangle {
-                id: opContainer
-                enabled: selectedOperator ? true : false
-                visible: selectedOperator ? true : false
 
+        property bool fineCheck: false
+        property bool coarseCheck: true
+
+        // Box title
+        Rectangle {
+            id: opContainer
+            enabled: selectedOperator ? true : false
+            visible: selectedOperator ? true : false
+            color: parent.color
+            width: parent.width - 4
+            height: parent.height - 4
+            anchors.fill: parent
+            border.color: "gray"
+            border.width: 3
+            radius: 3
+            Text{
+                id: freqText
+                x: 1064
+                y: 342
+                width: 12
+                height: 10
+                text: "0"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.horizontalCenter: opDrag.horizontalCenter
+                anchors.rightMargin: 319
+                anchors.leftMargin: 510
+                color: "gray"
+                font.pixelSize: 16
+                font.family: "Noto Sans"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                Text{
+                    id: plusFreq
+                    x: 82
+                    y: -3
+                    width: 50
+                    height: 21
+                    text: "+"
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    Rectangle {
+                        id: freqPlusTouchpoint
+                        x: 0
+                        y: 0
+                        width: 50
+                        height: 32
+                        color: "#ffffff"
+                        opacity: 0
+
+                        Timer {
+                            id: freqIncTimer
+                            interval: 500
+                            repeat: true
+
+                            onTriggered: {
+                                selectedOperator.setFrequency(5)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp)
+                                interval = 100
+                            }
+                        }
+
+                        MultiPointTouchArea{
+                            id: freqPlusButton
+                            anchors.fill: parent
+                            onPressed : {
+                                plusFreq.color = "pink"
+                                selectedOperator.setFrequency(1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                freqIncTimer.start()
+
+                            }
+                            onReleased: {
+                                plusFreq.color = plusFreq.parent.color
+                                freqIncTimer.interval = 500
+                                freqIncTimer.stop()
+                            }
+                        }
+                    }
+                }
+                Text{
+                    id: minFreq
+                    x: -94
+                    y: -3
+                    width: 50
+                    height: 21
+                    text: "-"
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    Timer{
+                        id: freqDecTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setFrequency(-5)
+                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp)
+                            interval = 100
+                        }
+                    }
+                    Rectangle {
+                        id: minFreqTouchpoint
+                        x: 0
+                        y: 0
+                        width: 50
+                        height: 26
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: freqMinButton
+                            anchors.fill: parent
+                            onPressed : {
+                                minFreq.color = "pink"
+                                selectedOperator.setFrequency(-1)
+                                controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                freqDecTimer.start()
+
+                            }
+                            onReleased: {
+                                minFreq.color = minFreq.parent.color
+                                freqDecTimer.interval = 500
+                                freqDecTimer.stop()
+                            }
+                        }
+                    }
+                }
+            }
+            Text {
+                id: ampText
+                x: 828
+                y: 189
+                text: "0"
+                color: "gray"
+                font.pixelSize: 16
+                font.family: "Noto Sans"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                Text {
+                    id: ampPlus
+                    x: 0
+                    y: -60
+                    width: 9
+                    height: 22
+                    text: qsTr("+")
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    Timer {
+                        id: ampIncTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setAmplitude(2)
+                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp)
+                            interval = 100
+                        }
+                    }
+
+                    Rectangle {
+                        id: ampIncTouchpoint
+                        x: -5
+                        y: -7
+                        width: 30
+                        height: 38
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: ampPlusButton
+                            anchors.fill: parent
+                            onPressed : {
+                                ampPlus.color = "pink"
+                                selectedOperator.setAmplitude(1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                ampIncTimer.start()
+
+                            }
+                            onReleased: {
+                                ampPlus.color = ampPlus.parent.color
+                                ampIncTimer.interval = 500
+                                ampIncTimer.stop()
+                            }
+
+                        }
+                    }
+                }
+
+                Text {
+                    id: ampMin
+                    x: 2
+                    y: 72
+                    text: qsTr("-")
+                    font.pixelSize: 16
+                    color: parent.color
+                    font.family: "Noto Sans"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    Timer {
+                        id: ampDecTimer
+                        interval: 500
+                        repeat: true
+
+                        onTriggered: {
+                            selectedOperator.setAmplitude(-2)
+                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp)
+                            interval = 100
+                        }
+                    }
+                    Rectangle {
+                        id: ampMinTouchPoint
+                        x: -8
+                        y: 0
+                        width: 30
+                        height: 28
+                        color: "#ffffff"
+                        opacity: 0
+                        MultiPointTouchArea{
+                            id: ampMinButton
+                            anchors.fill: parent
+                            onPressed : {
+                                ampMin.color = "pink"
+                                selectedOperator.setAmplitude(-1)
+                                controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                ampDecTimer.start()
+                            }
+                            onReleased: {
+                                ampMin.color = ampMin.parent.color
+                                ampDecTimer.interval = 500
+                                ampDecTimer.stop()
+                            }
+
+                        }
+                    }
+                }
+            }
 
             Text {
                 id: operatorName
-                x: 27
-                y: 14
+                x: 58
+                y: 8
                 text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
                 color: "#f0f0f0"
                 font.pixelSize: 32
+                font.underline: true
+            }
+            // Operator box
+            Rectangle {
+                id: opDrag
+                x: 224
+                y: 63
+                width: 598
+                height: 273
+                color: "lightgray" // Placeholder while colors are off on the wave
+                //color: "#414141"
 
-                // Frequency text
-                Text {
-                    id: freqText
-                    x: 12
-                    y: 79
-                    width: 80
-                    height: 49
-                    color: "#f0f0f0"
-                    text: qsTr("Freq: ")
-                    font.family: "Noto Sans"
-                    font.pixelSize: 32
 
-                }
-                // Frequency amount
                 Rectangle {
-                    id: freqValueBox
-                    x: 98
-                    y: 79
-                    width: 219
-                    height: 65
-                    color: "#222222"
-                    border.color: "#f0f0f0"
-                    border.width: 3
-
-                    TextInput {
-                        id: freqValueText
-                        x: 8
-                        y: 8
-                        width: 203
-                        height: 49
-                        horizontalAlignment: Text.AlignRight
-                        activeFocusOnPress: true
-                        font.pixelSize: 32
-                        color: "#f0f0f0"
-                        readOnly: false
-                        validator: RegularExpressionValidator{
-                            regularExpression: /([1-9]|[1-9][0-9]|1[0-9]{2}|200)/
-                        }
-                        onEditingFinished: {
-                            var values = freqValueText.text
-                            controller.changeFrequency(selectedOperator.idProp, values);
-                        }
-                    }
-
-                }
-
-                // Amplitude text
-                Text {
-                    id: ampText
-                    x: 12
-                    y: 208
-                    width: 80
-                    height: 43
-                    text: qsTr("Amp:")
-                    font.pixelSize: 32
-                    color: "#f0f0f0"
-                }
-                // Amp value box
-                Rectangle {
-                    id: ampValueBox
-                    x: 98
-                    y: 200
-                    width: 219
-                    height: 65
-                    color: "#222222"
-                    border.color: "#f0f0f0"
-                    border.width: 3
-                    // Amp value text
-                    TextInput {
-                        horizontalAlignment: Text.AlignRight
-                        id: ampValueText
-                        x: 8
-                        y: 8
-                        width: 203
-                        height: 49
-                        font.pixelSize: 32
-                        color: "#f0f0f0"
-                        readOnly: false
-                        validator: RegularExpressionValidator{
-                            regularExpression: /^([1-9]|[1-9][0-9]|100)/
-                        }
-                        onEditingFinished: {
-                            var values = ampValueText.text
-                            controller.changeAmplitude(selectedOperator.idProp, values);
-                        }
+                    id: opsinewaverectangle
+                    x: 2
+                    y: 1
+                    width: parent.width - 2
+                    height: parent.height - 2
+                    color: parent.color
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 1
+                    radius: 3
+                    SinWaveItem {
+                        id: opWaveView
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        //    		        anchors.rightMargin: 20
+                        //                            anchors.bottomMargin: 10
+                        width: parent.width - 3
+                        height: parent.height - 3
                     }
                 }
-                // Operator box
-                Rectangle {
-                    id: opDrag
-                    x: 350
-                    y: 22
-                    width: 450
-                    height: 300
-                    color: "#ff323f"
 
-                    // Make it respond to geastures
-                    MultiPointTouchArea{
-                        anchors.fill: parent
-                        anchors.rightMargin: 0
-                        anchors.bottomMargin: 0
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 0
-                        property var drag: parent
-                        property var offset : null
-                        property bool horiDrag: false
-                        property bool vertiDrag: false
-                        property real lastX: 0
-                        property real lastY: 0
-                        touchPoints: [
-                            TouchPoint {id: touch1}
-                        ]
-                        //                property var currentOp: null
+                // Make it respond to geastures
+                MultiPointTouchArea{
+                    anchors.fill: parent
+                    anchors.rightMargin: 8
+                    anchors.bottomMargin: 0
+                    anchors.leftMargin: 0
+                    anchors.topMargin: 0
+                    property var drag: parent
+                    property var offset : null
+                    property bool horiDrag: false
+                    property bool vertiDrag: false
+                    property real lastX: 0
+                    property real lastY: 0
+                    touchPoints: [
+                        TouchPoint {id: touch1}
+                    ]
 
-                        onTouchUpdated: {
-                            if (selectedOperator) {
-                                // TODO add multipliers !
-                                var freq = selectedOperator.getFreq();
-                                var amp = selectedOperator.getAmp();
-                                if(touchPoints.length > 0){
+                    onTouchUpdated: {
+                        if (selectedOperator) {
+                            // TODO add multipliers !
+                            var freq = selectedOperator.getFreq();
+                            var amp = selectedOperator.getAmp();
+                            if(touchPoints.length > 0){
 
-                                    var touchPoint = touchPoints[0]
-                                    var xDelta = touchPoint.sceneX - lastX;
-                                    var yDelta = touchPoint.sceneY - lastY;
-                                    lastX = touchPoint.sceneX;
-                                    lastY = touchPoint.sceneY;
+                                var touchPoint = touchPoints[0]
+                                var xDelta = touchPoint.sceneX - lastX;
+                                var yDelta = touchPoint.sceneY - lastY;
+                                lastX = touchPoint.sceneX;
+                                lastY = touchPoint.sceneY;
 
 
-                                    if (!horiDrag && !vertiDrag){
-                                        if (Math.abs(xDelta) > Math.abs(yDelta)){
-                                            horiDrag = true
-                                        } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
-                                            vertiDrag = true;
-                                        }
-                                    } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)){
+                                if (!horiDrag && !vertiDrag){
+                                    if (Math.abs(xDelta) > Math.abs(yDelta)){
+                                        horiDrag = true
+                                    } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
                                         vertiDrag = true;
-                                        horiDrag = false;
-                                    } else if ( vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)){
-                                        horiDrag = true;
-                                        vertiDrag = false;
                                     }
+                                } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)){
+                                    vertiDrag = true;
+                                    horiDrag = false;
+                                } else if ( vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)){
+                                    horiDrag = true;
+                                    vertiDrag = false;
+                                }
 
-                                    if(horiDrag) {
-                                        if (xDelta > 0){
-                                            console.log("here")
-                                            selectedOperator.setFrequency(1)
-                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                                        } else if (xDelta < 0){
-                                            console.log("there");
-                                            selectedOperator.setFrequency(-1)
-                                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                if(horiDrag) {
+                                    if (xDelta > 0){
+                                        if(operatorInfo.fineCheck){
+//                                            if (Math.abs(xDelta) > 10){
+//                                                selectedOperator.setFrequency(10)
+//                                            }
+//                                            else{
+                                                selectedOperator.setFrequency(0.5)
+//                                            }
+                                        } else {
+                                            selectedOperator.setFrequency(15)
                                         }
-                                    } else if(vertiDrag) {
-                                        if (yDelta < 0) {
-                                            selectedOperator.setAmplitude(1)
-                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
 
-                                        } else if (yDelta > 0){
-                                            selectedOperator.setAmplitude(-1)
-                                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                        controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+
+                                    } else if (xDelta < 0){
+                                        if(operatorInfo.fineCheck){
+//                                            if (Math.abs(xDelta) < -10){
+//                                                selectedOperator.setFrequency(-10)
+//                                            }
+//                                            else{
+                                                selectedOperator.setFrequency(-0.5)
+//                                             }
+                                        } else {
+                                            selectedOperator.setFrequency(-15)
                                         }
+
+                                        controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                    }
+                                } else if(vertiDrag) {
+                                    if (yDelta < 0) {
+                                        selectedOperator.setAmplitude(1)
+                                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+
+                                    } else if (yDelta > 0){
+                                        selectedOperator.setAmplitude(-1)
+                                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
                                     }
                                 }
                             }
                         }
+                    }
 
 
 
-                        onPressed: {
-                            var point = touchPoints[0]
+                    onPressed: {
+                        var point = touchPoints[0]
 
-                            parent.border.color = "pink"
-                            parent.border.width = 3
-                            parent.width = parent.width + 5
-                            parent.height = parent.height + 5
-                            offset = Qt.point(point.x, point.y);
-                            point.startSceneX = touchPoint.sceneX
-                            point.startSceneY = touchPoint.sceneY
-                            lastX = point.sceneX
-                            lastY = point.sceneY
-                        }
+                        opDrag.border.color = "pink"
+                        opDrag.border.width = 3
+                        opDrag.width = parent.width + 1
+                        opDrag.height = parent.height + 1
+                        offset = Qt.point(point.x, point.y);
+                        point.startSceneX = touchPoint.sceneX
+                        point.startSceneY = touchPoint.sceneY
+                        lastX = point.sceneX
+                        lastY = point.sceneY
+                    }
 
-                        onReleased: {
-                            parent.border.width = 0
-                            parent.width = parent.width - 5
-                            parent.height = parent.height - 5
-                            horiDrag = false;
-                            vertiDrag = false;
-
-                        }
+                    onReleased: {
+                        opDrag.border.width = 0
+                        opDrag.width = parent.width - 1
+                        opDrag.height = parent.height - 1
+                        horiDrag = false;
+                        vertiDrag = false;
 
                     }
 
                 }
 
+            }
+
+            Rectangle {
+                id: fine
+                x: 70
+                y: 202
+                width: 100
+                height: 40
+                color: "#323232"
+                anchors.horizontalCenterOffset: -320
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                MultiPointTouchArea{
+                    id: fineToggle
+                    anchors.fill: parent
+                    onPressed : {
+                        parent.border.width = 2;
+                        parent.border.color = "white";
+                        coarse.border.width = 0
+                        light2.color =  "#ff00ff";
+                        light1.color = "#7f7c7b";
+                        operatorInfo.coarseCheck = false;
+                        operatorInfo.fineCheck = true;
+                        console.log(fineSelected)
+                    }
+                    onReleased: {
+                        parent.border.width = 1;
+                        parent.border.color = "pink"
+                    }
+                }
+                Rectangle {
+                    id: light2
+                    x: 8
+                    y: 12
+                    width: 6
+                    height: 16
+                    color: "#7f7c7b"
+                }
+
+                Text {
+                    id: text3
+                    x: 30
+                    y: 12
+                    width: 40
+                    height: 17
+                    color: "#f0f0f0"
+                    text: qsTr("Fine")
+                    font.pixelSize: 12
+                }
+
+            }
+
+            Rectangle {
+                id: coarse
+                x: 70
+                y: 142
+                width: 100
+                height: 40
+                color: "#323232"
+                border.width: 1
+                border.color: "pink"
+                anchors.horizontalCenterOffset: -320
+                anchors.horizontalCenter: parent.horizontalCenter
+                //                    anchors.verticalCenter: parent.verticalCenter
+                MultiPointTouchArea{
+                    id: cearseToggle
+                    anchors.fill: parent
+                    onPressed: {
+                        parent.border.width = 2
+                        parent.border.color = "white"
+                        fine.border.width = 0
+                        light1.color =  "#ff00ff";
+                        light2.color = "#7f7c7b";
+                        operatorInfo.coarseCheck = true
+                        operatorInfo.fineCheck = false
+                    }
+                    onReleased: {
+                        parent.border.width = 1;
+                        parent.border.color = "pink"
+                    }
+                }
+                Rectangle {
+                    id: light1
+                    x: 6
+                    y: 13
+                    width: 6
+                    height: 16
+                    color: "#ff00ff"
+                }
+
+                Text {
+                    id: text2
+                    x: 31
+                    y: 12
+                    text: qsTr("Coarse")
+                    color: "#f0f0f0"
+                    font.pixelSize: 12
+                }
             }
 
         }
@@ -491,17 +780,17 @@ Window {
     }
 
 
-    AmpEnvGraphItem{
-        id: ampEnvGraphView
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin:0
-            anchors.bottomMargin: 310+bW
+        AmpEnvGraphItem{
+            id: ampEnvGraphView
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin:0
+                anchors.bottomMargin: 310+bW
 
 
-           width: ampEnvGraphView.W
-           height: ampEnvGraphView.H
-    }
+               width: ampEnvGraphView.W
+               height: ampEnvGraphView.H
+        }
 
 
     Rectangle {
