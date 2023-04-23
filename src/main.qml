@@ -15,7 +15,6 @@ Window {
     title: qsTr("VisualSynth")
     color: "#212121"
     property var selectedOperator: null
-    property var isSynthConnected: controller.isConnected()
 
     Component.onCompleted: {
         controller.setAmpEnvelopeSize(3); // controller.setReleaseAmpEnvelopeSize(3); ???
@@ -122,17 +121,8 @@ Window {
             anchors.bottom: parent.bottom
             anchors.leftMargin: 88
             anchors.bottomMargin: 54
-            color: "red"
+            color: controller.isConnected ? "green" : "red"
             radius: 50
-
-            states: State {
-                       name: "connectedstate"; when: isSynthConnected
-                       PropertyChanges {
-                           connectedRoundButton {
-                               color: "green"
-                           }
-                       }
-                    }
         }
 
 

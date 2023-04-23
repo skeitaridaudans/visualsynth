@@ -5,13 +5,17 @@
 #define USE_INTERSYNTH TRUE
 
 #include <stdexcept>
+#include <utility>
 #include "Api.h"
+
 #ifdef USE_INTERSYNTH
+
 #include "Intersynth/intersynth.h"
 
 #endif
 
-Api::Api() {
+Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateChange) : loveCommunicationTcp_(
+        std::move(onConnectionStateChange)) {
 #ifdef USE_INTERSYNTH
 
 
@@ -48,7 +52,8 @@ void Api::noteOff(unsigned char key) {
 #endif
 }
 
-void Api::sendOperatorValue(unsigned char operator_, unsigned char alg_index, bool attack, float frequency_factor, float amplitude) {
+void Api::sendOperatorValue(unsigned char operator_, unsigned char alg_index, bool attack, float frequency_factor,
+                            float amplitude) {
 #ifdef USE_INTERSYNTH
     loveCommunicationTcp_.sendOperatorValue(operator_, attack, alg_index, frequency_factor, amplitude);
 #endif
@@ -87,19 +92,19 @@ void Api::setAmpEnvelopeAttackValue(int index, float value, float time) {
 #endif
 }
 
-void Api::setAmpEnvelopeSize(int size){
+void Api::setAmpEnvelopeSize(int size) {
 #ifdef USE_INTERSYNTH
     loveCommunicationTcp_.setAttackAmpEnvelopeSize(size);
 #endif
 }
 
-void Api::setAmpReleaseEnvelopeSize(int size){
+void Api::setAmpReleaseEnvelopeSize(int size) {
 #ifdef USE_INTERSYNTH
     loveCommunicationTcp_.setReleaseAmpEnvelopeSize(size);
 #endif
 }
 
-void Api::setAmpReleaseEnvelopePoint(int index, float value, float time){
+void Api::setAmpReleaseEnvelopePoint(int index, float value, float time) {
 #ifdef USE_INTERSYNTH
     loveCommunicationTcp_.setReleaseAmpEnvelopePoint(index, value, time);
 #endif
