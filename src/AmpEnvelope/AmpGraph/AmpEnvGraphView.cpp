@@ -72,7 +72,7 @@ AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
 
 void AmpEnvGraphView::paintGraphContainer(QPainter *painter){
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(borderColor, 10));
+    painter->setPen(QPen(borderColor, 3));
     QRect rect = QRect(0, 0, this->width_, this->height_);
     painter->drawRect(rect);
 

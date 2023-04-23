@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <fstream>
 #include <utility>
+#include <QQmlEngine>
+#include <QQmlContext>
 #include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
@@ -106,6 +108,20 @@ void Controller::changeAmplitude(int operatorId, long amplitude) {
     operators_[operatorId].amplitude = amplitude;
     emit ampChanged(amplitude);
     sendOperator(operatorId);
+}
+
+void Controller::setOperatorLfoFrequency(int operatorId, long amount) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.frequencyLfoAmount = amount;
+
+    // TODO: Send to synth with api
+}
+
+void Controller::setOperatorLfoAmplitude(int operatorId, long amount) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.amplitudeLfoAmount = amount;
+
+    // TODO: Send to synth with api
 }
 
 void Controller::addModulator(int operatorId, int modulatorId) {

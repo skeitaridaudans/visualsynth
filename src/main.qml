@@ -459,12 +459,13 @@ Window {
 
             Text {
                 id: operatorName
-                x: 58
-                y: 8
-                text: qsTr("Operator: " + (selectedOperator ? selectedOperator.idProp+1 : ""))
+                x: 32
+                y: 16
+                text: qsTr("Operator " + (selectedOperator ? selectedOperator.idProp+1 : ""))
                 color: "#f0f0f0"
                 font.pixelSize: 32
-                font.underline: true
+                font.family: "Noto Sans"
+                font.weight: Font.Bold
             }
             // Operator box
             Rectangle {
@@ -615,163 +616,163 @@ Window {
 
             }
 
-            Rectangle {
-                id: fine
-                x: 70
-                y: 202
-                width: 100
-                height: 40
-                color: "#323232"
-                radius: 4
-                anchors.horizontalCenterOffset: -320
-                anchors.horizontalCenter: parent.horizontalCenter
-                state: operatorInfo.fineCheck ? "checked" : "unchecked"
-
-                states: [
-                    State {
-                        name: "checked"
-                        PropertyChanges {
-                            target: fine
-                            color: "#28ff00ff"
-                        }
-                        PropertyChanges {
-                            target: light2
-                            color: "#ff00ff"
-                        }
-                    },
-                    State {
-                        name: "unchecked"
-                        PropertyChanges {
-                            target: fine
-                            color: "#323232"
-                        }
-                        PropertyChanges {
-                            target: light2
-                            color: "#7f7c7b"
-                        }
-                    }
-                ]
-
-                transitions: [
-                    Transition {
-                        to: "checked"
-                        ColorAnimation {
-                            easing.type: Easing.OutQuad
-                            duration: 200
-                        }
-                    }
-                ]
-
-                MultiPointTouchArea{
-                    id: fineToggle
-                    anchors.fill: parent
-                    onPressed : {
-                        operatorInfo.coarseCheck = false;
-                        operatorInfo.fineCheck = true;
-                    }
-                }
-                Rectangle {
-                    id: light2
-                    width: 6
-                    height: 16
-                    radius: 2
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 8
-                }
-
-                Text {
-                    id: text3
-                    color: "#f0f0f0"
-                    text: qsTr("Fine")
-                    font.pixelSize: 13
-                    font.weight: Font.DemiBold
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: light2.right
-                    anchors.leftMargin: 14
-                }
-
+            Text {
+                id: freqControlTitle
+                color: "#9E9E9E"
+                text: "Frequency Control"
+                font.family: "Noto Sans"
+                anchors.top: operatorName.bottom
+                anchors.topMargin: 16
+                anchors.left: parent.left
+                anchors.leftMargin: 32
+                font.pointSize: 14
+                font.weight: Font.DemiBold
             }
 
             Rectangle {
-                id: coarse
-                x: 70
-                y: 142
-                width: 100
-                height: 40
-                radius: 4
-                anchors.horizontalCenterOffset: -320
-                anchors.horizontalCenter: parent.horizontalCenter
-                state: operatorInfo.coarseCheck ? "checked" : "unchecked"
+                id: freqControlBox
+                color: "transparent"
+                anchors.top: freqControlTitle.bottom
+                anchors.topMargin: 8
+                anchors.left: freqControlTitle.left
+                anchors.leftMargin: 8
+                height: freqControlBoxColumn.height
 
-                states: [
-                    State {
-                        name: "checked"
-                        PropertyChanges {
-                            target: coarse
-                            color: "#28ff00ff"
-                        }
-                        PropertyChanges {
-                            target: light1
-                            color: "#ff00ff"
-                        }
-                    },
-                    State {
-                        name: "unchecked"
-                        PropertyChanges {
-                            target: coarse
-                            color: "#323232"
-                        }
-                        PropertyChanges {
-                            target: light1
-                            color: "#7f7c7b"
+                Column {
+                    id: freqControlBoxColumn
+                    spacing: 16
+
+                    ToggleButton {
+                        id: fine
+                        enabled: operatorInfo.fineCheck
+                        text: qsTr("Fine")
+                        onPressed: {
+                            operatorInfo.coarseCheck = false;
+                            operatorInfo.fineCheck = true;
                         }
                     }
-                ]
 
-                transitions: [
-                    Transition {
-                        to: "checked"
-                        ColorAnimation {
-                            easing.type: Easing.OutQuad
-                            duration: 200
+                    ToggleButton {
+                        id: coarse
+                        enabled: operatorInfo.coarseCheck
+                        text: qsTr("Coarse")
+                        onPressed: {
+                            operatorInfo.coarseCheck = true;
+                            operatorInfo.fineCheck = false;
                         }
                     }
-                ]
-
-                //                    anchors.verticalCenter: parent.verticalCenter
-                MultiPointTouchArea{
-                    id: cearseToggle
-                    anchors.fill: parent
-                    onPressed: {
-                        operatorInfo.coarseCheck = true
-                        operatorInfo.fineCheck = false
-                    }
-                }
-                Rectangle {
-                    id: light1
-                    width: 6
-                    height: 16
-                    radius: 2
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 8
-                }
-
-                Text {
-                    id: text2
-                    text: qsTr("Coarse")
-                    color: "#f0f0f0"
-                    font.pixelSize: 13
-                    font.weight: Font.DemiBold
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: light1.right
-                    anchors.leftMargin: 14
                 }
             }
 
+            Text {
+                id: lfoOperatorOptionsTitle
+                color: "#9E9E9E"
+                text: "LFO"
+                font.family: "Noto Sans"
+                anchors.top: freqControlBox.bottom
+                anchors.topMargin: 16
+                anchors.left: parent.left
+                anchors.leftMargin: 32
+                font.pointSize: 14
+                font.weight: Font.DemiBold
+            }
+
+            Rectangle {
+                id: lfoOperatorOptionsBox
+                color: "transparent"
+                anchors.top: lfoOperatorOptionsTitle.bottom
+                anchors.topMargin: 8
+                anchors.left: lfoOperatorOptionsTitle.left
+                anchors.leftMargin: 8
+                height: lfoOperatorOptionsColumn.height
+
+                Column {
+                    id: lfoOperatorOptionsColumn
+                    spacing: 4
+
+                    Column {
+                        spacing: 2
+
+                        Text {
+                            id: frequencyAmount
+                            color: "#757575"
+                            text: "Frequency"
+                            font.family: "Noto Sans"
+                            font.pointSize: 12
+                        }
+
+                        Row {
+                            spacing: 8
+
+                            Text {
+                                id: lfoOperatorFreqAmountText
+                                text: `${selectedOperator ? selectedOperator.frequencyLfoAmount : 0}%`
+                                color: "#616161"
+                                height: 40
+                                width: 32
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.topMargin: 8
+                            }
+                            Slider {
+                                id: lfoOperatorFreqAmountSlider
+                                height: 40
+                                width: 96
+
+                                from: 0
+                                to: 100
+                                value: selectedOperator ? selectedOperator.frequencyLfoAmount : 0
+                                onMoved: {
+                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, lfoOperatorFreqAmountSlider.value);
+
+                                    // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
+                                    // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
+                                    // which will cause qt to crash if you have a signal for when the properties in Operator change
+                                    lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
+                        spacing: 2
+
+                        Text {
+                            id: amplitudeAmount
+                            color: "#757575"
+                            text: "Amplitude"
+                            font.family: "Noto Sans"
+                            font.pointSize: 12
+                        }
+                        Row {
+                            spacing: 8
+
+                            Text {
+                                id: lfoOperatorAmpAmountText
+                                text: `${selectedOperator ? selectedOperator.amplitudeLfoAmount : 0}%`
+                                color: "#616161"
+                                height: 40
+                                width: 32
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.topMargin: 8
+                            }
+
+                            Slider {
+                                id: lfoOperatorAmpAmountSlider
+                                height: 40
+                                width: 96
+
+                                from: 0
+                                to: 100
+                                value: selectedOperator ? selectedOperator.amplitudeLfoAmount : 0
+                                onMoved: {
+                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, lfoOperatorAmpAmountSlider.value);
+                                    lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -820,24 +821,111 @@ Window {
         }
     }
 
+    Rectangle {
+        id: lfoOptions
+        width: 857
+        height: 100
+        color: "transparent"
 
-        AmpEnvGraphItem{
-            id: ampEnvGraphView
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.rightMargin:0
-                anchors.bottomMargin: 310+bW
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.top: operatorInfo.bottom
+        anchors.topMargin: 0
 
-
-               width: ampEnvGraphView.W
-               height: ampEnvGraphView.H
+        Text {
+            id: lfoOptionsTitle
+            color: "#ffffff"
+            text: "LFO"
+            font.family: "Noto Sans"
+            anchors.left: parent.left
+            anchors.leftMargin: 24
+            anchors.topMargin: 8
+            anchors.top: parent.top
+            verticalAlignment: Text.AlignTop
+            font.pointSize: 18
+            font.weight: Font.Bold
         }
+
+        ToggleButton {
+            id: lfoEnabled
+            anchors.top: lfoOptionsTitle.bottom
+            anchors.topMargin: 8
+            anchors.left: lfoOptionsTitle.left
+            anchors.leftMargin: 0
+            enabled: controller.lfoEnabled
+            text: qsTr("Enabled")
+            onPressed: {
+                controller.lfoEnabled = !controller.lfoEnabled;
+            }
+        }
+
+        Text {
+            id: lfoRateTitle
+            color: "#9E9E9E"
+            text: "Rate"
+            height: lfoOptionsTitle.height
+            font.family: "Noto Sans"
+            anchors.left: lfoOptionsTitle.right
+            anchors.leftMargin: 96
+            anchors.topMargin: 8
+            anchors.top: parent.top
+            verticalAlignment: Text.AlignBottom
+            horizontalAlignment: Text.AlignLeft
+            font.pointSize: 14
+            font.weight: Font.DemiBold
+        }
+
+        Text {
+            id: lfoRateValue
+            text: `${controller.lfoFrequency / 10} Hz`
+            color: "#757575"
+            height: 40
+            width: 32
+            anchors.left: lfoRateTitle.left
+            anchors.leftMargin: 8
+            anchors.top: lfoRateTitle.bottom
+            anchors.topMargin: 8
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Slider {
+            id: lfoSlider
+            width: 400
+            height: 40
+            anchors.left: lfoRateValue.right
+            anchors.leftMargin: 16
+            anchors.top: lfoRateTitle.bottom
+            anchors.topMargin: 8
+
+            from: 1
+            to: 200
+            stepSize: 1
+            value: controller.lfoFrequency
+            onMoved: {
+                controller.lfoFrequency = lfoSlider.value
+            }
+        }
+    }
+
+    AmpEnvGraphItem{
+        id: ampEnvGraphView
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.top: lfoOptions.bottom
+        anchors.topMargin: 0
+
+        width: ampEnvGraphView.W
+        height: ampEnvGraphView.H
+    }
 
 
     Rectangle {
         id: dialContainer
         width: ampEnvGraphView.width
         height: 140
+        enabled: false
+        visible: false
         color: "transparent"
         border.width: ampEnvGraphView.bW
         border.color: ampEnvGraphView.bColor

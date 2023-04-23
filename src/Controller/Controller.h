@@ -26,6 +26,8 @@ public:
     Q_INVOKABLE void removeOperator(int operatorId);
     Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
     Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
+    Q_INVOKABLE void setOperatorLfoFrequency(int operatorId, long amount);
+    Q_INVOKABLE void setOperatorLfoAmplitude(int operatorId, long amount);
     Q_INVOKABLE void addModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void removeModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void noteOn(int note);
@@ -51,6 +53,8 @@ public:
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
     Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);
+    Q_PROPERTY(bool lfoEnabled MEMBER lfoEnabled_ NOTIFY lfoEnabledChanged);
+    Q_PROPERTY(long lfoFrequency MEMBER lfoFrequency_ NOTIFY lfoFrequencyChanged);
 
 signals:
     // Signals for operators
@@ -60,6 +64,8 @@ signals:
     Q_SIGNAL void freqChanged(long freq);
     Q_SIGNAL void showPresetsChanged(bool showPresets);
     Q_SIGNAL void isConnectedChanged(bool isConnected);
+    Q_SIGNAL void lfoEnabledChanged(bool lfoEnabled);
+    Q_SIGNAL void lfoFrequencyChanged(long lfoFrequency);
 
 
 private:
@@ -78,6 +84,9 @@ private:
     std::unique_ptr<Api> api;
     bool showPresets_;
     bool isConnected_;
+    bool lfoEnabled_;
+    // 60 is 6 Hz
+    long lfoFrequency_ = 60;
 
     void loadInitialPreset();
 };
