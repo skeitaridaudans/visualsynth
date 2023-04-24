@@ -8,17 +8,17 @@
 #include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
+const double kGraphicsFrequencyFactor = 40.0;
 
 std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
 
 Controller::Controller(QObject *parent) : QObject(parent) {
+    api = std::make_unique<Api>([this] (auto state) {
+        onConnectionStateChanged(state);
+    });
+
     resetAvailableOperatorIds();
     loadInitialPreset();
-}
-
-bool Controller::isConnected() {
-    //Breki - checks if connection to the synth is working
-    return true;
 }
 
 void Controller::loadInitialPreset() {
@@ -28,6 +28,8 @@ void Controller::loadInitialPreset() {
     defaultOperators.insert(
             std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
 
+    QString defaultname = "default";
+
     // TODO: Configure these values better
     const std::vector<AmpEnvValue> defaultAmpEnv = {
         AmpEnvValue(0, 0.5328, 0, true),
@@ -36,13 +38,13 @@ void Controller::loadInitialPreset() {
                 AmpEnvValue(3, 0.5328, 5.0, true)
     };
 
-    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv);
+    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
     changeToPreset(defaultPreset);
 }
 
 std::optional<int> Controller::addOperator() {
     if (operators_.size() >= kMaxNumberOfOperators) {
-        AlertController::instance->showAlert("Error: Only 8 operators allowed");
+        AlertController::instance->showAlert("Error: Only 8 operators allowed",1);
         return std::nullopt;
     }
 
@@ -69,30 +71,30 @@ void Controller::removeOperator(int operatorId) {
             op.second.modulatedBy.erase(
                     std::remove(op.second.modulatedBy.begin(), op.second.modulatedBy.end(), operatorId),
                     op.second.modulatedBy.end());
-            api.removeModulator(op.second.id, operatorId);
+            api->removeModulator(op.second.id, operatorId);
         }
     }
 }
 
 void Controller::noteOn(int note) {
-    api.noteOn(note);
+    api->noteOn(note);
 }
 
 void Controller::noteOff(int note) {
-    api.noteOff(note);
+    api->noteOff(note);
 }
 
 void Controller::setAmpEnvelopeSize(int size) {
-    api.setAmpEnvelopeSize(size);
+    api->setAmpEnvelopeSize(size);
 }
 
 void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
-    api.setAmpEnvelopeAttackValue(index, value, time);
+    api->setAmpEnvelopeAttackValue(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, true);
 }
 
 void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) {
-    api.setAmpReleaseEnvelopePoint(index, value, time);
+    api->setAmpReleaseEnvelopePoint(index, value, time);
     ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
 }
 
@@ -123,7 +125,7 @@ void Controller::removeModulator(int operatorId, int modulatorId) {
     auto &mod = operators_[modulatorId];
 
     op.modulatedBy.erase(std::remove(op.modulatedBy.begin(), op.modulatedBy.end(), modulatorId), op.modulatedBy.end());
-    api.removeModulator(operatorId, modulatorId);
+    api->removeModulator(operatorId, modulatorId);
 
     // Check if modulator is modulating any other operator before setting isModulator to false
     for (const auto &op_: operators_) {
@@ -146,7 +148,7 @@ void Controller::removeCarrier(int operatorId) {
     if (!operators_[operatorId].isCarrier) return;
 
     operators_[operatorId].isCarrier = false;
-    api.removeCarrier(operatorId);
+    api->removeCarrier(operatorId);
 }
 
 void Controller::sendOperator(int operatorId) {
@@ -156,7 +158,7 @@ void Controller::sendOperator(int operatorId) {
     float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
     //float freq = (op.frequency - 1 + 0.001)/(100-1);
     float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
-    api.sendOperatorValue(op.id, 0, 1, freq, amp);
+    api->sendOperatorValue(op.id, 0, 1, freq, amp);
 
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.3, (((op->frequency/200.0*100.0)-50.0)/20.0)), std::pow(1.3, (((op->amplitude/60.0*100.0)-50)/20.0))-0.3);
     //api.sendOperatorValue(op->id, 1, 0, std::pow(1.90366, ((float)op->frequency / 20.0)), std::pow(1.6, (((float)(op->amplitude)-50)/20.0))-0.3);
@@ -174,13 +176,13 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
 
     const auto &operator_ = getOperatorById(operatorId);
     if (operator_.isCarrier) {
-        api.addCarrier(operatorId);
+        api->addCarrier(operatorId);
     }
 
     sendOperator(operatorId);
 
     for (const auto &modulatorId: operator_.modulatedBy) {
-        api.addModulator(operatorId, modulatorId);
+        api->addModulator(operatorId, modulatorId);
 
         sendAllOperatorInfo(modulatorId, visited_);
     }
@@ -229,11 +231,16 @@ Operator *Controller::getSelectedOperator() {
 
 void Controller::savePreset(const std::string &name) {
     std::vector <AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
-    json json(Preset(operators_, ampEnvPoints));
+    json json(Preset(operators_, ampEnvPoints,QString::fromStdString(name)));
 
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
     file.close();
+
+
+    //Alert that a preset has been saved
+    QString str = QString("the preset '%1' has been saved to presets ").arg( QString::fromStdString(name));
+    AlertController::instance->showAlert(str, 0);
 }
 
 void Controller::loadPreset(const std::string &name) {
@@ -266,6 +273,11 @@ void Controller::changeToPreset(const Preset &preset) {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
+
+    //Alert that a preset has been loaded
+    QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
+    AlertController::instance->showAlert(str, 0);
+
 }
 
 void Controller::removeAllModulators() {
@@ -305,3 +317,39 @@ void Controller::hidePresets() {
     showPresets_ = false;
     showPresetsChanged(false);
 }
+
+double Controller::getOperatorModulationValue(int operatorId, int offset) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.visitedCount++;
+
+    double modulationSum = 0.0;
+    for (const auto modulatorId : operator_.modulatedBy) {
+        const auto& modulator = getOperatorById(modulatorId);
+        if (modulator.visitedCount < 2) {
+            modulationSum += getOperatorModulationValue(modulatorId, offset);
+        }
+    }
+    operator_.visitedCount--;
+
+    double frequency = (double) operator_.frequency / 100.0;
+    double amplitude = (double) operator_.amplitude / 100.0;
+    return sin(modulationSum - (double) (offset) * M_PI * 2 * frequency / kGraphicsFrequencyFactor) * amplitude;
+}
+
+double Controller::getCarrierOutput(int offset) {
+    double totalSample = 0.0;
+
+    for (const auto& operator_ : operators_) {
+        if (operator_.second.isCarrier) {
+            totalSample += getOperatorModulationValue(operator_.first, offset);
+        }
+    }
+
+    return totalSample;
+}
+
+void Controller::onConnectionStateChanged(QTcpSocket::SocketState state) {
+    isConnected_ = state == QTcpSocket::SocketState::ConnectedState;
+    isConnectedChanged(isConnected_);
+}
+

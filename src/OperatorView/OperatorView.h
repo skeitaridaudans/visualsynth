@@ -14,6 +14,7 @@
 #include "AddOperatorBox.h"
 #include "OperatorDrawer.h"
 #include "DeleteOperatorBox.h"
+#include "src/Utils/TweenAnimation.h"
 
 class AddOperatorBox;
 
@@ -52,6 +53,8 @@ private:
     std::unique_ptr<OperatorDrawer> operatorDrawer_;
     std::unique_ptr<AddOperatorBox> newBox_;
     std::unique_ptr<DeleteOperatorBox> deleteOperatorBox_;
+    TweenAnimation carrierLinePulseAnim_;
+    double carrierLineBoxOpacity_ = 1.0;
     TouchPoint primaryTouchPoint_;
     TouchPoint secondaryTouchPoint_;
     bool isUsingMouse_;

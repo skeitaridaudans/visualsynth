@@ -7,7 +7,7 @@
 class LoveCommunicationTcp
 {
 public:
-    LoveCommunicationTcp();
+    LoveCommunicationTcp(std::function<void (QTcpSocket::SocketState state)> onStateChange);
 
     bool connectToServer(QString ip, int port);
     void disconnectFromServer();
@@ -27,6 +27,7 @@ public:
 
 private:
     QTcpSocket socket;
+    std::function<void (QTcpSocket::SocketState state)> onStateChange;
     QByteArray getMessageBytes();
     void sendMessageBytes(QByteArray msg);
 

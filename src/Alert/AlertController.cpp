@@ -4,7 +4,7 @@
 
 #include "AlertController.h"
 
-const double kAlertTime = 1000;
+const double kAlertTime = 2500;
 
 std::unique_ptr<AlertController> AlertController::instance = std::make_unique<AlertController>();
 
@@ -12,8 +12,9 @@ AlertController::AlertController(QObject *parent) : QObject(parent) {
 
 }
 
-void AlertController::showAlert(const QString &text) {
+void AlertController::showAlert(const QString &text, const bool isErr) {
     setAlertText(text);
+    updateAlertColor(isErr);
     setAlertVisibleState(kVisibleState);
     alertShownTime_ = std::chrono::high_resolution_clock::now();
 }
@@ -30,12 +31,25 @@ void AlertController::update() {
     }
 }
 
+void AlertController::updateAlertColor(bool failed) {
+    if (failed == 1){
+        setAlertColor(this->failedColor_);
+    } else {
+        setAlertColor(this->successColor_);
+    }
+}
+
+
 QString AlertController::alertVisibleState() {
     return alertVisibleState_;
 }
 
 QString AlertController::alertText() {
     return alertText_;
+}
+
+QColor AlertController::alertColor() {
+    return alertColor_;
 }
 
 void AlertController::setAlertVisibleState(const QString &state) {
@@ -46,4 +60,9 @@ void AlertController::setAlertVisibleState(const QString &state) {
 void AlertController::setAlertText(const QString &text) {
     alertText_ = text;
     alertTextChanged(text);
+}
+
+void AlertController::setAlertColor(const QColor &color) {
+    alertColor_ = color;
+    alertColorChanged(color);
 }

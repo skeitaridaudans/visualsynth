@@ -6,6 +6,7 @@ import SinViewItem
 import OperatorView
 import OperatorPresetsView
 import AmpEnvGraphView
+import OutputWaveView
 
 Window {
     id: window
@@ -40,9 +41,6 @@ Window {
 
             var color = selectedOperator.getColorForOperator();
 
-            waveView.setFrequency(operator.freqProp);
-            waveView.setAmplitude(operator.ampProp);
-
             opWaveView.setFrequency(operator.freqProp);
             opWaveView.setAmplitude(operator.ampProp);
             opWaveView.setColor(color);
@@ -52,15 +50,12 @@ Window {
         function onOperatorDeselected(deselected){
             opContainer.enabled = false;
             opContainer.visible = false;
-
-            waveView.setFrequency(0);
-            waveView.setAmplitude(0);
         }
 
         function onFreqChanged(freq){
-
             freqText.text = parseFloat(freq).toFixed(1) + ""
             waveView.setFrequency(freq);
+
             opWaveView.setFrequency(freq);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
@@ -70,7 +65,6 @@ Window {
         function onAmpChanged(amp) {
             ampText.text = amp + ""
             opWaveView.setAmplitude(amp);
-            waveView.setAmplitude(amp);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
@@ -102,8 +96,8 @@ Window {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -3
         radius: 3
-        SinWaveItem {
-            id: waveView
+        OutputWaveView {
+            id: outputWaveView
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.rightMargin: 20
@@ -112,23 +106,22 @@ Window {
             height: 100
         }
 
-        RoundButton {
+
+        Rectangle {
             id: connectedRoundButton
             x: 88
-            //state: connected ? "Synth_connected" : "Synth_not_connected"    // trying to make color change
             y: 94
             width: 34
             height: 34
-            text: ""
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             anchors.leftMargin: 88
-            anchors.bottomMargin: 54 //
-            background: Rectangle {
-                radius: connectedRoundButton.radius
-                color: "#55ff00"
-            }
+            anchors.bottomMargin: 54
+            color: controller.isConnected ? "green" : "red"
+            radius: 50
         }
+
+
 
         Text {
             id: connectedText
@@ -148,6 +141,8 @@ Window {
         }
 
     }
+
+
 
     Rectangle {
         id: operatorrectangle
@@ -171,13 +166,13 @@ Window {
 
         Button {
             id: button1
-            width: 114
-            height: 42
+            width: 250
+            height: 50
             text: qsTr("Presets")
-            anchors.left: parent.left
+
             anchors.top: parent.top
-            anchors.leftMargin: 62
-            anchors.topMargin: 52
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 50
             onPressed: {
                 controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
@@ -187,8 +182,11 @@ Window {
         Rectangle {
             id: presetsContainer
             visible: controller.showPresets
-            x: 62
-            y: 88
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: button1.height*2
+
             width: 450
             height: 450
             color: "#323232"
@@ -196,27 +194,12 @@ Window {
 
             OperatorPresetsView {
                 id: presetsView
-                anchors.left: parent.left
+               anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.fill: parent
                 enabled: controller.showPresets
             }
         }
-
-        // ComboBox {
-
-        //var bleBle = qsTr(presets.getName() + "hello");
-        //var bleBle = text()"helloooo";
-        // id: presetDropdown
-        // x: 412
-        // y: 57
-        // width: 262
-        // height: 36
-        //model: ["Preset 1", "Preset 2", bleBle]  // , String(bleBle)
-        // textRole: "key"
-        // model: controller.loadAvailablePresets()
-
-        // }
 
 
     }
@@ -740,18 +723,50 @@ Window {
         }
     }
 
+    Rectangle {
+        id: rectangle1
+        y: 965
+        width: 510
+        height: 55
+        color: alertController.alertColor
+        radius: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 62
+        anchors.horizontalCenter: parent.horizontalCenter
+        state: alertController.alertVisibleState
 
-    /*Text {
-        id: presetsText
-        x: 347
-        y: 62
-        width: 68
-        height: 27
-        color: "#ffffff"
-        text: qsTr("Presets")
-        font.pixelSize: 18
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: -53; opacity: 0 }
+            },
+            State {
+                name: "visible"
+                PropertyChanges { target: rectangle1; anchors.bottomMargin: 62; opacity: 1 }
+            }
+        ]
 
-    }*/
+        transitions: [
+            Transition {
+                to: "invisible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            },
+            Transition {
+                to: "visible"
+                NumberAnimation { properties: "anchors.bottomMargin,opacity"; easing.type: Easing.InOutQuad; duration: 400; loops: 1 }
+            }
+        ]
+
+        Text {
+            id: text1
+            color: "#ffffff"
+            text: alertController.alertText
+            anchors.fill: parent
+            font.pixelSize: 22
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
 
 
         AmpEnvGraphItem{
