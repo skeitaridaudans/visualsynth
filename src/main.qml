@@ -43,6 +43,9 @@ Window {
             opWaveView.setAmplitude(operator.ampProp);
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
+
+            lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
+            lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
         }
 
         function onOperatorDeselected(deselected){
