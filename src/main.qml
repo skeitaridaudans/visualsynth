@@ -27,10 +27,12 @@ Window {
     }
 
     Connections {
+
         target: controller
         function onOperatorSelected(operator) {
+
             selectedOperator = operator
-            freqText.text = operator.freqProp + ""
+            freqText.text = parseFloat(operator.freqProp).toFixed(1) + ""
             ampText.text = operator.ampProp + ""
 
             opContainer.enabled = true
@@ -56,7 +58,8 @@ Window {
         }
 
         function onFreqChanged(freq){
-            freqText.text = freq + ""
+
+            freqText.text = parseFloat(freq).toFixed(1) + ""
             waveView.setFrequency(freq);
             opWaveView.setFrequency(freq);
             var color = selectedOperator.getColorForOperator();
@@ -567,28 +570,28 @@ Window {
                                 if(horiDrag) {
                                     if (xDelta > 0){
                                         if(operatorInfo.fineCheck){
-//                                            if (Math.abs(xDelta) > 10){
-//                                                selectedOperator.setFrequency(10)
-//                                            }
-//                                            else{
-                                                selectedOperator.setFrequency(0.5)
-//                                            }
+                                            if (Math.abs(xDelta) > 10){
+                                                selectedOperator.setFrequency(5)
+                                            }
+                                            else{
+                                                selectedOperator.setFrequency(0.1)
+                                            }
                                         } else {
-                                            selectedOperator.setFrequency(15)
+                                            selectedOperator.setFrequency(10)
                                         }
 
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
 
                                     } else if (xDelta < 0){
                                         if(operatorInfo.fineCheck){
-//                                            if (Math.abs(xDelta) < -10){
-//                                                selectedOperator.setFrequency(-10)
-//                                            }
-//                                            else{
-                                                selectedOperator.setFrequency(-0.5)
-//                                             }
+                                            if (Math.abs(xDelta) < -10){
+                                                selectedOperator.setFrequency(-5)
+                                            }
+                                            else{
+                                                selectedOperator.setFrequency(-0.1)
+                                             }
                                         } else {
-                                            selectedOperator.setFrequency(-15)
+                                            selectedOperator.setFrequency(-10)
                                         }
 
                                         controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
@@ -657,7 +660,6 @@ Window {
                         light1.color = "#7f7c7b";
                         operatorInfo.coarseCheck = false;
                         operatorInfo.fineCheck = true;
-                        console.log(fineSelected)
                     }
                     onReleased: {
                         parent.border.width = 1;
@@ -824,7 +826,6 @@ Window {
 
             property real commonValue;
             onValueChanged: {
-                console.log("value changed")
                 ampEnvGraphView.decay = Qt.point(dialDecay.value,ampEnvGraphView.decay.y);
                 controller.setAttackAmpEnvelopePoint(2, 1 - (dialSustain.value/300), ((dialDecay.value - 100)/500));
 
@@ -898,8 +899,6 @@ Window {
 
                 controller.setReleaseAmpEnvelopePoint(0, 1 - (dialSustain.value/300), 0)
                 controller.setReleaseAmpEnvelopePoint(1, 0, dialRelease.value);
-                console.log(dialRelease.value);
-
             }
 
             Label {

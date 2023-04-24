@@ -33,7 +33,7 @@ Operator::Operator(const Operator &operator_)
           isModulator(operator_.isModulator), isCarrier(operator_.isCarrier), modulatedBy(operator_.modulatedBy),
           position(operator_.position), operatorViewState(operator_.operatorViewState) {}
 
-void Operator::setFrequency(long step) {
+void Operator::setFrequency(float step) {
     if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0)) {
         this->frequency = this->frequency + step;
     }
@@ -49,7 +49,7 @@ long Operator::getAmp() {
     return this->amplitude;
 }
 
-long Operator::getFreq() {
+float Operator::getFreq() {
     return this->frequency;
 }
 
@@ -59,7 +59,7 @@ QColor Operator::getColorForOperator() const {
                   (int) ((log10((double) this->amplitude) / 4.38) * 255.0));
 }
 
-Operator::Operator(int id, long frequency, long amplitude, bool isModulator, bool isCarrier,
+Operator::Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier,
                    std::vector<int> modulatedBy, QPointF position, QObject *parent)
         : id(id), frequency(frequency), amplitude(amplitude), isModulator(isModulator), isCarrier(isCarrier),
           modulatedBy(std::move(modulatedBy)), position(position) {

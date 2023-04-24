@@ -25,7 +25,7 @@ public:
     Q_INVOKABLE bool isConnected();     //Breki - checks if connection to the synth is working
     Q_INVOKABLE std::optional<int> addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
-    Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
+    Q_INVOKABLE void changeFrequency(int operatorId, float frequency);
     Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
     Q_INVOKABLE void addModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void removeModulator(int operatorId, int modulatorId);
@@ -55,7 +55,7 @@ signals:
     Q_SIGNAL void operatorSelected(Operator* op);
     Q_SIGNAL void operatorDeselected(bool deselected);
     Q_SIGNAL void ampChanged(long amp);
-    Q_SIGNAL void freqChanged(long freq);
+    Q_SIGNAL void freqChanged(float freq);
     Q_SIGNAL void showPresetsChanged(bool showPresets);
 
 private:

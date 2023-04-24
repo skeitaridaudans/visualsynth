@@ -96,7 +96,7 @@ void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) 
     ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
 }
 
-void Controller::changeFrequency(int operatorId, long frequency) {
+void Controller::changeFrequency(int operatorId, float frequency) {
     operators_[operatorId].frequency = frequency;
     emit freqChanged(frequency);
     sendOperator(operatorId);
@@ -154,6 +154,7 @@ void Controller::sendOperator(int operatorId) {
     // Núverandi range 0 - 200 20 er lægsta nóta sem heyrist hæsta er 175 þá er 100 byrjunar nóta.
 
     float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
+    //float freq = (op.frequency - 1 + 0.001)/(100-1);
     float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
     api.sendOperatorValue(op.id, 0, 1, freq, amp);
 
