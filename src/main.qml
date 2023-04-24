@@ -852,10 +852,10 @@ Window {
             anchors.topMargin: 8
             anchors.left: lfoOptionsTitle.left
             anchors.leftMargin: 0
-            enabled: controller.lfoEnabled
+            enabled: controller.isLfoEnabled
             text: qsTr("Enabled")
             onPressed: {
-                controller.lfoEnabled = !controller.lfoEnabled;
+                controller.setLfoEnabled(!controller.isLfoEnabled);
             }
         }
 
@@ -903,7 +903,7 @@ Window {
             stepSize: 1
             value: controller.lfoFrequency
             onMoved: {
-                controller.lfoFrequency = lfoSlider.value
+                controller.setLfoFrequency(lfoSlider.value);
             }
         }
     }
