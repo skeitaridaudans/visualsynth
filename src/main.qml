@@ -505,7 +505,7 @@ Window {
                     id: opsinewaverectangle
                     x: 2
                     y: 1
-                    width: parent.width - 2
+                    width: parent.width - 4
                     height: parent.height - 2
                     color: parent.color
                     anchors.bottom: parent.bottom
@@ -514,6 +514,7 @@ Window {
                     SinWaveItem {
                         id: opWaveView
                         anchors.right: parent.right
+                        anchors.rightMargin: 2
                         anchors.bottom: parent.bottom
                         //    		        anchors.rightMargin: 20
                         //                            anchors.bottomMargin: 10
@@ -584,7 +585,7 @@ Window {
 
                                     } else if (xDelta < 0){
                                         if(operatorInfo.fineCheck){
-                                            if (Math.abs(xDelta) < -10){
+                                            if (xDelta < -10){
                                                 selectedOperator.setFrequency(-5)
                                             }
                                             else{

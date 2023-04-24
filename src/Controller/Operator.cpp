@@ -34,7 +34,7 @@ Operator::Operator(const Operator &operator_)
           position(operator_.position), operatorViewState(operator_.operatorViewState) {}
 
 void Operator::setFrequency(float step) {
-    if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0)) {
+    if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0.9)) {
         this->frequency = this->frequency + step;
     }
 }
@@ -56,7 +56,7 @@ float Operator::getFreq() {
 
 QColor Operator::getColorForOperator() const {
     return QColor((int) ((log10((double) this->frequency) / 4.38) * 255.0), 20,
-                  (int) ((log10((double) this->amplitude) / 4.38) * 255.0));
+                  (int) ((log10((double) this->amplitude+1) / 4.38) * 255.0));
 }
 
 Operator::Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier,
