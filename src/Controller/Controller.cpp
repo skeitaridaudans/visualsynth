@@ -38,7 +38,7 @@ void Controller::loadInitialPreset() {
                 AmpEnvValue(3, 0.5328, 5.0, true)
     };
 
-    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
+    const Preset defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
     changeToPreset(defaultPreset);
 }
 
@@ -274,9 +274,13 @@ void Controller::changeToPreset(const Preset &preset) {
         }
     }
 
+    if(!isFirst_){
     //Alert that a preset has been loaded
-    QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
-    AlertController::instance->showAlert(str, 0);
+        QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
+        AlertController::instance->showAlert(str, 0);
+    } else {
+        isFirst_ = false;
+    }
 
 }
 
