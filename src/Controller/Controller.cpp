@@ -8,7 +8,7 @@
 #include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
-const double kGraphicsFrequencyFactor = 40.0;
+const double kGraphicsFrequencyFactor = 160.0;
 
 std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
 
@@ -322,7 +322,15 @@ void Controller::hidePresets() {
     showPresetsChanged(false);
 }
 
-double Controller::getOperatorModulationValue(int operatorId, int offset) {
+double Controller::getSingleOperatorValue(int operatorId, double offset) {
+    auto& operator_ = getOperatorById(operatorId);
+
+    double frequency = std::pow(1.90366, (double) (operator_.frequency - 100) / 20.0);
+    double amplitude = std::pow(1.6, (double) (operator_.amplitude - 50) / 20.0) - 0.3;
+    return sin(-(double) (offset) * M_PI * 2 * frequency / kGraphicsFrequencyFactor) * amplitude;
+}
+
+double Controller::getOperatorModulationValue(int operatorId, double offset) {
     auto& operator_ = getOperatorById(operatorId);
     operator_.visitedCount++;
 
@@ -335,12 +343,12 @@ double Controller::getOperatorModulationValue(int operatorId, int offset) {
     }
     operator_.visitedCount--;
 
-    double frequency = (double) operator_.frequency / 100.0;
-    double amplitude = (double) operator_.amplitude / 100.0;
+    double frequency = std::pow(1.90366, (double) (operator_.frequency - 100) / 20.0);
+    double amplitude = std::pow(1.6, (double) (operator_.amplitude - 50) / 20.0) - 0.3;
     return sin(modulationSum - (double) (offset) * M_PI * 2 * frequency / kGraphicsFrequencyFactor) * amplitude;
 }
 
-double Controller::getCarrierOutput(int offset) {
+double Controller::getCarrierOutput(double offset) {
     double totalSample = 0.0;
 
     for (const auto& operator_ : operators_) {

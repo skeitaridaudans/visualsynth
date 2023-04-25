@@ -17,11 +17,11 @@ public:
     void paint(QPainter *painter) override;
 
 private:
-    std::deque<double> waveValues_;
-    int currentXOffset_;
+    QList<QPointF> waveValues_;
+    double currentXOffset_;
     std::chrono::time_point<std::chrono::high_resolution_clock> moveOffsetUpdateTime_;
 
-    double getValueAtOffset(int offset);
+    double getValueAtOffset(double offset);
 };
 
 

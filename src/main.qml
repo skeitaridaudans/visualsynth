@@ -2,11 +2,11 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQml 2.0
-import SinViewItem
 import OperatorView
 import OperatorPresetsView
 import AmpEnvGraphView
 import OutputWaveView
+import OperatorWaveView
 
 Window {
     id: window
@@ -41,8 +41,6 @@ Window {
 
             var color = selectedOperator.getColorForOperator();
 
-            opWaveView.setFrequency(operator.freqProp);
-            opWaveView.setAmplitude(operator.ampProp);
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
         }
@@ -54,9 +52,7 @@ Window {
 
         function onFreqChanged(freq){
             freqText.text = parseFloat(freq).toFixed(1) + ""
-            waveView.setFrequency(freq);
 
-            opWaveView.setFrequency(freq);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
@@ -64,7 +60,6 @@ Window {
 
         function onAmpChanged(amp) {
             ampText.text = amp + ""
-            opWaveView.setAmplitude(amp);
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
@@ -494,7 +489,7 @@ Window {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 1
                     radius: 3
-                    SinWaveItem {
+                    OperatorWaveView {
                         id: opWaveView
                         anchors.right: parent.right
                         anchors.rightMargin: 2
