@@ -71,7 +71,7 @@ private:
     void removeAllModulatorsForOperator(int operatorId);
     void onConnectionStateChanged(QTcpSocket::SocketState state);
 
-    bool isFirst_ = true;
+    bool isFirst_ = true; // This is used to avoid the program crashing while loading the initial preset
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;

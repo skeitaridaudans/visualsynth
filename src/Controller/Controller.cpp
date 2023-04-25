@@ -273,7 +273,7 @@ void Controller::changeToPreset(const Preset &preset) {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
-
+    // This is to avoid the program crashing when loading the first preset.
     if(!isFirst_){
     //Alert that a preset has been loaded
         QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
