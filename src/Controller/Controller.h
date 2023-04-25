@@ -71,6 +71,7 @@ private:
     void removeAllModulatorsForOperator(int operatorId);
     void onConnectionStateChanged(QTcpSocket::SocketState state);
 
+    bool isFirst_ = true;
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
