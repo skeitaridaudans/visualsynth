@@ -38,7 +38,7 @@ void Controller::loadInitialPreset() {
                 AmpEnvValue(3, 0.5328, 5.0, true)
     };
 
-    const auto defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
+    const Preset defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
     changeToPreset(defaultPreset);
 }
 
@@ -98,7 +98,7 @@ void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) 
     ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
 }
 
-void Controller::changeFrequency(int operatorId, long frequency) {
+void Controller::changeFrequency(int operatorId, float frequency) {
     operators_[operatorId].frequency = frequency;
     emit freqChanged(frequency);
     sendOperator(operatorId);
@@ -156,6 +156,7 @@ void Controller::sendOperator(int operatorId) {
     // Núverandi range 0 - 200 20 er lægsta nóta sem heyrist hæsta er 175 þá er 100 byrjunar nóta.
 
     float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
+    //float freq = (op.frequency - 1 + 0.001)/(100-1);
     float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
     api->sendOperatorValue(op.id, 0, 1, freq, amp);
 
@@ -272,10 +273,14 @@ void Controller::changeToPreset(const Preset &preset) {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
-
+    // This is to avoid the program crashing when loading the first preset.
+    if(!isFirst_){
     //Alert that a preset has been loaded
-    QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
-    AlertController::instance->showAlert(str, 0);
+        QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
+        AlertController::instance->showAlert(str, 0);
+    } else {
+        isFirst_ = false;
+    }
 
 }
 
