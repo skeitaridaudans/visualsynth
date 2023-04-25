@@ -24,7 +24,7 @@ public:
 
     Q_INVOKABLE std::optional<int> addOperator();
     Q_INVOKABLE void removeOperator(int operatorId);
-    Q_INVOKABLE void changeFrequency(int operatorId, long frequency);
+    Q_INVOKABLE void changeFrequency(int operatorId, float frequency);
     Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
     Q_INVOKABLE void setOperatorLfoFrequency(int operatorId, long amount);
     Q_INVOKABLE void setOperatorLfoAmplitude(int operatorId, long amount);
@@ -64,7 +64,7 @@ signals:
     Q_SIGNAL void operatorSelected(Operator* op);
     Q_SIGNAL void operatorDeselected(bool deselected);
     Q_SIGNAL void ampChanged(long amp);
-    Q_SIGNAL void freqChanged(long freq);
+    Q_SIGNAL void freqChanged(float freq);
     Q_SIGNAL void showPresetsChanged(bool showPresets);
     Q_SIGNAL void isConnectedChanged(bool isConnected);
     Q_SIGNAL void isLfoEnabledChanged(bool isLfoEnabled);
@@ -84,6 +84,7 @@ private:
     void sendOperatorLfoValuesToSynth(int operatorId);
     void sendLfoGlobalOptionsToSynth();
 
+    bool isFirst_ = true; // This is used to avoid the program crashing while loading the initial preset
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;

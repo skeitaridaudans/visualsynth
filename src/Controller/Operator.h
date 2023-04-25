@@ -40,11 +40,11 @@ struct Operator:public QObject {
 public:
     Operator();
     Operator(int id, QObject* parent=0);
-    Operator(int id, long frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
+    Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
     Operator(const Operator& operator_);
 
     int id;
-    long frequency;
+    float frequency;
     long amplitude;
     bool isModulator;
     bool isCarrier;
@@ -58,13 +58,13 @@ public:
     OperatorViewState operatorViewState;
     int visitedCount = 0;
     Q_PROPERTY(int idProp MEMBER id)
-    Q_PROPERTY(long freqProp MEMBER frequency)
+    Q_PROPERTY(float freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)
     Q_PROPERTY(long frequencyLfoAmount MEMBER frequencyLfoAmount)
     Q_PROPERTY(long amplitudeLfoAmount MEMBER amplitudeLfoAmount)
-    Q_INVOKABLE long getFreq();
+    Q_INVOKABLE float getFreq();
     Q_INVOKABLE long getAmp();
-    Q_INVOKABLE void setFrequency(long step);
+    Q_INVOKABLE void setFrequency(float step);
     Q_INVOKABLE void setAmplitude(long step);
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
