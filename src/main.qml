@@ -128,7 +128,7 @@ Window {
             width: 141
             height: 27
             color: "#ffffff"
-            text: qsTr("Connected")
+            text: controller.isConnected ? qsTr("Connected!") : qsTr("not Connected!")
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             font.pixelSize: 18
@@ -163,7 +163,7 @@ Window {
             height: 800
         }
 
-       /*PresetButton {
+        PresetButton {
             id:presetB
             width: 250
             height: 50
@@ -173,22 +173,7 @@ Window {
             anchors.topMargin: 50;
 
             onClicked: {
-                updateOpen()
-                controller.deselectOperator()
-                controller.showPresets = !controller.showPresets;
-            }
-        } */
-
-        Button {
-            id: button1
-            width: 250
-            height: 50
-            text: qsTr("Presets")
-
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: 50
-            onPressed: {
+                presetB.updateOpen
                 controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
             }
@@ -201,10 +186,10 @@ Window {
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: button1.height *2
+            anchors.topMargin: presetB.height *3
 
-            width: width
-            height: height
+            width: 450
+            height: 450
             color: "#323232"
             radius: 8
 
