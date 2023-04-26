@@ -46,8 +46,9 @@ public:
     Q_INVOKABLE Operator *getSelectedOperator();
     void changeToPreset(const Preset& preset);
     Q_INVOKABLE void hidePresets();
-    double getOperatorModulationValue(int operatorId, int offset);
-    double getCarrierOutput(int offset);
+    double getSingleOperatorValue(int operatorId, double offset);
+    double getOperatorModulationValue(int operatorId, double offset);
+    double getCarrierOutput(double offset);
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
     Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);
