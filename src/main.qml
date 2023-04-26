@@ -186,7 +186,7 @@ Window {
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: presetB.height *3
+            anchors.topMargin: presetB.height *2.5
 
             width: 450
             height: 450
