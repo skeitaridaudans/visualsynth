@@ -121,7 +121,7 @@ void OperatorPresetsView::addNewPreset() {
     }
 
     DialogController::instance->
-            showDialog("Create preset", "Save current operators as a new preset", "Name", "Create",
+            showDialog("Create preset", "Save current operators as a new preset", "", "Create",
                        "Cancel",
                        [this](const QString &presetName) {
                            const auto &controller = Controller::instance;

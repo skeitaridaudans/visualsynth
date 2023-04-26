@@ -63,7 +63,7 @@ qt_add_executable(appVisualSynth
 qt_add_qml_module(appVisualSynth
     URI VisualSynth
     VERSION 1.0
-    QML_FILES src/main.qml src/ToggleButton.qml
+    QML_FILES src/main.qml src/ToggleButton.qml src/TextInputDialog.qml
 )
 
 set_target_properties(appVisualSynth PROPERTIES
