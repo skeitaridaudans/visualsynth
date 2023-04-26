@@ -9,7 +9,7 @@
 #include "src/Dialog/DialogController.h"
 #include "src/OperatorPresetsView/OperatorPresetsView.h"
 #include "src/OutputWaveView/OutputWaveView.h"
-
+#include "src/OperatorView/PresetButton.h"
 int main(int argc, char *argv[])
 {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     qmlRegisterType<SinWaveItem>("SinViewItem", 1, 0, "SinWaveItem");
     qmlRegisterType<OperatorView>("OperatorView", 1, 0, "OperatorView");
+    qmlRegisterType<PresetButton>("PButton", 1,0, "PresetButton");
+
     qmlRegisterType<AmpEnvGraphView>("AmpEnvGraphView",1,0,"AmpEnvGraphItem");
     qmlRegisterType<OperatorPresetsView>("OperatorPresetsView", 1, 0, "OperatorPresetsView");
     qmlRegisterType<OutputWaveView>("OutputWaveView", 1, 0, "OutputWaveView");

@@ -7,6 +7,7 @@ import OperatorView
 import OperatorPresetsView
 import AmpEnvGraphView
 import OutputWaveView
+import PButton 1.0
 
 Window {
     id: window
@@ -26,6 +27,7 @@ Window {
         controller.setReleaseAmpEnvelopePoint(0 , dialSustain.value ,0);
         controller.setReleaseAmpEnvelopePoint(1, 0, 1);
     }
+
 
     Connections {
         target: controller
@@ -136,6 +138,7 @@ Window {
             anchors.bottomMargin: 58
         }
 
+
     }
 
 
@@ -160,6 +163,22 @@ Window {
             height: 800
         }
 
+       /*PresetButton {
+            id:presetB
+            width: 250
+            height: 50
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 50;
+
+            onClicked: {
+                updateOpen()
+                controller.deselectOperator()
+                controller.showPresets = !controller.showPresets;
+            }
+        } */
+
         Button {
             id: button1
             width: 250
@@ -175,16 +194,17 @@ Window {
             }
         }
 
+
         Rectangle {
             id: presetsContainer
             visible: controller.showPresets
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: button1.height*2
+            anchors.topMargin: button1.height *2
 
-            width: 450
-            height: 450
+            width: width
+            height: height
             color: "#323232"
             radius: 8
 
@@ -1041,4 +1061,5 @@ Window {
 
 
     }
+
 }
