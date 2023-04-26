@@ -31,7 +31,6 @@ Window {
 
         target: controller
         function onOperatorSelected(operator) {
-
             selectedOperator = operator
             freqText.text = parseFloat(operator.freqProp).toFixed(1) + ""
             ampText.text = operator.ampProp + ""
@@ -187,12 +186,30 @@ Window {
             color: "#323232"
             radius: 8
 
-            OperatorPresetsView {
-                id: presetsView
-               anchors.left: parent.left
+            ScrollView {
+                anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.fill: parent
-                enabled: controller.showPresets
+
+                clip: true
+                wheelEnabled: false
+
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
+                contentWidth: presetsContainer.width
+                contentHeight: Math.max(presetsContainer.height, presetsView.calculatedContentHeight)
+
+                OperatorPresetsView {
+                    id: presetsView
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.fill: parent
+                    enabled: controller.showPresets
+
+                    containerWidth: presetsContainer.width
+                    containerHeight: presetsContainer.height
+                }
             }
         }
 

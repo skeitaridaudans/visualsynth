@@ -104,8 +104,14 @@ void OperatorPresetsView::loadPresets() {
 }
 
 void OperatorPresetsView::updateSizes() {
-    presetBoxSize.setWidth((width() - (kOuterPaddingX * 2.0 + kBetweenPaddingX * kColumnCount)) / kColumnCount);
-    presetBoxSize.setHeight((height() - (kOuterPaddingY * 2.0 + kBetweenPaddingY * kRowCount)) / kRowCount);
+    presetBoxSize.setWidth((containerWidth_ - (kOuterPaddingX * 2.0 + kBetweenPaddingX * kColumnCount)) / kColumnCount);
+    presetBoxSize.setHeight((containerHeight_ - (kOuterPaddingY * 2.0 + kBetweenPaddingY * kRowCount)) / kRowCount);
+
+    const auto contentHeight = ceil(static_cast<double>(operatorPresetViews_->size() + 1) / 3.0) * (presetBoxSize.height() + kBetweenPaddingY) + kOuterPaddingY * 2.0;
+    if (std::abs(contentHeight - calculatedContentHeight_) > 0.1) {
+        calculatedContentHeight_ = contentHeight;
+        calculatedContentHeightChanged(calculatedContentHeight_);
+    }
 }
 
 void OperatorPresetsView::addNewPreset() {
