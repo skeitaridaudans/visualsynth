@@ -11,6 +11,9 @@ if (ENABLE_INTERSYNTH)
 	add_definitions(-DUSE_INTERSYNTH)
 endif()
 
+if (ANDROID)
+	add_definitions(-DANDROID)
+endif ()
 
 
 # Linux support
@@ -62,8 +65,10 @@ qt_add_executable(appVisualSynth
 qt_add_qml_module(appVisualSynth
     URI VisualSynth
     VERSION 1.0
-    QML_FILES src/main.qml src/ToggleButton.qml src/TextInputDialog.qml
-		src/ConnectionInfo.qml
+    QML_FILES src/main.qml src/UiComponents/Core/ToggleButton.qml src/UiComponents/Sections/TextInputDialog.qml
+		src/UiComponents/Sections/ConnectionSection.qml src/UiComponents/Sections/BottomAlertView.qml src/UiComponents/Sections/GlobalLfoOptionsSection.qml
+		src/UiComponents/Sections/OperatorInfoSection.qml src/UiComponents/Sections/OutputWaveSection.qml src/UiComponents/Sections/OperatorViewSection.qml
+		src/UiComponents/Sections/AmpEnvSection.qml
 )
 
 set_target_properties(appVisualSynth PROPERTIES
