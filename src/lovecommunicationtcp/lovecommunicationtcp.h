@@ -11,9 +11,11 @@ public:
     LoveCommunicationTcp(std::function<void (QTcpSocket::SocketState state)> onStateChange);
 
     bool connectToServer(QString ip, int port);
+    void connectToServerAsync(QString ip, int port);
     void disconnectFromServer();
     QString getMessageString();
     void sendMessageString(QString msg);
+    bool isConnected();
 
     QString sendOperatorValue(int operator_id, bool attack, int envelope_index, float frequency, float amplitude);
     QString addModulator(int operator_id, int modulator_id);

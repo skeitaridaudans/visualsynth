@@ -70,6 +70,7 @@ Window {
 
         onTriggered: alertController.update()
     }
+
     Rectangle {
         id: sinewaverectangle
         anchors.bottom: parent.bottom
@@ -92,36 +93,12 @@ Window {
             height: 100
             width: 800
         }
-        Rectangle {
-            id: connectedRoundButton
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 54
-            anchors.left: parent.left
-            anchors.leftMargin: 88
-            color: controller.isConnected ? "green" : "red"
-            height: 34
-            radius: 50
-            width: 34
-            x: 88
-            y: 94
-        }
-        Text {
-            id: connectedText
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 58
-            anchors.left: parent.left
-            anchors.leftMargin: 127
-            color: "#ffffff"
-            font.pixelSize: 18
-            height: 27
-            horizontalAlignment: Text.AlignLeft
-            text: qsTr("Connected")
-            verticalAlignment: Text.AlignVCenter
-            width: 141
-            x: 128
-            y: 100
-        }
     }
+
+    ConnectionInfo {
+
+    }
+
     Rectangle {
         id: operatorrectangle
         border.color: "gray"

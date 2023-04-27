@@ -8,19 +8,27 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include "src/Utils/Utils.h"
+#include "src/Dialog/DialogController.h"
 
 const int kMaxNumberOfOperators = 8;
 const double kGraphicsFrequencyFactor = 160.0;
+const QString kSynthIpSettingsKey = "synth_ip";
+const QString kCompanyName = "Love Synthesizer";
+const QString kApplicationName = "Visualsynth";
 
-std::unique_ptr <Controller> Controller::instance = std::make_unique<Controller>();
+std::unique_ptr<Controller> Controller::instance = std::make_unique<Controller>();
 
-Controller::Controller(QObject *parent) : QObject(parent) {
-    api = std::make_unique<Api>([this] (auto state) {
+Controller::Controller(QObject *parent) : QObject(parent), settings_(kCompanyName, kApplicationName) {
+    api = std::make_unique<Api>([this](auto state) {
         onConnectionStateChanged(state);
     });
 
     resetAvailableOperatorIds();
     loadInitialPreset();
+
+    if (settings_.contains(kSynthIpSettingsKey)) {
+        synthIp_ = settings_.value(kSynthIpSettingsKey).toString();
+    }
 }
 
 void Controller::loadInitialPreset() {
@@ -34,19 +42,19 @@ void Controller::loadInitialPreset() {
 
     // TODO: Configure these values better
     const std::vector<AmpEnvValue> defaultAmpEnv = {
-        AmpEnvValue(0, 0.5328, 0, true),
-                AmpEnvValue(1, 0, 1, false),
-                AmpEnvValue(2, 0.5328, 0.6404, true),
-                AmpEnvValue(3, 0.5328, 5.0, true)
+            AmpEnvValue(0, 0.5328, 0, true),
+            AmpEnvValue(1, 0, 1, false),
+            AmpEnvValue(2, 0.5328, 0.6404, true),
+            AmpEnvValue(3, 0.5328, 5.0, true)
     };
 
-    const Preset defaultPreset = Preset(defaultOperators, defaultAmpEnv,defaultname);
+    const Preset defaultPreset = Preset(defaultOperators, defaultAmpEnv, defaultname);
     changeToPreset(defaultPreset);
 }
 
 std::optional<int> Controller::addOperator() {
     if (operators_.size() >= kMaxNumberOfOperators) {
-        AlertController::instance->showAlert("Error: Only 8 operators allowed",1);
+        AlertController::instance->showAlert("Error: Only 8 operators allowed", 1);
         return std::nullopt;
     }
 
@@ -113,21 +121,21 @@ void Controller::changeAmplitude(int operatorId, long amplitude) {
 }
 
 void Controller::setOperatorLfoFrequency(int operatorId, long amount) {
-    auto& operator_ = getOperatorById(operatorId);
+    auto &operator_ = getOperatorById(operatorId);
     operator_.frequencyLfoAmount = amount;
 
     sendOperatorLfoValuesToSynth(operatorId);
 }
 
 void Controller::setOperatorLfoAmplitude(int operatorId, long amount) {
-    auto& operator_ = getOperatorById(operatorId);
+    auto &operator_ = getOperatorById(operatorId);
     operator_.amplitudeLfoAmount = amount;
 
     sendOperatorLfoValuesToSynth(operatorId);
 }
 
 void Controller::sendOperatorLfoValuesToSynth(int operatorId) {
-    const auto& operator_ = getOperatorById(operatorId);
+    const auto &operator_ = getOperatorById(operatorId);
 
     const auto frequencyAmount = static_cast<float>(operator_.frequencyLfoAmount) / 100.0f;
     const auto amplitudeAmount = static_cast<float>(operator_.amplitudeLfoAmount) / 100.0f;
@@ -277,8 +285,8 @@ Operator *Controller::getSelectedOperator() {
 }
 
 void Controller::savePreset(const std::string &name) {
-    std::vector <AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
-    json json(Preset(operators_, ampEnvPoints,QString::fromStdString(name)));
+    std::vector<AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
+    json json(Preset(operators_, ampEnvPoints, QString::fromStdString(name)));
 
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
@@ -286,7 +294,7 @@ void Controller::savePreset(const std::string &name) {
 
 
     //Alert that a preset has been saved
-    QString str = QString("the preset '%1' has been saved to presets ").arg( QString::fromStdString(name));
+    QString str = QString("the preset '%1' has been saved to presets ").arg(QString::fromStdString(name));
     AlertController::instance->showAlert(str, 0);
 }
 
@@ -321,8 +329,8 @@ void Controller::changeToPreset(const Preset &preset) {
         }
     }
     // This is to avoid the program crashing when loading the first preset.
-    if(!isFirst_){
-    //Alert that a preset has been loaded
+    if (!isFirst_) {
+        //Alert that a preset has been loaded
         QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
         AlertController::instance->showAlert(str, 0);
     } else {
@@ -370,7 +378,7 @@ void Controller::hidePresets() {
 }
 
 double Controller::getSingleOperatorValue(int operatorId, double offset) {
-    auto& operator_ = getOperatorById(operatorId);
+    auto &operator_ = getOperatorById(operatorId);
 
     double frequency = std::pow(1.90366, (double) (operator_.frequency - 100) / 20.0);
     double amplitude = std::pow(1.6, (double) (operator_.amplitude - 50) / 20.0) - 0.3;
@@ -378,12 +386,12 @@ double Controller::getSingleOperatorValue(int operatorId, double offset) {
 }
 
 double Controller::getOperatorModulationValue(int operatorId, double offset) {
-    auto& operator_ = getOperatorById(operatorId);
+    auto &operator_ = getOperatorById(operatorId);
     operator_.visitedCount++;
 
     double modulationSum = 0.0;
-    for (const auto modulatorId : operator_.modulatedBy) {
-        const auto& modulator = getOperatorById(modulatorId);
+    for (const auto modulatorId: operator_.modulatedBy) {
+        const auto &modulator = getOperatorById(modulatorId);
         if (modulator.visitedCount < 2) {
             modulationSum += getOperatorModulationValue(modulatorId, offset);
         }
@@ -398,7 +406,7 @@ double Controller::getOperatorModulationValue(int operatorId, double offset) {
 double Controller::getCarrierOutput(double offset) {
     double totalSample = 0.0;
 
-    for (const auto& operator_ : operators_) {
+    for (const auto &operator_: operators_) {
         if (operator_.second.isCarrier) {
             totalSample += getOperatorModulationValue(operator_.first, offset);
         }
@@ -407,8 +415,66 @@ double Controller::getCarrierOutput(double offset) {
     return totalSample;
 }
 
-void Controller::onConnectionStateChanged(QTcpSocket::SocketState state) {
-    isConnected_ = state == QTcpSocket::SocketState::ConnectedState;
-    isConnectedChanged(isConnected_);
+void Controller::showConnectDialog() {
+    DialogController::instance->showDialog(
+            "Connect to synthesizer",
+            "Type the IP address of the synthesizer that you want to connect to",
+            synthIp_, "IP address", "Connect", "Cancel",
+            [this](const auto &ip) {
+                if (ip.isEmpty()) {
+                    AlertController::instance->showAlert("Invalid IP address", true);
+                    return false;
+                }
+
+                synthIp_ = ip;
+                settings_.setValue(kSynthIpSettingsKey, ip);
+                api->connect(synthIp_);
+                return true;
+            });
 }
 
+void Controller::disconnect() {
+    api->disconnect();
+}
+
+void Controller::onConnectionStateChanged(QTcpSocket::SocketState state) {
+    if (isConnecting_ && state == QTcpSocket::SocketState::UnconnectedState) {
+        AlertController::instance->showAlert("Failed to connect to synth", true);
+    }
+
+    isConnecting_ = state == QTcpSocket::SocketState::ConnectingState;
+    isConnectingChanged(isConnecting_);
+
+    isConnected_ = state == QTcpSocket::SocketState::ConnectedState;
+    isConnectedChanged(isConnected_);
+
+    if (isConnected_) {
+        onConnected();
+        setConnectionStateText("Connected");
+    }
+    else if (isConnecting_) {
+        setConnectionStateText("Connecting");
+    }
+    else {
+        setConnectionStateText("Not connected");
+    }
+}
+
+void Controller::onConnected() {
+    // Remove all operators when we connect
+    for (int i = 0; i < 8; i++) {
+        api->removeCarrier(i);
+    }
+
+    // Send all operators that have been created in the UI before connecting
+    for (const auto &operator_: operators_) {
+        if (operator_.second.isCarrier) {
+            sendAllOperatorInfo(operator_.first);
+        }
+    }
+}
+
+void Controller::setConnectionStateText(QString connectionStateText) {
+    connectionStateText_ = std::move(connectionStateText);
+    connectionStateTextChanged(connectionStateText_);
+}

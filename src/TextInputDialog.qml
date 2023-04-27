@@ -4,8 +4,6 @@ import QtQuick.Controls.Material 2.15
 
 Rectangle {
     id: dialogBackground
-    Material.theme: Material.Dark
-    Material.accent: Material.Purple
     visible: dialogController.isVisible
     enabled: dialogController.isVisible
     state: dialogController.isVisible ? "visible" : "invisible"
@@ -186,7 +184,7 @@ Rectangle {
                     id: okButtonBackground
                     color: "#3F51B5"
                     radius: 4
-                    state: okButton.hovered ? "hovered" : okButton.pressed ? "pressed" : "none"
+                    state: okButton.pressed ? "pressed" : okButton.hovered ? "hovered" : "none"
 
                     states: [
                         State {
@@ -243,7 +241,7 @@ Rectangle {
                     id: cancelButtonBackground
                     color: "#FAFAFA"
                     radius: 4
-                    state: cancelButton.hovered ? "hovered" : cancelButton.pressed ? "pressed" : "none"
+                    state: cancelButton.pressed ? "pressed" : cancelButton.hovered ? "hovered" : "none"
 
                     states: [
                         State {

@@ -25,6 +25,12 @@ bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
     }
 }
 
+void LoveCommunicationTcp::connectToServerAsync(QString ip, int port) {
+    // Connect to the server at IP address 192.168.1.100 and port 1234
+    socket.connectToHost(ip, port);
+    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
+}
+
 void LoveCommunicationTcp::disconnectFromServer() {
     // Close the socket
     socket.close();
@@ -55,6 +61,10 @@ QString LoveCommunicationTcp::getMessageString() {
 
 void LoveCommunicationTcp::sendMessageString(QString msg) {
     sendMessageBytes(msg.toUtf8());
+}
+
+bool LoveCommunicationTcp::isConnected() {
+    return socket.state() == QTcpSocket::SocketState::ConnectedState;
 }
 
 QString LoveCommunicationTcp::sendOperatorValue(int operator_id, bool attack, int envelope_index, float frequency,
