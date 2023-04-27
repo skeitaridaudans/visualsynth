@@ -12,8 +12,6 @@
 
 int main(int argc, char *argv[])
 {
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
-
     QGuiApplication app(argc, argv);
     qmlRegisterType<OperatorView>("OperatorView", 1, 0, "OperatorView");
     qmlRegisterType<AmpEnvGraphView>("AmpEnvGraphView",1,0,"AmpEnvGraphItem");
