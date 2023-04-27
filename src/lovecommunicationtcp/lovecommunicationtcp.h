@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QtNetwork>
+#include "src/Controller/LfoWaveType.h"
 
 class LoveCommunicationTcp
 {
@@ -23,6 +24,8 @@ public:
     QString setReleaseAmpEnvelopePoint(int point_index, float value, float time);
     QString setAttackAmpEnvelopeSize(int size);
     QString setReleaseAmpEnvelopeSize(int size);
+    QString setLfoGlobalOptions(bool enabled, LfoWaveType type, float frequency);
+    QString setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount);
 
 
 private:
@@ -30,7 +33,6 @@ private:
     std::function<void (QTcpSocket::SocketState state)> onStateChange;
     QByteArray getMessageBytes();
     void sendMessageBytes(QByteArray msg);
-
 };
 
 #endif // LOVECOMMUNICATIONTCP_H

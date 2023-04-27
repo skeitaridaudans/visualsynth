@@ -15,8 +15,8 @@ public:
     explicit DialogController(QObject *parent = 0);
 
     void showDialog(const QString &title, const QString &text, const QString &defaultValue = "",
-                    const QString &confirmButtonText = "Ok", const QString &cancelButtonText = "Cancel",
-                    std::function<void(const QString& value)> onSubmit = nullptr);
+                    const QString &placeholderText = "", const QString &confirmButtonText = "Ok",
+                    const QString &cancelButtonText = "Cancel", std::function<bool(const QString& value)> onSubmit = nullptr);
 
     Q_INVOKABLE void submit();
 
@@ -24,6 +24,7 @@ public:
 
     Q_PROPERTY(QString title MEMBER title_ NOTIFY titleChanged)
     Q_PROPERTY(QString text MEMBER text_ NOTIFY textChanged)
+    Q_PROPERTY(QString placeholderText MEMBER placeholderText_ NOTIFY placeholderTextChanged)
     Q_PROPERTY(QString value MEMBER value_ NOTIFY valueChanged)
     Q_PROPERTY(QString confirmButtonText MEMBER confirmButtonText_ NOTIFY confirmButtonTextChanged)
     Q_PROPERTY(QString cancelButtonText MEMBER cancelButtonText_ NOTIFY cancelButtonTextChanged)
@@ -33,6 +34,8 @@ signals:
     Q_SIGNAL void titleChanged(QString title);
 
     Q_SIGNAL void textChanged(QString text);
+
+    Q_SIGNAL void placeholderTextChanged(QString placeholderName);
 
     Q_SIGNAL void valueChanged(QString value);
 
@@ -45,11 +48,12 @@ signals:
 private:
     QString title_;
     QString text_;
+    QString placeholderText_;
     QString value_;
     QString confirmButtonText_;
     QString cancelButtonText_;
     bool isVisible_ = false;
-    std::function<void(const QString& value)> onSubmit_;
+    std::function<bool(const QString& value)> onSubmit_;
 };
 
 

@@ -48,6 +48,11 @@ public:
     long amplitude;
     bool isModulator;
     bool isCarrier;
+
+    // Percentage, 0-100%
+    long frequencyLfoAmount = 0;
+    long amplitudeLfoAmount = 0;
+
     std::vector<int> modulatedBy;
     QPointF position;
     OperatorViewState operatorViewState;
@@ -55,6 +60,8 @@ public:
     Q_PROPERTY(int idProp MEMBER id)
     Q_PROPERTY(float freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)
+    Q_PROPERTY(long frequencyLfoAmount MEMBER frequencyLfoAmount)
+    Q_PROPERTY(long amplitudeLfoAmount MEMBER amplitudeLfoAmount)
     Q_INVOKABLE float getFreq();
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(float step);
@@ -63,6 +70,7 @@ public:
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
     Q_INVOKABLE QColor getColorForOperator() const; //Operator *operator_
+
 };
 
 void to_json(json& j, const Operator& o);

@@ -121,9 +121,14 @@ void OperatorPresetsView::addNewPreset() {
     }
 
     DialogController::instance->
-            showDialog("Create preset", "Save current operators as a new preset", "Name", "Create",
+            showDialog("Create preset", "Save current operators as a new preset", "", "Name of preset", "Create",
                        "Cancel",
                        [this](const QString &presetName) {
+                            if (presetName.isEmpty()) {
+                                AlertController::instance->showAlert("Preset name cannot be empty", true);
+                                return false;
+                            }
+
                            const auto &controller = Controller::instance;
                            controller->savePreset(presetName.toStdString());
 
@@ -131,6 +136,8 @@ void OperatorPresetsView::addNewPreset() {
                            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
                                                                 Preset(controller->operators(), ampEnvValues,presetName));
                            operatorPresetViews_->push_back(std::move(presetView));
+
+                           return true;
                        });
 }
 

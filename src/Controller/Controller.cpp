@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <fstream>
 #include <utility>
+#include <QQmlEngine>
+#include <QQmlContext>
 #include "src/Utils/Utils.h"
 
 const int kMaxNumberOfOperators = 8;
@@ -108,6 +110,51 @@ void Controller::changeAmplitude(int operatorId, long amplitude) {
     operators_[operatorId].amplitude = amplitude;
     emit ampChanged(amplitude);
     sendOperator(operatorId);
+}
+
+void Controller::setOperatorLfoFrequency(int operatorId, long amount) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.frequencyLfoAmount = amount;
+
+    sendOperatorLfoValuesToSynth(operatorId);
+}
+
+void Controller::setOperatorLfoAmplitude(int operatorId, long amount) {
+    auto& operator_ = getOperatorById(operatorId);
+    operator_.amplitudeLfoAmount = amount;
+
+    sendOperatorLfoValuesToSynth(operatorId);
+}
+
+void Controller::sendOperatorLfoValuesToSynth(int operatorId) {
+    const auto& operator_ = getOperatorById(operatorId);
+
+    const auto frequencyAmount = static_cast<float>(operator_.frequencyLfoAmount) / 100.0f;
+    const auto amplitudeAmount = static_cast<float>(operator_.amplitudeLfoAmount) / 100.0f;
+    api->setOperatorLfoValues(operatorId, frequencyAmount, amplitudeAmount);
+}
+
+void Controller::setLfoEnabled(bool enabled) {
+    isLfoEnabled_ = enabled;
+    isLfoEnabledChanged(enabled);
+    sendLfoGlobalOptionsToSynth();
+}
+
+void Controller::setLfoWaveType(LfoWaveType lfoWaveType) {
+    lfoWaveType_ = lfoWaveType;
+    lfoWaveTypeChanged(lfoWaveType);
+    sendLfoGlobalOptionsToSynth();
+}
+
+void Controller::setLfoFrequency(long frequency) {
+    lfoFrequency_ = frequency;
+    lfoFrequencyChanged(frequency);
+    sendLfoGlobalOptionsToSynth();
+}
+
+void Controller::sendLfoGlobalOptionsToSynth() {
+    const float frequency = static_cast<float>(lfoFrequency_) / 10.0f;
+    api->setLfoGlobalOptions(isLfoEnabled_, lfoWaveType_, frequency);
 }
 
 void Controller::addModulator(int operatorId, int modulatorId) {

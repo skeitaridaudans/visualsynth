@@ -12,14 +12,16 @@ DialogController::DialogController(QObject *parent) : QObject(parent) {
 }
 
 void DialogController::showDialog(const QString &title, const QString &text, const QString &defaultValue,
-                                  const QString &confirmButtonText, const QString &cancelButtonText,
-                                  std::function<void(const QString& value)> onSubmit) {
+                                  const QString &placeholderText, const QString &confirmButtonText,
+                                  const QString &cancelButtonText, std::function<bool(const QString& value)> onSubmit) {
     isVisible_ = true;
     isVisibleChanged(isVisible_);
     title_ = title;
     titleChanged(title_);
     text_ = text;
     textChanged(text_);
+    placeholderText_ = placeholderText;
+    placeholderTextChanged(placeholderText_);
     value_ = defaultValue;
     valueChanged(value_);
     confirmButtonText_ = confirmButtonText;
@@ -31,11 +33,10 @@ void DialogController::showDialog(const QString &title, const QString &text, con
 }
 
 void DialogController::submit() {
-    isVisible_ = false;
-    isVisibleChanged(isVisible_);
-
-    if (onSubmit_ != nullptr) {
-        onSubmit_(value_);
+    // If on submit is provided, only hide the dialog if it returns true
+    if ((onSubmit_ != nullptr && onSubmit_(value_)) || onSubmit_ == nullptr) {
+        isVisible_ = false;
+        isVisibleChanged(isVisible_);
     }
 }
 
