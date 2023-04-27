@@ -24,7 +24,7 @@ Controller::Controller(QObject *parent) : QObject(parent) {
 void Controller::loadInitialPreset() {
     Operators defaultOperators;
     defaultOperators.insert(
-            std::make_pair<int, Operator>(1, Operator(1, 140, 60, false, true, {0}, QPointF(0.4696, 0.894))));
+            std::make_pair<int, Operator>(1, Operator(1, 100, 60, false, true, {0}, QPointF(0.4696, 0.894))));
     defaultOperators.insert(
             std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
 
