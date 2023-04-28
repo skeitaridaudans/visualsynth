@@ -1,7 +1,7 @@
 //
 // Created by Sigurður on 4/25/2023.
 //
-
+#include <iostream>
 #include "PresetButton.h"
 #include "QPainter"
 
@@ -81,7 +81,6 @@ void PresetButton::mouseReleaseEvent(QMouseEvent *event)
 
 bool PresetButton::updateOpen() {
     open_ = !open_;
-
     if (open_) { //if the button displays all available presets then display a certain icon
         icon_ = iconOn_;
         color_ = colorOpen_;
@@ -89,6 +88,7 @@ bool PresetButton::updateOpen() {
         icon_ = iconOff_;
         color_ = colorClosed_;
     }
+    update();
 
     return open_;
 

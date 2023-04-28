@@ -275,7 +275,7 @@ void Controller::changeToPreset(const Preset &preset) {
 
     //Alert that a preset has been loaded
     QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
-    AlertController::instance->showAlert(str, 0);
+//    AlertController::instance->showAlert(str, 0);
 
 }
 
@@ -313,10 +313,14 @@ void Controller::resetAvailableOperatorIds() {
 }
 
 void Controller::hidePresets() {
-    showPresets_ = false;
-    showPresetsChanged(false);
+    if(showPresets_ == true){
+        showPresets_ = false;
+        emit showPresetsChanged(false);
+    }
 }
 
+//void Controller::showPresets_() {
+//}?
 double Controller::getOperatorModulationValue(int operatorId, int offset) {
     auto& operator_ = getOperatorById(operatorId);
     operator_.visitedCount++;

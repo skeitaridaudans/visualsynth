@@ -67,6 +67,12 @@ Window {
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
         }
+        function onShowPresetsChanged(show){
+//            if(!show ){
+                var a =  presetB.updateOpen; // Since this is updated in OperatorView.cpp we need to catch the signal.
+//            }
+        }
+
     }
 
     Material.theme: Material.Dark
@@ -173,7 +179,7 @@ Window {
             anchors.topMargin: 50;
 
             onClicked: {
-                presetB.updateOpen
+//                presetB.updateOpen;
                 controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
             }
@@ -242,7 +248,7 @@ Window {
                 width: 12
                 height: 10
                 text: "0"
-                anchors.left: parent.left
+//                anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.horizontalCenter: opDrag.horizontalCenter
                 anchors.rightMargin: 319
