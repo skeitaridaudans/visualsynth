@@ -22,10 +22,14 @@ private:
     void paintParams(QPainter *painter);
     void paintLines(QPainter *painter);
     void paintParam(QPainter *painter, const AmpEnvValue &param);
-    QPointF mapAmpEnvPointToView(const QPointF &point);
-    QPointF mapViewPointToAmpEnvPoint(const QPointF &point);
-    const AmpEnvValue* findTouchedAmpEnvPoint(const QPointF& touchPoint);
+    QPointF mapAmpEnvPointToView(const QPointF &point, bool isAttack);
+    QPointF mapViewPointToAmpEnvPoint(const QPointF &point, bool isAttack);
+    QPointF clampBetweenAdjacentPoints(const AmpEnvValue& ampEnvValue, const QPointF& desiredPos);
+    QPointF getDrawingPosOfAmpEnvPoint(const AmpEnvValue& ampEnvValue);
+    const AmpEnvValue *findTouchedAmpEnvPoint(const QPointF& touchPoint);
     const AmpEnvValue &getDraggingAmpEnvValue();
+    bool startDragging(int touchPointId, const QPointF& pos);
+    void updateDragging(QPointF draggingPos);
 
     QColor borderColor = QColor(Qt::gray);
     std::optional<DraggingTouchPoint> draggingTouchPoint_;

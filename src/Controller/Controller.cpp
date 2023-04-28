@@ -44,11 +44,12 @@ void Controller::loadInitialPreset() {
     const std::vector<AmpEnvValue> defaultAttackAmpEnv = {
             AmpEnvValue(0, 0.0, 0.0, true),
             AmpEnvValue(1, 0.8, 0.25, true),
-            AmpEnvValue(2, 0.5, 0.35, true),
+            AmpEnvValue(2, 0.5, 0.5, true),
+            AmpEnvValue(3, 0.5, 1.0, true),
     };
 
     const std::vector<AmpEnvValue> defaultReleaseAmpEnv {
-            AmpEnvValue(0, 0.5, 0.75, false),
+            AmpEnvValue(0, 0.5, 0.0, false),
             AmpEnvValue(1, 0, 1, false),
     };
 

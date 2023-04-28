@@ -8,13 +8,13 @@
 struct DraggingTouchPoint {
     int touchPointId;
     int ampEnvPointIndex;
-    bool isAttack;
+    bool isLastPoint;
 
     DraggingTouchPoint(int touchPointId,
                        int ampEnvPointIndex,
-                       bool isAttack) : touchPointId(touchPointId),
+                       bool isLastPoint) : touchPointId(touchPointId),
                                         ampEnvPointIndex(ampEnvPointIndex),
-                                        isAttack(isAttack) {
+                                        isLastPoint(isLastPoint) {
 
     }
 };
