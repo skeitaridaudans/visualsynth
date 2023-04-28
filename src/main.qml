@@ -7,7 +7,6 @@ import OperatorPresetsView
 import AmpEnvGraphView
 import OutputWaveView
 import OperatorWaveView
-
 import "UiComponents"
 import "UiComponents/Sections"
 
@@ -32,70 +31,61 @@ Window {
 
         onTriggered: alertController.update()
     }
-
     Row {
-        spacing: 0
         anchors.fill: parent
+        spacing: 0
 
         // The left column
         Column {
-            spacing: 0
             height: parent.height
+            spacing: 0
             width: parent.width / 2
-
-            OperatorViewSection {
-                id: operatorViewSection
-                height: parent.height - 140
-                width: parent.width
-            }
 
             ConnectionSection {
                 id: connectionSection
-                height: 140
+                height: 80
+                width: parent.width
+            }
+            OperatorViewSection {
+                id: operatorViewSection
+                height: parent.height - 80
                 width: parent.width
             }
         }
 
         // The right column
         Column {
-            spacing: 0
             height: parent.height
+            spacing: 0
             width: parent.width / 2
 
             OperatorInfoSection {
                 id: operatorInfoSection
-                height: 377
+                height: 400
                 width: parent.width
             }
-
             GlobalLfoOptionsSection {
                 id: globalLfoOptionsSection
                 height: 100
                 width: parent.width
             }
-
             AmpEnvSection {
                 id: ampEnvGraphViewSection
+                height: parent.height * (6 / 7) - 500
                 width: parent.width
-                height: 316
+            }
+            OutputWaveSection {
+                id: outputWaveSection
+                height: parent.height / 7
+                width: parent.width
             }
         }
     }
-
-    //OutputWaveSection {
-    //    id: outputWaveSection
-    //    height: 185
-    //    width: 1922
-    //    x: 0
-    //    y: 898
-    //}
 
     // This must under everything (except alert) so that it's not possible to click on anything behind the dialog
     TextInputDialog {
         anchors.fill: parent
     }
-
     BottomAlertView {
-
     }
 }

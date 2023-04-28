@@ -65,6 +65,173 @@ Rectangle {
         visible: selectedOperator ? true : false
         width: parent.width - 4
 
+        Rectangle {
+            id: leftColumn
+            Text {
+                id: operatorName
+                color: "#f0f0f0"
+                font.family: "Noto Sans"
+                font.pixelSize: 32
+                font.weight: Font.Bold
+                text: qsTr("Operator " + (selectedOperator ? selectedOperator.idProp + 1 : ""))
+                x: 32
+                y: 16
+            }
+            Text {
+                id: freqControlTitle
+                anchors.left: parent.left
+                anchors.leftMargin: 32
+                anchors.top: operatorName.bottom
+                anchors.topMargin: 16
+                color: "#9E9E9E"
+                font.family: "Noto Sans"
+                font.pointSize: 14
+                font.weight: Font.DemiBold
+                text: "Frequency Control"
+            }
+            Rectangle {
+                id: freqControlBox
+                anchors.left: freqControlTitle.left
+                anchors.leftMargin: 8
+                anchors.top: freqControlTitle.bottom
+                anchors.topMargin: 16
+                color: "transparent"
+                height: freqControlBoxColumn.height
+
+                Column {
+                    id: freqControlBoxColumn
+                    spacing: 8
+
+                    ToggleButton {
+                        id: fine
+                        enabled: operatorInfo.fineCheck
+                        text: qsTr("Fine")
+
+                        onPressed: {
+                            operatorInfo.coarseCheck = false;
+                            operatorInfo.fineCheck = true;
+                        }
+                    }
+                    ToggleButton {
+                        id: coarse
+                        enabled: operatorInfo.coarseCheck
+                        text: qsTr("Coarse")
+
+                        onPressed: {
+                            operatorInfo.coarseCheck = true;
+                            operatorInfo.fineCheck = false;
+                        }
+                    }
+                }
+            }
+            Text {
+                id: lfoOperatorOptionsTitle
+                anchors.left: parent.left
+                anchors.leftMargin: 32
+                anchors.top: freqControlBox.bottom
+                anchors.topMargin: 16
+                color: "#9E9E9E"
+                font.family: "Noto Sans"
+                font.pointSize: 14
+                font.weight: Font.DemiBold
+                text: "LFO"
+            }
+            Rectangle {
+                id: lfoOperatorOptionsBox
+                anchors.left: lfoOperatorOptionsTitle.left
+                anchors.leftMargin: 8
+                anchors.top: lfoOperatorOptionsTitle.bottom
+                anchors.topMargin: 8
+                color: "transparent"
+                height: lfoOperatorOptionsColumn.height
+
+                Column {
+                    id: lfoOperatorOptionsColumn
+                    spacing: 4
+
+                    Column {
+                        spacing: 2
+
+                        Text {
+                            id: frequencyAmount
+                            color: "#757575"
+                            font.family: "Noto Sans"
+                            font.pointSize: 12
+                            text: "Frequency"
+                        }
+                        Row {
+                            spacing: 8
+
+                            Text {
+                                id: lfoOperatorFreqAmountText
+                                anchors.topMargin: 8
+                                color: "#616161"
+                                height: 40
+                                text: `${selectedOperator ? selectedOperator.frequencyLfoAmount : 0}%`
+                                verticalAlignment: Text.AlignVCenter
+                                width: 32
+                            }
+                            Slider {
+                                id: lfoOperatorFreqAmountSlider
+                                from: 0
+                                height: 40
+                                to: 100
+                                value: selectedOperator ? selectedOperator.frequencyLfoAmount : 0
+                                width: 96
+
+                                onMoved: {
+                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, lfoOperatorFreqAmountSlider.value);
+
+                                    // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
+                                    // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
+                                    // which will cause qt to crash if you have a signal for when the properties in Operator change
+                                    lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
+                                }
+                            }
+                        }
+                    }
+                    Column {
+                        spacing: 2
+
+                        Text {
+                            id: amplitudeAmount
+                            color: "#757575"
+                            font.family: "Noto Sans"
+                            font.pointSize: 12
+                            text: "Amplitude"
+                        }
+                        Row {
+                            spacing: 8
+
+                            Text {
+                                id: lfoOperatorAmpAmountText
+                                anchors.topMargin: 8
+                                color: "#616161"
+                                height: 40
+                                text: `${selectedOperator ? selectedOperator.amplitudeLfoAmount : 0}%`
+                                verticalAlignment: Text.AlignVCenter
+                                width: 32
+                            }
+                            Slider {
+                                id: lfoOperatorAmpAmountSlider
+                                from: 0
+                                height: 40
+                                to: 100
+                                value: selectedOperator ? selectedOperator.amplitudeLfoAmount : 0
+                                width: 96
+
+                                onMoved: {
+                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, lfoOperatorAmpAmountSlider.value);
+                                    lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         Text {
             id: freqText
             anchors.horizontalCenter: opDrag.horizontalCenter
@@ -93,7 +260,8 @@ Rectangle {
                 text: "+"
                 verticalAlignment: Text.AlignVCenter
                 width: 50
-                x: 82
+                anchors.left: parent.horizontalCenter
+                anchors.leftMargin: 50
                 y: -3
 
                 Rectangle {
@@ -136,6 +304,8 @@ Rectangle {
             }
             Text {
                 id: minFreq
+                anchors.right: parent.horizontalCenter
+                anchors.rightMargin: 50
                 color: parent.color
                 font.family: "Noto Sans"
                 font.pixelSize: 16
@@ -144,7 +314,6 @@ Rectangle {
                 text: "-"
                 verticalAlignment: Text.AlignVCenter
                 width: 50
-                x: -94
                 y: -3
 
                 Timer {
@@ -194,11 +363,14 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             text: "0"
             verticalAlignment: Text.AlignVCenter
-            x: 828
+            anchors.left: opDrag.right
+            anchors.leftMargin: 8
             y: 189
 
             Text {
                 id: ampPlus
+                anchors.bottom: parent.verticalCenter
+                anchors.bottomMargin: 50
                 color: parent.color
                 font.family: "Noto Sans"
                 font.pixelSize: 16
@@ -208,7 +380,6 @@ Rectangle {
                 verticalAlignment: Text.AlignVCenter
                 width: 9
                 x: 0
-                y: -60
 
                 Timer {
                     id: ampIncTimer
@@ -250,6 +421,8 @@ Rectangle {
             }
             Text {
                 id: ampMin
+                anchors.top: parent.verticalCenter
+                anchors.topMargin: 50
                 color: parent.color
                 font.family: "Noto Sans"
                 font.pixelSize: 16
@@ -257,7 +430,6 @@ Rectangle {
                 text: qsTr("-")
                 verticalAlignment: Text.AlignVCenter
                 x: 2
-                y: 72
 
                 Timer {
                     id: ampDecTimer
@@ -298,22 +470,12 @@ Rectangle {
                 }
             }
         }
-        Text {
-            id: operatorName
-            color: "#f0f0f0"
-            font.family: "Noto Sans"
-            font.pixelSize: 32
-            font.weight: Font.Bold
-            text: qsTr("Operator " + (selectedOperator ? selectedOperator.idProp + 1 : ""))
-            x: 32
-            y: 16
-        }
         // Operator box
         Rectangle {
             id: opDrag
             color: "lightgray" // Placeholder while colors are off on the wave
             height: 273
-            width: 598
+            width: parent.width - leftColumn.width - 350
             x: 224
             y: 63
 
@@ -437,158 +599,6 @@ Rectangle {
                                     selectedOperator.setAmplitude(-1);
                                     controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Text {
-            id: freqControlTitle
-            anchors.left: parent.left
-            anchors.leftMargin: 32
-            anchors.top: operatorName.bottom
-            anchors.topMargin: 16
-            color: "#9E9E9E"
-            font.family: "Noto Sans"
-            font.pointSize: 14
-            font.weight: Font.DemiBold
-            text: "Frequency Control"
-        }
-        Rectangle {
-            id: freqControlBox
-            anchors.left: freqControlTitle.left
-            anchors.leftMargin: 8
-            anchors.top: freqControlTitle.bottom
-            anchors.topMargin: 16
-            color: "transparent"
-            height: freqControlBoxColumn.height
-
-            Column {
-                id: freqControlBoxColumn
-                spacing: 8
-
-                ToggleButton {
-                    id: fine
-                    enabled: operatorInfo.fineCheck
-                    text: qsTr("Fine")
-
-                    onPressed: {
-                        operatorInfo.coarseCheck = false;
-                        operatorInfo.fineCheck = true;
-                    }
-                }
-                ToggleButton {
-                    id: coarse
-                    enabled: operatorInfo.coarseCheck
-                    text: qsTr("Coarse")
-
-                    onPressed: {
-                        operatorInfo.coarseCheck = true;
-                        operatorInfo.fineCheck = false;
-                    }
-                }
-            }
-        }
-        Text {
-            id: lfoOperatorOptionsTitle
-            anchors.left: parent.left
-            anchors.leftMargin: 32
-            anchors.top: freqControlBox.bottom
-            anchors.topMargin: 16
-            color: "#9E9E9E"
-            font.family: "Noto Sans"
-            font.pointSize: 14
-            font.weight: Font.DemiBold
-            text: "LFO"
-        }
-        Rectangle {
-            id: lfoOperatorOptionsBox
-            anchors.left: lfoOperatorOptionsTitle.left
-            anchors.leftMargin: 8
-            anchors.top: lfoOperatorOptionsTitle.bottom
-            anchors.topMargin: 8
-            color: "transparent"
-            height: lfoOperatorOptionsColumn.height
-
-            Column {
-                id: lfoOperatorOptionsColumn
-                spacing: 4
-
-                Column {
-                    spacing: 2
-
-                    Text {
-                        id: frequencyAmount
-                        color: "#757575"
-                        font.family: "Noto Sans"
-                        font.pointSize: 12
-                        text: "Frequency"
-                    }
-                    Row {
-                        spacing: 8
-
-                        Text {
-                            id: lfoOperatorFreqAmountText
-                            anchors.topMargin: 8
-                            color: "#616161"
-                            height: 40
-                            text: `${selectedOperator ? selectedOperator.frequencyLfoAmount : 0}%`
-                            verticalAlignment: Text.AlignVCenter
-                            width: 32
-                        }
-                        Slider {
-                            id: lfoOperatorFreqAmountSlider
-                            from: 0
-                            height: 40
-                            to: 100
-                            value: selectedOperator ? selectedOperator.frequencyLfoAmount : 0
-                            width: 96
-
-                            onMoved: {
-                                controller.setOperatorLfoFrequency(selectedOperator.idProp, lfoOperatorFreqAmountSlider.value);
-
-                                // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
-                                // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
-                                // which will cause qt to crash if you have a signal for when the properties in Operator change
-                                lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
-                            }
-                        }
-                    }
-                }
-                Column {
-                    spacing: 2
-
-                    Text {
-                        id: amplitudeAmount
-                        color: "#757575"
-                        font.family: "Noto Sans"
-                        font.pointSize: 12
-                        text: "Amplitude"
-                    }
-                    Row {
-                        spacing: 8
-
-                        Text {
-                            id: lfoOperatorAmpAmountText
-                            anchors.topMargin: 8
-                            color: "#616161"
-                            height: 40
-                            text: `${selectedOperator ? selectedOperator.amplitudeLfoAmount : 0}%`
-                            verticalAlignment: Text.AlignVCenter
-                            width: 32
-                        }
-                        Slider {
-                            id: lfoOperatorAmpAmountSlider
-                            from: 0
-                            height: 40
-                            to: 100
-                            value: selectedOperator ? selectedOperator.amplitudeLfoAmount : 0
-                            width: 96
-
-                            onMoved: {
-                                controller.setOperatorLfoAmplitude(selectedOperator.idProp, lfoOperatorAmpAmountSlider.value);
-                                lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
                             }
                         }
                     }

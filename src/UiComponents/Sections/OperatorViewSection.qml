@@ -11,6 +11,12 @@ Rectangle {
     color: "#212121"
     radius: 3
 
+    OperatorView {
+        id: boxes
+        anchors.top: parent.top
+        height: parent.height - 50
+        width: parent.width
+    }
     Button {
         id: button1
         anchors.horizontalCenter: parent.horizontalCenter
@@ -24,12 +30,6 @@ Rectangle {
             controller.deselectOperator();
             controller.showPresets = !controller.showPresets;
         }
-    }
-    OperatorView {
-        id: boxes
-        anchors.top: parent.top
-        height: parent.height - 50
-        width: parent.width
     }
     Rectangle {
         id: presetsContainer

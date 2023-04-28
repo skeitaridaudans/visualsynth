@@ -105,7 +105,7 @@ private:
     bool showPresets_ = false;
     bool isConnected_ = false;
     bool isConnecting_ = false;
-    bool isLfoEnabled_;
+    bool isLfoEnabled_ = false;
     LfoWaveType lfoWaveType_ = LfoWaveType::Sine;
     // 60 is 6 Hz
     long lfoFrequency_ = 60;
