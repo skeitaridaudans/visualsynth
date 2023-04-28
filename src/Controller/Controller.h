@@ -10,7 +10,6 @@
 #include <QSettings>
 #include "Operator.h"
 #include "Api.h"
-#include "src/AmpEnvelope/AmpGraph/AmpEnvParams/AmpEnvParams.h"
 #include "AmpEnvValue.h"
 #include "Preset.h"
 
@@ -46,7 +45,8 @@ public:
     void savePreset(const std::string &name);
     void loadPreset(const std::string &name);
     Operators &operators();
-    AmpEnvValue (&ampEnvValues())[4];
+    const std::vector<AmpEnvValue>& attackAmpEnvValues();
+    const std::vector<AmpEnvValue>& releaseAmpEnvValues();
     Operator &getOperatorById(int id);
     std::optional<int> selectedOperatorId();
     Q_INVOKABLE Operator *getSelectedOperator();
@@ -98,7 +98,8 @@ private:
     Operators operators_;
     std::unordered_set<int> availableOperatorIds_;
     std::optional<int> selectedOperatorId_;
-    AmpEnvValue ampEnvValues_[4] = {AmpEnvValue(0, true), AmpEnvValue(1, true), AmpEnvValue(2, true), AmpEnvValue(3, false)};
+    std::vector<AmpEnvValue> attackAmpEnvValues_;
+    std::vector<AmpEnvValue> releaseAmpEnvValues_;
     std::unique_ptr<Api> api;
     bool showPresets_ = false;
     bool isConnected_ = false;
