@@ -56,7 +56,7 @@ void AmpEnvGraphView::paintParams(QPainter *painter) {
 }
 
 void AmpEnvGraphView::paintParam(QPainter *painter, const AmpEnvValue &param) {
-    const auto isBeingDragged = draggingTouchPoint_->ampEnvPointIndex == param.index;
+    const auto isBeingDragged = draggingTouchPoint_.has_value() && draggingTouchPoint_->ampEnvPointIndex == param.index;
 
     const auto coords = getDrawingPosOfAmpEnvParam(param);
     const auto pointWidth = kPointWidth * (isBeingDragged ? draggingParamScale_ : 1.0);
