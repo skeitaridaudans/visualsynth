@@ -24,15 +24,6 @@ Window {
     visible: true
     width: 1920
 
-    Component.onCompleted: {
-        controller.setAmpEnvelopeSize(3); // controller.setReleaseAmpEnvelopeSize(3); ???
-        controller.setAttackAmpEnvelopePoint(0, 0, 0);
-        controller.setAttackAmpEnvelopePoint(3, 1 - (dialSustain.value / 300), 5);
-        controller.setReleaseAmpEnvelopeSize(2);
-        controller.setReleaseAmpEnvelopePoint(0, dialSustain.value, 0);
-        controller.setReleaseAmpEnvelopePoint(1, 0, 1);
-    }
-
     Timer {
         id: alertControllerUpdate
         interval: 10

@@ -132,9 +132,8 @@ void OperatorPresetsView::addNewPreset() {
                            const auto &controller = Controller::instance;
                            controller->savePreset(presetName.toStdString());
 
-                           std::vector<AmpEnvValue> ampEnvValues (std::begin(controller->ampEnvValues()), std::end(controller->ampEnvValues()));
                            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
-                                                                Preset(controller->operators(), ampEnvValues,presetName));
+                                                                Preset(controller->operators(), controller->attackAmpEnvValues(), controller->releaseAmpEnvValues(),presetName));
                            operatorPresetViews_->push_back(std::move(presetView));
 
                            return true;

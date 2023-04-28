@@ -12,13 +12,14 @@ using Operators = std::unordered_map<int, Operator>;
 struct Preset {
     QString name;
     Operators operators;
-    std::vector<AmpEnvValue> empEnvValues;
+    std::vector<AmpEnvValue> attackAmpEnvValues;
+    std::vector<AmpEnvValue> releaseAmpEnvValues;
 
-    Preset() : operators(), empEnvValues() {
+    Preset() : operators(), attackAmpEnvValues(), releaseAmpEnvValues() {
 
     }
 
-    Preset(Operators operators, std::vector<AmpEnvValue> ampEnvValues, QString pname) : operators(std::move(operators)), empEnvValues(std::move(ampEnvValues)), name(pname) {
+    Preset(Operators operators, std::vector<AmpEnvValue> attackAmpEnvValues, std::vector<AmpEnvValue> releaseAmpEnvValues, QString name) : operators(std::move(operators)), attackAmpEnvValues(std::move(attackAmpEnvValues)), releaseAmpEnvValues(std::move(releaseAmpEnvValues)), name(name) {
 
     }
 };
@@ -26,13 +27,15 @@ struct Preset {
 inline void to_json(json& j, const Preset& o) {
     j = json{
             { "operators", o.operators },
-            { "empEnvValues", o.empEnvValues },
+            { "attackAmpEnvValues", o.attackAmpEnvValues},
+            { "releaseAmpEnvValues", o.releaseAmpEnvValues},
     };
 }
 
 inline void from_json(const json& j, Preset& o) {
     j["operators"].get_to(o.operators);
-    j["empEnvValues"].get_to(o.empEnvValues);
+    j["attackAmpEnvValues"].get_to(o.attackAmpEnvValues);
+    j["releaseAmpEnvValues"].get_to(o.releaseAmpEnvValues);
 }
 
 #endif //MAIN_QML_PRESET_H
