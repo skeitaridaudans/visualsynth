@@ -10,6 +10,7 @@
 #include <QQuickPaintedItem>
 #include "src/Controller/AmpEnvValue.h"
 #include "DraggingTouchPoint.h"
+#include "src/Utils/TweenAnimation.h"
 
 class AmpEnvGraphView : public QQuickPaintedItem {
 Q_OBJECT
@@ -25,7 +26,7 @@ private:
     QPointF mapAmpEnvPointToView(const QPointF &point, bool isAttack);
     QPointF mapViewPointToAmpEnvPoint(const QPointF &point, bool isAttack);
     QPointF clampBetweenAdjacentPoints(const AmpEnvValue& ampEnvValue, const QPointF& desiredPos);
-    QPointF getDrawingPosOfAmpEnvPoint(const AmpEnvValue& ampEnvValue);
+    QPointF getDrawingPosOfAmpEnvParam(const AmpEnvValue& param);
     const AmpEnvValue *findTouchedAmpEnvPoint(const QPointF& touchPoint);
     const AmpEnvValue &getDraggingAmpEnvValue();
     bool startDragging(int touchPointId, const QPointF& pos);
@@ -33,6 +34,10 @@ private:
 
     QColor borderColor = QColor(Qt::gray);
     std::optional<DraggingTouchPoint> draggingTouchPoint_;
+    double draggingParamOpacity_ = 1.0;
+    double draggingParamScale_ = 1.0;
+    TweenAnimation paramOpacityAnim_;
+    TweenAnimation paramScaleAnim_;
 
 protected:
     void touchEvent(QTouchEvent *event) override;
