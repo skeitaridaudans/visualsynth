@@ -507,9 +507,24 @@ void Controller::onConnected() {
             sendAllOperatorInfo(operator_.first);
         }
     }
+
+    sendAmpEnvelopeToSynth();
 }
 
 void Controller::setConnectionStateText(QString connectionStateText) {
     connectionStateText_ = std::move(connectionStateText);
     connectionStateTextChanged(connectionStateText_);
+}
+
+void Controller::sendAmpEnvelopeToSynth() {
+    // For some reason, the synth always creates n+1 points when you set size to n
+    api->setAmpEnvelopeSize(attackAmpEnvValues_.size() - 1);
+    for (const auto &ampEnvValue : attackAmpEnvValues_) {
+        api->setAmpEnvelopeAttackValue(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
+
+    api->setAmpReleaseEnvelopeSize(releaseAmpEnvValues_.size());
+    for (const auto &ampEnvValue : releaseAmpEnvValues_) {
+        api->setAmpReleaseEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
 }

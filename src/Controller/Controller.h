@@ -93,6 +93,7 @@ private:
     void sendLfoGlobalOptionsToSynth();
     void onConnected();
     void setConnectionStateText(QString connectionStateText);
+    void sendAmpEnvelopeToSynth();
 
     bool isFirst_ = true; // This is used to avoid the program crashing while loading the initial preset
     Operators operators_;
