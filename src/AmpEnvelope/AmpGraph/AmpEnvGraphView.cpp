@@ -56,7 +56,7 @@ void AmpEnvGraphView::paintParams(QPainter *painter) {
 }
 
 void AmpEnvGraphView::paintParam(QPainter *painter, const AmpEnvValue &param) {
-    const auto isBeingDragged = draggingTouchPoint_.has_value() && draggingTouchPoint_->ampEnvPointIndex == param.index;
+    const auto isBeingDragged = draggingAnimParamIndex_ == param.index;
 
     const auto coords = getDrawingPosOfAmpEnvParam(param);
     const auto pointWidth = kPointWidth * (isBeingDragged ? draggingParamScale_ : 1.0);
@@ -190,6 +190,7 @@ bool AmpEnvGraphView::startDragging(int touchPointId, const QPointF &pos) {
         draggingTouchPoint_ = DraggingTouchPoint(touchPointId, touchedAmpEnvPoint->index,
                                                  touchedAmpEnvPoint->index ==
                                                  controller->attackAmpEnvValues().size() - 1);
+        draggingAnimParamIndex_ = touchedAmpEnvPoint->index;
         paramOpacityAnim_.setForward();
         paramScaleAnim_.setForward();
         return true;
@@ -211,7 +212,7 @@ void AmpEnvGraphView::updateDragging(QPointF draggingPos) {
                 (updatedPos.x() - clampedUpdatedPos.x()) / kViewReleaseProportion * kViewAttackProportion,
                 0.0);
 
-        controller->setReleaseAmpEnvelopePoint(0, clampedUpdatedPos.y(), releasePointX);
+        controller->setReleaseAmpEnvelopePoint(0, clampedUpdatedPos.y(), std::clamp(releasePointX, 0.0, 1.0));
     }
 }
 

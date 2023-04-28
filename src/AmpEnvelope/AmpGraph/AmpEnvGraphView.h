@@ -38,6 +38,9 @@ private:
     double draggingParamScale_ = 1.0;
     TweenAnimation paramOpacityAnim_;
     TweenAnimation paramScaleAnim_;
+    // This is needed because draggingTouchPoint_ becomes null immediately after dragging stops,
+    // but we want to finish the animation first
+    int draggingAnimParamIndex_ = 0;
 
 protected:
     void touchEvent(QTouchEvent *event) override;
