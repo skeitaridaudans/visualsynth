@@ -6,7 +6,6 @@
 #include <QCursor>
 #include <QGuiApplication>
 #include "src/Controller/Controller.h"
-#include "src/GlUtils/Utils.h"
 #include "src/Utils/Utils.h"
 #include "src/FontAwesome.h"
 

@@ -40,12 +40,18 @@ void OutputWaveView::paint(QPainter *painter) {
 
     painter->setPen(QPen(kWaveColor, 3));
 
-    painter->drawPolyline(QPolygonF(waveValues_));
+    // This needs to be done every frame in case the height of the view changed (while resizing the window)
+    std::vector<QPointF> renderWavePoints;
+    for (const auto& waveValue : waveValues_) {
+        renderWavePoints.emplace_back(waveValue.x(), waveValue.y() * (height() / 3.5) + (height() / 2.0));
+    }
+
+    painter->drawPolyline(renderWavePoints.data(), renderWavePoints.size());
 
     update();
 }
 
 double OutputWaveView::getValueAtOffset(double offset) {
     const auto &controller = Controller::instance;
-    return controller->getCarrierOutput(currentXOffset_)  * (height() / 2.5) + (height() / 2.0);
+    return controller->getCarrierOutput(currentXOffset_);
 }

@@ -28,6 +28,11 @@ Controller::Controller(QObject *parent) : QObject(parent), settings_(kCompanyNam
 
     if (settings_.contains(kSynthIpSettingsKey)) {
         synthIp_ = settings_.value(kSynthIpSettingsKey).toString();
+        api->connect(synthIp_);
+    }
+    else {
+        // TODO: Fix crash here (at least on Android)
+        // showConnectDialog();
     }
 }
 
@@ -41,14 +46,19 @@ void Controller::loadInitialPreset() {
     QString defaultname = "default";
 
     // TODO: Configure these values better
-    const std::vector<AmpEnvValue> defaultAmpEnv = {
-            AmpEnvValue(0, 0.5328, 0, true),
-            AmpEnvValue(1, 0, 1, false),
-            AmpEnvValue(2, 0.5328, 0.6404, true),
-            AmpEnvValue(3, 0.5328, 5.0, true)
+    const std::vector<AmpEnvValue> defaultAttackAmpEnv = {
+            AmpEnvValue(0, 0.0, 0.0, true),
+            AmpEnvValue(1, 0.8, 0.25, true),
+            AmpEnvValue(2, 0.5, 0.5, true),
+            AmpEnvValue(3, 0.5, 1.0, true),
     };
 
-    const Preset defaultPreset = Preset(defaultOperators, defaultAmpEnv, defaultname);
+    const std::vector<AmpEnvValue> defaultReleaseAmpEnv {
+            AmpEnvValue(0, 0.5, 0.0, false),
+            AmpEnvValue(1, 0, 1, false),
+    };
+
+    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultname);
     changeToPreset(defaultPreset);
 }
 
@@ -99,13 +109,38 @@ void Controller::setAmpEnvelopeSize(int size) {
 }
 
 void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
+    // It doesn't make sense to add a amp envelope point that is more than 2 spots ahead of any current point
+    if (attackAmpEnvValues_.size() < index) {
+        return;
+    }
+
     api->setAmpEnvelopeAttackValue(index, value, time);
-    ampEnvValues_[index] = AmpEnvValue(index, value, time, true);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, true);
+    if (attackAmpEnvValues_.size() == index) {
+        attackAmpEnvValues_.emplace_back(ampEnvValue);
+    }
+    else {
+        attackAmpEnvValues_[index] = ampEnvValue;
+    }
 }
 
 void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) {
+    // It doesn't make sense to add a amp envelope point that is more than 2 spots ahead of any current point
+    if (releaseAmpEnvValues_.size() < index) {
+        return;
+    }
+
     api->setAmpReleaseEnvelopePoint(index, value, time);
-    ampEnvValues_[index] = AmpEnvValue(index, value, time, false);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, false);
+    if (releaseAmpEnvValues_.size() == index) {
+        releaseAmpEnvValues_.emplace_back(ampEnvValue);
+    }
+    else {
+        releaseAmpEnvValues_[index] = ampEnvValue;
+    }
+
 }
 
 void Controller::changeFrequency(int operatorId, float frequency) {
@@ -263,8 +298,12 @@ Operators &Controller::operators() {
     return operators_;
 }
 
-AmpEnvValue (&Controller::ampEnvValues())[4] {
-    return ampEnvValues_;
+const std::vector<AmpEnvValue>& Controller::attackAmpEnvValues() {
+    return attackAmpEnvValues_;
+}
+
+const std::vector<AmpEnvValue>& Controller::releaseAmpEnvValues() {
+    return releaseAmpEnvValues_;
 }
 
 Operator &Controller::getOperatorById(int id) {
@@ -285,8 +324,9 @@ Operator *Controller::getSelectedOperator() {
 }
 
 void Controller::savePreset(const std::string &name) {
-    std::vector<AmpEnvValue> ampEnvPoints(std::begin(ampEnvValues_), std::end(ampEnvValues_));
-    json json(Preset(operators_, ampEnvPoints, QString::fromStdString(name)));
+    const auto attackAmpEnvValues = attackAmpEnvValues_;
+    const auto releaseAmpEnvValues = releaseAmpEnvValues_;
+    json json(Preset(operators_, attackAmpEnvValues, releaseAmpEnvValues, QString::fromStdString(name)));
 
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
@@ -321,12 +361,11 @@ void Controller::changeToPreset(const Preset &preset) {
         }
     }
 
-    for (const auto &ampEnvValue: preset.empEnvValues) {
-        if (ampEnvValue.attack) {
-            setAttackAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
-        } else {
-            setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
-        }
+    for (const auto &ampEnvValue: preset.attackAmpEnvValues) {
+        setAttackAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
+    for (const auto &ampEnvValue : preset.releaseAmpEnvValues) {
+        setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
 
     // This is to avoid the program crashing when loading the first preset.
@@ -475,9 +514,24 @@ void Controller::onConnected() {
             sendAllOperatorInfo(operator_.first);
         }
     }
+
+    sendAmpEnvelopeToSynth();
 }
 
 void Controller::setConnectionStateText(QString connectionStateText) {
     connectionStateText_ = std::move(connectionStateText);
     connectionStateTextChanged(connectionStateText_);
+}
+
+void Controller::sendAmpEnvelopeToSynth() {
+    // For some reason, the synth always creates n+1 points when you set size to n
+    api->setAmpEnvelopeSize(attackAmpEnvValues_.size() - 1);
+    for (const auto &ampEnvValue : attackAmpEnvValues_) {
+        api->setAmpEnvelopeAttackValue(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
+
+    api->setAmpReleaseEnvelopeSize(releaseAmpEnvValues_.size());
+    for (const auto &ampEnvValue : releaseAmpEnvValues_) {
+        api->setAmpReleaseEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
 }

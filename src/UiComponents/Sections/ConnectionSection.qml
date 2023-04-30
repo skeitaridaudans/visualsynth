@@ -4,15 +4,13 @@ import QtQuick.Controls.Material 2.15
 
 Rectangle {
     id: connectionInfoContainer
-    anchors.left: parent.left
-    anchors.top: operatorrectangle.bottom
+    color: "transparent"
 
     Rectangle {
         id: connectionInfo
         anchors.left: parent.left
         anchors.leftMargin: 40
-        anchors.top: parent.top
-        anchors.topMargin: 32
+        anchors.verticalCenter: parent.verticalCenter
         height: 60
 
         BusyIndicator {

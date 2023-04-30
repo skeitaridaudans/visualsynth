@@ -8,7 +8,6 @@ Rectangle {
     enabled: dialogController.isVisible
     state: dialogController.isVisible ? "visible" : "invisible"
 
-    anchors.fill: parent
     color: "#8C000000"
 
     states: [

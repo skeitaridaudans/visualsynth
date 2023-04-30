@@ -11,6 +11,9 @@ if (ENABLE_INTERSYNTH)
 	add_definitions(-DUSE_INTERSYNTH)
 endif()
 
+if (ANDROID)
+	add_definitions(-DANDROID)
+endif ()
 
 
 # Linux support
@@ -53,18 +56,19 @@ add_subdirectory(./lib/QtAwesome QtAwesome)
 include_directories(./lib/json)
 
 find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
-find_package(OpenGL REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Network)
 
 qt_add_executable(appVisualSynth
 		src/main.cpp
-		src/main.h src/SinWaveView/SinWaveItem.cpp src/SinWaveView/SinWaveItem.h src/OperatorView/OperatorView.cpp src/OperatorView/OperatorView.h src/OperatorView/OperatorDrawer.cpp src/OperatorView/OperatorDrawer.h src/OperatorView/AddOperatorBox.h src/OperatorView/AddOperatorBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/GlUtils/Utils.cpp src/GlUtils/Utils.h src/Utils/Utils.h src/Alert/AlertController.cpp src/Alert/AlertController.h src/FontAwesome.h src/OperatorView/DeleteOperatorBox.h src/OperatorView/DeleteOperatorBox.cpp src/FontAwesome.cpp src/AmpEnvelope/AmpGraph/AmpEnvGraphView.cpp src/AmpEnvelope/AmpGraph/AmpEnvParams/AmpEnvParams.cpp src/AmpEnvelope/AmpGraph/AmpEnvParams/AmpEnvParams.h src/AmpEnvelope/AmpGraph/LineBetweenParams/Line.cpp src/AmpEnvelope/AmpGraph/LineBetweenParams/Line.h src/lovecommunicationtcp/lovecommunicationtcp.cpp src/lovecommunicationtcp/lovecommunicationtcp.h lib/json/json.hpp src/OperatorPresetsView/OperatorPresetsView.cpp src/OperatorPresetsView/OperatorPresetsView.h src/OperatorPresetsView/OperatorPresetView.cpp src/OperatorPresetsView/OperatorPresetView.h src/Utils/TweenAnimation.cpp src/Utils/TweenAnimation.h src/Utils/ColorTweenAnimation.cpp src/Utils/ColorTweenAnimation.h src/Dialog/DialogController.cpp src/Dialog/DialogController.h src/Utils/TouchPoint.h src/Utils/PointTweenAnimation.cpp src/Utils/PointTweenAnimation.h src/Controller/Preset.h src/Controller/AmpEnvValue.h src/OutputWaveView/OutputWaveView.cpp src/OutputWaveView/OutputWaveView.h src/OperatorView/PresetButton.cpp src/OperatorView/PresetButton.h)
+		src/main.h src/OperatorView/OperatorView.cpp src/OperatorView/OperatorView.h src/OperatorView/OperatorDrawer.cpp src/OperatorView/OperatorDrawer.h src/OperatorView/AddOperatorBox.h src/OperatorView/AddOperatorBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/Utils/Utils.h src/Alert/AlertController.cpp src/Alert/AlertController.h src/FontAwesome.h src/OperatorView/DeleteOperatorBox.h src/OperatorView/DeleteOperatorBox.cpp src/FontAwesome.cpp src/AmpEnvelope/AmpGraph/AmpEnvGraphView.h src/AmpEnvelope/AmpGraph/AmpEnvGraphView.cpp src/lovecommunicationtcp/lovecommunicationtcp.cpp src/lovecommunicationtcp/lovecommunicationtcp.h lib/json/json.hpp src/OperatorPresetsView/OperatorPresetsView.cpp src/OperatorPresetsView/OperatorPresetsView.h src/OperatorPresetsView/OperatorPresetView.cpp src/OperatorPresetsView/OperatorPresetView.h src/Utils/TweenAnimation.cpp src/Utils/TweenAnimation.h src/Utils/ColorTweenAnimation.cpp src/Utils/ColorTweenAnimation.h src/Dialog/DialogController.cpp src/Dialog/DialogController.h src/Utils/TouchPoint.h src/Utils/PointTweenAnimation.cpp src/Utils/PointTweenAnimation.h src/Controller/Preset.h src/Controller/AmpEnvValue.h src/OutputWaveView/OutputWaveView.cpp src/OutputWaveView/OutputWaveView.h src/Controller/LfoWaveType.h src/OperatorWaveView/OperatorWaveView.h src/OperatorWaveView/OperatorWaveView.cpp src/AmpEnvelope/AmpGraph/DraggingTouchPoint.h src/OperatorView/PresetButton.cpp src/OperatorView/PresetButton.h)
 
 qt_add_qml_module(appVisualSynth
     URI VisualSynth
     VERSION 1.0
-    QML_FILES src/main.qml src/ToggleButton.qml src/TextInputDialog.qml
-		src/ConnectionInfo.qml
+    QML_FILES src/main.qml src/UiComponents/Core/ToggleButton.qml src/UiComponents/Sections/TextInputDialog.qml
+		src/UiComponents/Sections/ConnectionSection.qml src/UiComponents/Sections/BottomAlertView.qml src/UiComponents/Sections/GlobalLfoOptionsSection.qml
+		src/UiComponents/Sections/OperatorInfoSection.qml src/UiComponents/Sections/OutputWaveSection.qml src/UiComponents/Sections/OperatorViewSection.qml
+		src/UiComponents/Sections/AmpEnvSection.qml
 )
 
 set_target_properties(appVisualSynth PROPERTIES
@@ -78,8 +82,6 @@ set_target_properties(appVisualSynth PROPERTIES
 target_link_libraries(appVisualSynth
     PRIVATE Qt6::Quick)
 
-target_link_libraries(appVisualSynth PRIVATE OpenGL::GL)
-target_link_libraries(appVisualSynth PRIVATE OpenGL::GLU)
 target_link_libraries(appVisualSynth PRIVATE QtAwesome)
 target_link_libraries(appVisualSynth PRIVATE Qt6::Network)
 
