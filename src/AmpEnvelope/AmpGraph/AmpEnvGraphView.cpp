@@ -171,7 +171,7 @@ const AmpEnvValue &AmpEnvGraphView::getDraggingAmpEnvValue() {
 const AmpEnvValue *AmpEnvGraphView::findTouchedAmpEnvPoint(const QPointF &touchPoint) {
     const auto &controller = Controller::instance;
     for (auto &ampEnvValue: controller->attackAmpEnvValues()) {
-        const auto valueCoords = mapAmpEnvPointToView(QPointF(ampEnvValue.time, ampEnvValue.value), true);
+        const auto valueCoords = getDrawingPosOfAmpEnvParam(ampEnvValue);
 
         if (vectorBetweenPoints(touchPoint, valueCoords).length() < kPointDragAreaSize) {
             return &ampEnvValue;
