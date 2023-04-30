@@ -86,7 +86,7 @@ void OperatorPresetsView::paintAddPresetButton(QPainter *painter, const QPointF 
 
 void OperatorPresetsView::loadPresets() {
     if (!std::filesystem::directory_entry("presets/").exists()) {
-        qDebug() << "Presets directory does not exist";
+//        qDebug() << "Presets directory does not exist";
         return;
     }
 

@@ -328,6 +328,7 @@ void Controller::changeToPreset(const Preset &preset) {
             setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
         }
     }
+
     // This is to avoid the program crashing when loading the first preset.
     if (!isFirst_) {
         //Alert that a preset has been loaded
@@ -336,7 +337,6 @@ void Controller::changeToPreset(const Preset &preset) {
     } else {
         isFirst_ = false;
     }
-
 }
 
 void Controller::removeAllModulators() {
@@ -373,8 +373,10 @@ void Controller::resetAvailableOperatorIds() {
 }
 
 void Controller::hidePresets() {
-    showPresets_ = false;
-    showPresetsChanged(false);
+    if(showPresets_ == true){
+        showPresets_ = false;
+        emit showPresetsChanged(false);
+    }
 }
 
 double Controller::getSingleOperatorValue(int operatorId, double offset) {
@@ -387,6 +389,7 @@ double Controller::getSingleOperatorValue(int operatorId, double offset) {
 
 double Controller::getOperatorModulationValue(int operatorId, double offset) {
     auto &operator_ = getOperatorById(operatorId);
+
     operator_.visitedCount++;
 
     double modulationSum = 0.0;

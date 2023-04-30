@@ -6,6 +6,7 @@ import OperatorView
 import OperatorPresetsView
 import AmpEnvGraphView
 import OutputWaveView
+import PButton 1.0
 import OperatorWaveView
 
 Window {
@@ -29,6 +30,7 @@ Window {
         controller.setReleaseAmpEnvelopePoint(0, dialSustain.value, 0);
         controller.setReleaseAmpEnvelopePoint(1, 0, 1);
     }
+
 
     Connections {
         function onAmpChanged(amp) {
@@ -59,6 +61,17 @@ Window {
             lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
             lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
         }
+        
+        function onShowPresetsChanged(show){
+//            if(!show ){
+                var a =  presetB.updateOpen; // Since this is updated in OperatorView.cpp we need to catch the signal.
+//            }
+        }
+
+    }
+
+    Material.theme: Material.Dark
+    Material.accent: Material.Purple
 
         target: controller
     }
@@ -93,6 +106,42 @@ Window {
             height: 100
             width: 800
         }
+
+
+        Rectangle {
+            id: connectedRoundButton
+            x: 88
+            y: 94
+            width: 34
+            height: 34
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 88
+            anchors.bottomMargin: 54
+            color: controller.isConnected ? "green" : "red"
+            radius: 50
+        }
+
+
+
+        Text {
+            id: connectedText
+            x: 128
+            y: 100
+            width: 141
+            height: 27
+            color: "#ffffff"
+            text: controller.isConnected ? qsTr("Connected!") : qsTr("not Connected!")
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            font.pixelSize: 18
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            anchors.leftMargin: 127
+            anchors.bottomMargin: 58
+        }
+
+
     }
 
     ConnectionInfo {
@@ -119,25 +168,31 @@ Window {
             height: 800
             width: 900
         }
-        Button {
-            id: button1
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 50
-            height: 50
-            text: qsTr("Presets")
-            width: 250
 
-            onPressed: {
-                controller.deselectOperator();
+        PresetButton {
+            id:presetB
+            width: 250
+            height: 50
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 50;
+
+            onClicked: {
+//                presetB.updateOpen;
+                controller.deselectOperator()
                 controller.showPresets = !controller.showPresets;
             }
         }
+
+
         Rectangle {
             id: presetsContainer
             anchors.horizontalCenter: parent.horizontalCenter
+
             anchors.top: parent.top
-            anchors.topMargin: button1.height * 2
+            anchors.topMargin: presetB.height *2.5
+
             color: "#323232"
             height: 450
             radius: 8
@@ -167,6 +222,7 @@ Window {
             }
         }
     }
+    
     Rectangle {
         // Operator info box
         id: operatorInfo
@@ -200,6 +256,7 @@ Window {
 
             Text {
                 id: freqText
+                
                 anchors.horizontalCenter: opDrag.horizontalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 510
@@ -1019,4 +1076,5 @@ Window {
             verticalAlignment: Text.AlignVCenter
         }
     }
+
 }
