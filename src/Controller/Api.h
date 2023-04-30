@@ -12,6 +12,8 @@ class Api {
 public:
     Api(std::function<void (QTcpSocket::SocketState state)> onConnectionStateChange);
 
+    void connect(const QString& ip);
+    void disconnect();
     void sendOperatorValue(unsigned char operator_, unsigned char alg_index, bool attack, float frequency_factor, float amplitude);
     void noteOn(unsigned char key);
     void noteOff(unsigned char key);
@@ -23,6 +25,8 @@ public:
     void setAmpEnvelopeSize(int size);
     void setAmpReleaseEnvelopePoint(int index, float value, float time);
     void setAmpReleaseEnvelopeSize(int size);
+    void setLfoGlobalOptions(bool enabled, LfoWaveType type, float frequency);
+    void setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount);
 
 private:
     LoveCommunicationTcp loveCommunicationTcp_;

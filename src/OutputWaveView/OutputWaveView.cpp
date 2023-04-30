@@ -10,15 +10,13 @@ const double kOffsetUpdateTime = 1000.0 / 60.0; // 60 fps
 
 OutputWaveView::OutputWaveView(QQuickItem *parent) : QQuickPaintedItem(parent),
                                                      moveOffsetUpdateTime_(std::chrono::high_resolution_clock::now()) {
-    const auto &controller = Controller::instance;
-
 }
 
 void OutputWaveView::paint(QPainter *painter) {
     // Add the initial points when the view is first rendered
     if (waveValues_.empty()) {
         for (int x = 0; x < width() + 1; x++) {
-            waveValues_.emplace_back(getValueAtOffset(x));
+            waveValues_.emplace_back(QPointF(static_cast<double>(x), getValueAtOffset(x)));
         }
         currentXOffset_ = (int) width();
     }
@@ -27,26 +25,27 @@ void OutputWaveView::paint(QPainter *painter) {
     const auto timeSinceOffsetUpdate = std::chrono::duration<double, std::milli>(
             currentTime - moveOffsetUpdateTime_).count();
     if (timeSinceOffsetUpdate > kOffsetUpdateTime) {
-        currentXOffset_++;
-        moveOffsetUpdateTime_ = std::chrono::high_resolution_clock::now();
+        const auto offsetBy = (timeSinceOffsetUpdate / kOffsetUpdateTime) * 1.75;
 
-        waveValues_.pop_front();
-        waveValues_.push_back(getValueAtOffset(currentXOffset_));
+        currentXOffset_ += offsetBy;
+        waveValues_.pop_back();
+        waveValues_.push_front(QPointF(0, getValueAtOffset(currentXOffset_)));
+
+        for (auto& waveValue : waveValues_) {
+            waveValue.setX(waveValue.x() + offsetBy);
+        }
+
+        moveOffsetUpdateTime_ = std::chrono::high_resolution_clock::now();
     }
 
     painter->setPen(QPen(kWaveColor, 3));
 
-    std::vector<QPointF> wavePoints;
-    for (int x = 0; x < width() + 1; x++) {
-        wavePoints.emplace_back((double) x, waveValues_[x]);
-    }
-
-    painter->drawPolyline(wavePoints.data(), wavePoints.size());
+    painter->drawPolyline(QPolygonF(waveValues_));
 
     update();
 }
 
-double OutputWaveView::getValueAtOffset(int offset) {
+double OutputWaveView::getValueAtOffset(double offset) {
     const auto &controller = Controller::instance;
     return controller->getCarrierOutput(currentXOffset_)  * (height() / 2.5) + (height() / 2.0);
 }

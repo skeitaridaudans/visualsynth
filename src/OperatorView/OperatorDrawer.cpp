@@ -80,7 +80,7 @@ void OperatorDrawer::update(Operator &operator_) {
         }
 
         // When operator is pressed (touch is released before dragging starts)
-        if (isInsideBox(operator_, primaryTouchPointPos) && !operatorView_->primaryTouchPoint().isPressed) {
+        else if (isInsideBox(operator_, primaryTouchPointPos) && !operatorView_->primaryTouchPoint().isPressed) {
             onOperatorPressed(operator_);
         }
     }

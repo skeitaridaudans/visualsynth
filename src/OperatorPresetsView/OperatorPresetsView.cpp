@@ -104,8 +104,14 @@ void OperatorPresetsView::loadPresets() {
 }
 
 void OperatorPresetsView::updateSizes() {
-    presetBoxSize.setWidth((width() - (kOuterPaddingX * 2.0 + kBetweenPaddingX * kColumnCount)) / kColumnCount);
-    presetBoxSize.setHeight((height() - (kOuterPaddingY * 2.0 + kBetweenPaddingY * kRowCount)) / kRowCount);
+    presetBoxSize.setWidth((containerWidth_ - (kOuterPaddingX * 2.0 + kBetweenPaddingX * kColumnCount)) / kColumnCount);
+    presetBoxSize.setHeight((containerHeight_ - (kOuterPaddingY * 2.0 + kBetweenPaddingY * kRowCount)) / kRowCount);
+
+    const auto contentHeight = ceil(static_cast<double>(operatorPresetViews_->size() + 1) / 3.0) * (presetBoxSize.height() + kBetweenPaddingY) + kOuterPaddingY * 2.0;
+    if (std::abs(contentHeight - calculatedContentHeight_) > 0.1) {
+        calculatedContentHeight_ = contentHeight;
+        calculatedContentHeightChanged(calculatedContentHeight_);
+    }
 }
 
 void OperatorPresetsView::addNewPreset() {
@@ -115,9 +121,14 @@ void OperatorPresetsView::addNewPreset() {
     }
 
     DialogController::instance->
-            showDialog("Create preset", "Save current operators as a new preset", "Name", "Create",
+            showDialog("Create preset", "Save current operators as a new preset", "", "Name of preset", "Create",
                        "Cancel",
                        [this](const QString &presetName) {
+                            if (presetName.isEmpty()) {
+                                AlertController::instance->showAlert("Preset name cannot be empty", true);
+                                return false;
+                            }
+
                            const auto &controller = Controller::instance;
                            controller->savePreset(presetName.toStdString());
 
@@ -125,6 +136,8 @@ void OperatorPresetsView::addNewPreset() {
                            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
                                                                 Preset(controller->operators(), ampEnvValues,presetName));
                            operatorPresetViews_->push_back(std::move(presetView));
+
+                           return true;
                        });
 }
 

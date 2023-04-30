@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "src/Controller/Intersynth/floating_fix.h"
+#include "src/Controller/LfoWaveType.h"
 
 
 LoveCommunicationTcp::LoveCommunicationTcp(std::function<void(QTcpSocket::SocketState state)> onStateChange)
@@ -22,6 +23,12 @@ bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
         qDebug() << "Error connecting to server:" << socket.errorString();
         return false;
     }
+}
+
+void LoveCommunicationTcp::connectToServerAsync(QString ip, int port) {
+    // Connect to the server at IP address 192.168.1.100 and port 1234
+    socket.connectToHost(ip, port);
+    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
 }
 
 void LoveCommunicationTcp::disconnectFromServer() {
@@ -54,6 +61,10 @@ QString LoveCommunicationTcp::getMessageString() {
 
 void LoveCommunicationTcp::sendMessageString(QString msg) {
     sendMessageBytes(msg.toUtf8());
+}
+
+bool LoveCommunicationTcp::isConnected() {
+    return socket.state() == QTcpSocket::SocketState::ConnectedState;
 }
 
 QString LoveCommunicationTcp::sendOperatorValue(int operator_id, bool attack, int envelope_index, float frequency,
@@ -147,6 +158,29 @@ QString LoveCommunicationTcp::setReleaseAmpEnvelopeSize(int size) {
     store_float_in_buffer(buf, -1.0);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
     store_float_in_buffer(buf, -1.0);
+    bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    sendMessageBytes(bytes);
+    return QString::fromUtf8(bytes.toHex(' '));
+}
+
+QString LoveCommunicationTcp::setLfoGlobalOptions(bool enabled, LfoWaveType type, float frequency) {
+    QByteArray bytes;
+    bool singleBitEnabled = !!enabled;
+    bytes.append((unsigned char) (0xE0 + (singleBitEnabled << 3) + (unsigned char) type));
+    unsigned char buf[5];
+    store_float_in_buffer(buf, frequency);
+    bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    sendMessageBytes(bytes);
+    return QString::fromUtf8(bytes.toHex(' '));
+}
+
+QString LoveCommunicationTcp::setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount) {
+    QByteArray bytes;
+    bytes.append((unsigned char) (0xF0 + operatorId));
+    unsigned char buf[5];
+    store_float_in_buffer(buf, frequencyAmount);
+    bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    store_float_in_buffer(buf, amplitudeAmount);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
     sendMessageBytes(bytes);
     return QString::fromUtf8(bytes.toHex(' '));
