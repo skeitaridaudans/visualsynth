@@ -12,6 +12,13 @@ Rectangle {
     color: "#212121"
     radius: 3
 
+    Connections {
+        function onShowPresetsChanged(show) {
+            presetB.updateOpen();
+        }
+
+        target: controller
+    }
     OperatorView {
         id: boxes
         anchors.top: parent.top
