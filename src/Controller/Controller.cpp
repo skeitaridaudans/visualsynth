@@ -376,7 +376,6 @@ void Controller::changeToPreset(const Preset &preset) {
     } else {
         isFirst_ = false;
     }
-
 }
 
 void Controller::removeAllModulators() {
@@ -413,8 +412,10 @@ void Controller::resetAvailableOperatorIds() {
 }
 
 void Controller::hidePresets() {
-    showPresets_ = false;
-    showPresetsChanged(false);
+    if(showPresets_ == true){
+        showPresets_ = false;
+        emit showPresetsChanged(false);
+    }
 }
 
 double Controller::getSingleOperatorValue(int operatorId, double offset) {
@@ -427,6 +428,7 @@ double Controller::getSingleOperatorValue(int operatorId, double offset) {
 
 double Controller::getOperatorModulationValue(int operatorId, double offset) {
     auto &operator_ = getOperatorById(operatorId);
+
     operator_.visitedCount++;
 
     double modulationSum = 0.0;
@@ -532,4 +534,8 @@ void Controller::sendAmpEnvelopeToSynth() {
     for (const auto &ampEnvValue : releaseAmpEnvValues_) {
         api->setAmpReleaseEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
+}
+
+bool Controller::showPresets() {
+    return showPresets_;
 }

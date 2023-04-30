@@ -57,6 +57,7 @@ public:
     double getCarrierOutput(double offset);
     Q_INVOKABLE void showConnectDialog();
     Q_INVOKABLE void disconnect();
+    bool showPresets();
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
     Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);
