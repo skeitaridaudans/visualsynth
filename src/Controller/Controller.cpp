@@ -535,3 +535,7 @@ void Controller::sendAmpEnvelopeToSynth() {
         api->setAmpReleaseEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
 }
+
+bool Controller::showPresets() {
+    return showPresets_;
+}

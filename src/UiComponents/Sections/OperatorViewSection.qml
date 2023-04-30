@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import OperatorView
 import OperatorPresetsView
+import PButton
 
 Rectangle {
     id: operatorrectangle
@@ -17,25 +18,25 @@ Rectangle {
         height: parent.height - 50
         width: parent.width
     }
-    Button {
-        id: button1
+    PresetButton {
+        id: presetB
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 50
         height: 50
-        text: qsTr("Presets")
         width: 250
 
-        onPressed: {
+        onClicked: {
             controller.deselectOperator();
             controller.showPresets = !controller.showPresets;
+            presetB.updateOpen();
         }
     }
     Rectangle {
         id: presetsContainer
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: button1.bottom
-        anchors.topMargin: 8
+        anchors.top: presetB.bottom
+        anchors.topMargin: 16
         color: "#323232"
         height: 450
         radius: 8

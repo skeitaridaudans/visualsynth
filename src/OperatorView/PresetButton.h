@@ -15,7 +15,6 @@ class PresetButton : public QQuickPaintedItem{
     Q_OBJECT
 
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(bool updateOpen READ updateOpen )
 
     Q_PROPERTY(double width READ width )
     Q_PROPERTY(double height READ height)
@@ -26,7 +25,7 @@ public:
 
     QString title() const;
     void setTitle(const QString newTitle);
-    bool updateOpen();
+    Q_INVOKABLE void updateOpen();
 
 
     void paint(QPainter *painter);

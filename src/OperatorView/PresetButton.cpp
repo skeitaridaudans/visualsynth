@@ -4,6 +4,7 @@
 #include <iostream>
 #include "PresetButton.h"
 #include "QPainter"
+#include "src/Controller/Controller.h"
 
 
 const QString iconOn_ (fa::fa_folder_open);
@@ -79,8 +80,8 @@ void PresetButton::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-bool PresetButton::updateOpen() {
-    open_ = !open_;
+void PresetButton::updateOpen() {
+    open_ = Controller::instance->showPresets();
     if (open_) { //if the button displays all available presets then display a certain icon
         icon_ = iconOn_;
         color_ = colorOpen_;
@@ -89,9 +90,6 @@ bool PresetButton::updateOpen() {
         color_ = colorClosed_;
     }
     update();
-
-    return open_;
-
 }
 
 double PresetButton::width() {
