@@ -43,6 +43,8 @@ public:
     Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
     Operator(const Operator& operator_);
 
+    Operator& operator=(const Operator& operator_);
+
     int id;
     float frequency;
     long amplitude;

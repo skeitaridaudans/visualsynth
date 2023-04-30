@@ -28,6 +28,11 @@ Controller::Controller(QObject *parent) : QObject(parent), settings_(kCompanyNam
 
     if (settings_.contains(kSynthIpSettingsKey)) {
         synthIp_ = settings_.value(kSynthIpSettingsKey).toString();
+        api->connect(synthIp_);
+    }
+    else {
+        // TODO: Fix crash here (at least on Android)
+        // showConnectDialog();
     }
 }
 

@@ -33,6 +33,19 @@ Operator::Operator(const Operator &operator_)
           isModulator(operator_.isModulator), isCarrier(operator_.isCarrier), modulatedBy(operator_.modulatedBy),
           position(operator_.position), operatorViewState(operator_.operatorViewState) {}
 
+Operator &Operator::operator=(const Operator &operator_) {
+    this->id = operator_.id;
+    this->frequency = operator_.frequency;
+    this->amplitude = operator_.amplitude;
+    this->isModulator = operator_.isModulator;
+    this->isCarrier = operator_.isCarrier;
+    this->modulatedBy = operator_.modulatedBy;
+    this->position = operator_.position;
+    this->operatorViewState = operator_.operatorViewState;
+
+    return *this;
+}
+          
 void Operator::setFrequency(float step) {
     if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0.9)) {
         this->frequency = this->frequency + step;

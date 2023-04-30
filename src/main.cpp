@@ -3,6 +3,11 @@
 #include "src/AmpEnvelope/AmpGraph/AmpEnvGraphView.h"
 
 #include <QQmlContext>
+
+#ifdef ANDROID
+#include <QtCore/private/qandroidextras_p.h>
+#endif
+
 #include "Controller/Controller.h"
 #include "src/Alert/AlertController.h"
 #include "src/Dialog/DialogController.h"
@@ -12,8 +17,6 @@
 
 int main(int argc, char *argv[])
 {
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
-
     QGuiApplication app(argc, argv);
     qmlRegisterType<OperatorView>("OperatorView", 1, 0, "OperatorView");
     qmlRegisterType<AmpEnvGraphView>("AmpEnvGraphView",1,0,"AmpEnvGraphItem");
@@ -32,6 +35,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dialogController", DialogController::instance.get());
     engine.rootContext()->setContextProperty("controller", Controller::instance.get());
     engine.load(url);
+
+#ifdef ANDROID
+    const auto res = QtAndroidPrivate::checkPermission(QtAndroidPrivate::Storage).result();
+    if (res == QtAndroidPrivate::Denied) {
+        const auto res = QtAndroidPrivate::requestPermission(QtAndroidPrivate::Storage).result();
+    }
+#endif
 
     return app.exec();
 }
