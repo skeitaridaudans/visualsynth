@@ -70,11 +70,6 @@ Window {
 
     }
 
-    Material.theme: Material.Dark
-    Material.accent: Material.Purple
-
-        target: controller
-    }
     Timer {
         id: alertControllerUpdate
         interval: 10
@@ -105,40 +100,6 @@ Window {
             anchors.rightMargin: 20
             height: 100
             width: 800
-        }
-
-
-        Rectangle {
-            id: connectedRoundButton
-            x: 88
-            y: 94
-            width: 34
-            height: 34
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 88
-            anchors.bottomMargin: 54
-            color: controller.isConnected ? "green" : "red"
-            radius: 50
-        }
-
-
-
-        Text {
-            id: connectedText
-            x: 128
-            y: 100
-            width: 141
-            height: 27
-            color: "#ffffff"
-            text: controller.isConnected ? qsTr("Connected!") : qsTr("not Connected!")
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            font.pixelSize: 18
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            anchors.leftMargin: 127
-            anchors.bottomMargin: 58
         }
 
 
