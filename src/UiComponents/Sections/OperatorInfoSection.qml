@@ -576,7 +576,9 @@ Rectangle {
                                             selectedOperator.setFrequency(0.1);
                                         }
                                     } else {
-                                        selectedOperator.setFrequency(10);
+                                        if(xDelta > 5) {
+                                            selectedOperator.setFrequency(10);
+                                        }
                                     }
                                     controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                 } else if (xDelta < 0) {
@@ -587,7 +589,9 @@ Rectangle {
                                             selectedOperator.setFrequency(-0.1);
                                         }
                                     } else {
-                                        selectedOperator.setFrequency(-10);
+                                        if(xDelta < -5){
+                                            selectedOperator.setFrequency(-10);
+                                        }
                                     }
                                     controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
                                 }
