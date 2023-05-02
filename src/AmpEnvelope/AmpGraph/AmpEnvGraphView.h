@@ -19,7 +19,6 @@ public:
     void paint(QPainter *painter) override;
 
 private:
-    void paintGraphContainer(QPainter *painter);
     void paintParams(QPainter *painter);
     void paintLines(QPainter *painter);
     void paintParam(QPainter *painter, const AmpEnvValue &param);
@@ -31,6 +30,8 @@ private:
     const AmpEnvValue &getDraggingAmpEnvValue();
     bool startDragging(int touchPointId, const QPointF& pos);
     void updateDragging(QPointF draggingPos);
+    double draggableAreaWidth();
+    double draggableAreaHeight();
 
     QColor borderColor = QColor(Qt::gray);
     std::optional<DraggingTouchPoint> draggingTouchPoint_;

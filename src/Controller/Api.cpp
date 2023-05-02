@@ -15,7 +15,7 @@ Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateCha
 }
 
 void Api::connect(const QString &ip) {
-    loveCommunicationTcp_.connectToServerAsync(ip, kSynthPort);
+    loveCommunicationTcp_.connectToServer(ip, kSynthPort);
 }
 
 void Api::disconnect() {

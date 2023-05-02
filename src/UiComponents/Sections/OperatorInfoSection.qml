@@ -235,10 +235,6 @@ Rectangle {
         Text {
             id: freqText
             anchors.horizontalCenter: opDrag.horizontalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 510
-            anchors.right: parent.right
-            anchors.rightMargin: 319
             color: "gray"
             font.family: "Noto Sans"
             font.pixelSize: 16
