@@ -14,7 +14,8 @@ Window {
     id: window
 
     property var selectedOperator: null
-
+    property string borderColor : "gray"
+    property int borderWidth: 2
     Material.accent: Material.Purple
     Material.theme: Material.Dark
     color: "#212121"
@@ -45,11 +46,52 @@ Window {
                 id: connectionSection
                 height: 80
                 width: parent.width
+
+                Item {
+                    width: parent.width
+                    height: parent.height
+                    Rectangle {
+                        width: parent.width
+                        height: borderWidth
+                        color: borderColor
+                        anchors.top: parent.top
+                    }
+                    Rectangle {
+                        height: parent.height
+                        width: borderWidth
+                        color: borderColor
+                        anchors.left: parent.left
+                    }
+                    Rectangle {
+                        width: parent.width
+                        height: borderWidth
+                        color: borderColor
+                        anchors.bottom: parent.bottom
+                    }
+                }
+
             }
             OperatorViewSection {
                 id: operatorViewSection
                 height: parent.height - 80
                 width: parent.width
+
+                Item {
+                    width: parent.width
+                    height: parent.height
+                    Rectangle {
+                        width: parent.width
+                        height: borderWidth
+                        color: borderColor
+                        anchors.bottom: parent.bottom
+                    }
+                    Rectangle {
+                        height: parent.height
+                        width: borderWidth
+                        color: borderColor
+                        anchors.left: parent.left
+                    }
+                }
             }
         }
 
@@ -63,11 +105,62 @@ Window {
                 id: operatorInfoSection
                 height: 400
                 width: parent.width
+
+                Item {
+                    width: parent.width
+                    height: parent.height
+
+                    Rectangle {
+                        width: parent.width
+                        height: borderWidth
+                        color: borderColor
+                        anchors.top: parent.top
+                    }
+
+                    Rectangle {
+                        height: parent.height
+                        width: borderWidth
+                        color: borderColor
+                        anchors.right: parent.right
+                    }
+
+                    Rectangle {
+                        height: parent.height
+                        width: borderWidth
+                        color: borderColor
+                        anchors.left: parent.left
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: borderWidth
+                        color: borderColor
+                        anchors.bottom: parent.bottom
+                    }
+                }
             }
             GlobalLfoOptionsSection {
                 id: globalLfoOptionsSection
                 height: 100
                 width: parent.width
+
+                Item {
+                    width: parent.width
+                    height: parent.height
+                    Rectangle {
+                        width: borderWidth
+                        height: parent.height
+                        color: borderColor
+                        anchors.left: parent.left
+                    }
+                    Rectangle {
+                        width: borderWidth
+                        height: parent.height
+                        color: borderColor
+                        anchors.right: parent.right
+                    }
+
+                }
             }
             AmpEnvSection {
                 id: ampEnvGraphViewSection
@@ -78,6 +171,24 @@ Window {
                 id: outputWaveSection
                 height: parent.height / 7
                 width: parent.width
+
+                Item{
+                    width: parent.width
+                    height: parent.height
+
+                    Rectangle {
+                        width: borderWidth
+                        height: parent.height
+                        color: borderColor
+                        anchors.right: parent.right
+                    }
+                    Rectangle {
+                        width: borderWidth
+                        height: parent.height
+                        color: borderColor
+                        anchors.left: parent.left
+                    }
+                }
             }
         }
     }
