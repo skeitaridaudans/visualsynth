@@ -7,8 +7,6 @@ import PButton
 
 Rectangle {
     id: operatorrectangle
-    border.color: "gray"
-    border.width: 3
     color: "#212121"
     radius: 3
 
