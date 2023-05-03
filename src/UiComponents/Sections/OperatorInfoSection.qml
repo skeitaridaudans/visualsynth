@@ -13,9 +13,6 @@ Rectangle {
     property bool fineCheck: false
     property int operatorId: selectedOperator ? selectedOperator.idProp : 0
 
-    // Temporary border boundsof box
-    border.color: "gray"
-    border.width: 3
     color: "#212121"
     radius: 3
 
@@ -56,8 +53,6 @@ Rectangle {
     Rectangle {
         id: opContainer
         anchors.fill: parent
-        border.color: "gray"
-        border.width: 3
         color: parent.color
         enabled: selectedOperator ? true : false
         height: parent.height - 4
