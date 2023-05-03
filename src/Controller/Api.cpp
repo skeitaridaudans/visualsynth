@@ -94,3 +94,15 @@ void Api::setOperatorLfoValues(int operatorId, float frequencyAmount, float ampl
 
     loveCommunicationTcp_.setOperatorLfoValues(operatorId, frequencyAmount, amplitudeAmount);
 }
+
+void Api::setOperatorEnvelopeAttackValue(int operatorId, int index, float value, float time) {
+    if (!loveCommunicationTcp_.isConnected()) return;
+
+    loveCommunicationTcp_.setOperatorAmpEnvelopeValue(operatorId, index, true, value, time);
+}
+
+void Api::setOperatorEnvelopeReleaseValue(int operatorId, int index, float value, float time) {
+    if (!loveCommunicationTcp_.isConnected()) return;
+
+    loveCommunicationTcp_.setOperatorAmpEnvelopeValue(operatorId, index, false, value, time);
+}

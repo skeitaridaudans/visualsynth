@@ -28,6 +28,7 @@ public:
     QString setReleaseAmpEnvelopeSize(int size);
     QString setLfoGlobalOptions(bool enabled, LfoWaveType type, float frequency);
     QString setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount);
+    QString setOperatorAmpEnvelopeValue(int operatorId, int index, bool attack, float value, float time);
 
 
 private:
