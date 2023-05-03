@@ -34,6 +34,8 @@ Rectangle {
             opContainer.visible = false;
         }
         function onOperatorSelected(operator) {
+            if (!operator) return;
+            
             selectedOperator = operator;
             freqText.text = parseFloat(operator.freqProp).toFixed(1) + "";
             ampText.text = operator.ampProp + "";

@@ -31,7 +31,9 @@ Operator::Operator()
 Operator::Operator(const Operator &operator_)
         : id(operator_.id), frequency(operator_.frequency), amplitude(operator_.amplitude),
           isModulator(operator_.isModulator), isCarrier(operator_.isCarrier), modulatedBy(operator_.modulatedBy),
-          position(operator_.position), operatorViewState(operator_.operatorViewState) {}
+          position(operator_.position), operatorViewState(operator_.operatorViewState),
+          frequencyLfoAmount(operator_.frequencyLfoAmount), amplitudeLfoAmount(operator_.amplitudeLfoAmount),
+          attackEnvValues(operator_.attackEnvValues), releaseEnvValues(operator_.releaseEnvValues) {}
 
 Operator &Operator::operator=(const Operator &operator_) {
     this->id = operator_.id;
@@ -42,6 +44,10 @@ Operator &Operator::operator=(const Operator &operator_) {
     this->modulatedBy = operator_.modulatedBy;
     this->position = operator_.position;
     this->operatorViewState = operator_.operatorViewState;
+    this->frequencyLfoAmount = operator_.frequencyLfoAmount;
+    this->amplitudeLfoAmount = operator_.amplitudeLfoAmount;
+    this->attackEnvValues = operator_.attackEnvValues;
+    this->releaseEnvValues = operator_.releaseEnvValues;
 
     return *this;
 }
@@ -73,9 +79,10 @@ QColor Operator::getColorForOperator() const {
 }
 
 Operator::Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier,
-                   std::vector<int> modulatedBy, QPointF position, QObject *parent)
+                   std::vector<int> modulatedBy, QPointF position, std::vector<AmpEnvValue> attackEnvValues,
+                   std::vector<AmpEnvValue> releaseEnvValues, QObject *parent)
         : id(id), frequency(frequency), amplitude(amplitude), isModulator(isModulator), isCarrier(isCarrier),
-          modulatedBy(std::move(modulatedBy)), position(position) {
+          modulatedBy(std::move(modulatedBy)), position(position), attackEnvValues(attackEnvValues), releaseEnvValues(releaseEnvValues) {
 
 }
 

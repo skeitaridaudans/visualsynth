@@ -18,6 +18,11 @@ public:
     explicit AmpEnvGraphView(QQuickItem *parent = nullptr);
     void paint(QPainter *painter) override;
 
+    Q_PROPERTY(bool operatorEnvelope MEMBER operatorEnvelope_ NOTIFY operatorEnvelopeChanged);
+
+signals:
+    Q_SIGNAL void operatorEnvelopeChanged(bool operatorEnvelope);
+
 private:
     void paintParams(QPainter *painter);
     void paintLines(QPainter *painter);
@@ -32,6 +37,12 @@ private:
     void updateDragging(QPointF draggingPos);
     double draggableAreaWidth();
     double draggableAreaHeight();
+    QColor graphColor();
+    QColor paramBorderColor();
+    const std::vector<AmpEnvValue> &currentAttackEnvelope();
+    const std::vector<AmpEnvValue> &currentReleaseEnvelope();
+    void setAttackEnvelopeValue(int index, float value, float time);
+    void setReleaseEnvelopeValue(int index, float value, float time);
 
     QColor borderColor = QColor(Qt::gray);
     std::optional<DraggingTouchPoint> draggingTouchPoint_;
@@ -42,6 +53,7 @@ private:
     // This is needed because draggingTouchPoint_ becomes null immediately after dragging stops,
     // but we want to finish the animation first
     int draggingAnimParamIndex_ = 0;
+    bool operatorEnvelope_ = false;
 
 protected:
     void touchEvent(QTouchEvent *event) override;

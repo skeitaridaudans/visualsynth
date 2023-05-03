@@ -11,6 +11,7 @@
 #include <chrono>
 #include <QObject>
 #include "src/Utils/Utils.h"
+#include "AmpEnvValue.h"
 
 enum class DraggingState {
     None,
@@ -21,6 +22,7 @@ enum class DraggingState {
 // All state that is specifically just for the operator view
 struct OperatorViewState {
     OperatorViewState();
+
     OperatorViewState(const OperatorViewState &operatorViewState);
 
     std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> initialClickTime = std::nullopt;
@@ -35,15 +37,17 @@ struct OperatorViewState {
     std::optional<TweenAnimation> connectIconOpacityAnim;
 };
 
-struct Operator:public QObject {
-    Q_OBJECT
+struct Operator : public QObject {
+Q_OBJECT
 public:
     Operator();
-    Operator(int id, QObject* parent=0);
-    Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy, QPointF position, QObject* parent=0);
-    Operator(const Operator& operator_);
+    Operator(int id, QObject *parent = 0);
+    Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier, std::vector<int> modulatedBy,
+             QPointF position, std::vector<AmpEnvValue> attackEnvValues, std::vector<AmpEnvValue> releaseEnvValues,
+             QObject *parent = 0);
+    Operator(const Operator &operator_);
 
-    Operator& operator=(const Operator& operator_);
+    Operator &operator=(const Operator &operator_);
 
     int id;
     float frequency;
@@ -58,12 +62,16 @@ public:
     std::vector<int> modulatedBy;
     QPointF position;
     OperatorViewState operatorViewState;
+    std::vector<AmpEnvValue> attackEnvValues;
+    std::vector<AmpEnvValue> releaseEnvValues;
     int visitedCount = 0;
+
     Q_PROPERTY(int idProp MEMBER id)
     Q_PROPERTY(float freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)
     Q_PROPERTY(long frequencyLfoAmount MEMBER frequencyLfoAmount)
     Q_PROPERTY(long amplitudeLfoAmount MEMBER amplitudeLfoAmount)
+
     Q_INVOKABLE float getFreq();
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(float step);
@@ -75,7 +83,8 @@ public:
 
 };
 
-void to_json(json& j, const Operator& o);
-void from_json(const json& j, Operator& o);
+void to_json(json &j, const Operator &o);
+
+void from_json(const json &j, Operator &o);
 
 #endif //QTQUICKTEST_OPERATOR_H

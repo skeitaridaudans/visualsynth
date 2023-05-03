@@ -37,13 +37,24 @@ Controller::Controller(QObject *parent) : QObject(parent), settings_(kCompanyNam
 }
 
 void Controller::loadInitialPreset() {
+    const std::vector<AmpEnvValue> defaultOpAttackEnvelope = {
+            AmpEnvValue(0, 1.0, 0.0, true),
+            AmpEnvValue(1, 1.0, 0.2, true),
+            AmpEnvValue(2, 1.0, 0.5, true),
+            AmpEnvValue(3, 1.0, 1.0, true),
+    };
+    const std::vector<AmpEnvValue> defaultOpReleaseEnvelope = {
+            AmpEnvValue(0, 1.0, 0.0, false),
+            AmpEnvValue(1, 0.0, 0.0, false),
+    };
+
     Operators defaultOperators;
     defaultOperators.insert(
-            std::make_pair<int, Operator>(1, Operator(1, 100, 60, false, true, {0}, QPointF(0.4696, 0.894))));
+            std::make_pair<int, Operator>(1, Operator(1, 100, 60, false, true, {0}, QPointF(0.4696, 0.894), defaultOpAttackEnvelope, defaultOpReleaseEnvelope)));
     defaultOperators.insert(
-            std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
+            std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075), defaultOpAttackEnvelope, defaultOpReleaseEnvelope)));
 
-    QString defaultname = "default";
+    QString defaultName = "default";
 
     const std::vector<AmpEnvValue> defaultAttackAmpEnv = {
             AmpEnvValue(0, 0.0, 0.0, true),
@@ -57,7 +68,7 @@ void Controller::loadInitialPreset() {
             AmpEnvValue(1, 0, 1, false),
     };
 
-    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultname);
+    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultName);
     changeToPreset(defaultPreset);
 }
 
@@ -72,6 +83,15 @@ std::optional<int> Controller::addOperator() {
 
     auto op = Operator(id);
     operators_.insert(std::make_pair<int, Operator>((int) id, std::move(op)));
+
+    // Set the default operator envelope
+    setAttackOpEnvelopePoint(id, 0, 1.0, 0.0);
+    setAttackOpEnvelopePoint(id, 1, 1.0, 0.2);
+    setAttackOpEnvelopePoint(id, 2, 1.0, 0.5);
+    setAttackOpEnvelopePoint(id, 3, 1.0, 1.0);
+
+    setReleaseOpEnvelopePoint(id, 0, 1.0, 0.0);
+    setReleaseOpEnvelopePoint(id, 1, 0.0, 0.0);
 
     return id;
 }
@@ -140,6 +160,40 @@ void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) 
         releaseAmpEnvValues_[index] = ampEnvValue;
     }
 
+}
+
+void Controller::setAttackOpEnvelopePoint(int operatorId, int index, float value, float time) {
+    auto& operator_ = getOperatorById(operatorId);
+    if (operator_.attackEnvValues.size() < index) {
+        return;
+    }
+
+    api->setOperatorEnvelopeAttackValue(operatorId, index, value, time);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, true);
+    if (operator_.attackEnvValues.size() == index) {
+        operator_.attackEnvValues.emplace_back(ampEnvValue);
+    }
+    else {
+        operator_.attackEnvValues[index] = ampEnvValue;
+    }
+}
+
+void Controller::setReleaseOpEnvelopePoint(int operatorId, int index, float value, float time) {
+    auto& operator_ = getOperatorById(operatorId);
+    if (operator_.releaseEnvValues.size() < index) {
+        return;
+    }
+
+    api->setOperatorEnvelopeReleaseValue(operatorId, index, value, time);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, false);
+    if (operator_.releaseEnvValues.size() == index) {
+        operator_.releaseEnvValues.emplace_back(ampEnvValue);
+    }
+    else {
+        operator_.releaseEnvValues[index] = ampEnvValue;
+    }
 }
 
 void Controller::changeFrequency(int operatorId, float frequency) {
@@ -264,6 +318,15 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
     }
 
     sendOperator(operatorId);
+    sendOperatorLfoValuesToSynth(operatorId);
+
+    for (const auto& ampEnvValue : operator_.attackEnvValues) {
+        api->setOperatorEnvelopeAttackValue(operatorId, ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
+
+    for (const auto& ampEnvValue : operator_.releaseEnvValues) {
+        api->setOperatorEnvelopeReleaseValue(operatorId, ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
 
     for (const auto &modulatorId: operator_.modulatedBy) {
         api->addModulator(operatorId, modulatorId);
@@ -285,6 +348,7 @@ void Controller::selectOperator(int id) {
 
 void Controller::deselectOperator() {
     selectedOperatorId_ = std::nullopt;
+    emit operatorSelected(nullptr);
     emit operatorDeselected(true);
 }
 

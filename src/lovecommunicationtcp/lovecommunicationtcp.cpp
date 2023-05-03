@@ -188,12 +188,14 @@ QString LoveCommunicationTcp::setOperatorLfoValues(int operatorId, float frequen
 QString LoveCommunicationTcp::setOperatorAmpEnvelopeValue(int operatorId, int index, bool attack, float value, float time) {
     QByteArray bytes;
     // Operator amp envelope message tag is 0x0, so we only have to send the index (the other bytes will be zero automatically)
-    bytes.append((unsigned char) (index));
-    bytes.append(attack ? 0x1 : 0x2);
+    bytes.append(0x01);
+    bytes.append((operatorId << 4) | (attack ? 0x1 : 0x2));
+    bytes.append(index);
     unsigned char buf[5];
     store_float_in_buffer(buf, value);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
     store_float_in_buffer(buf, time);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    sendMessageBytes(bytes);
     return QString::fromUtf8(bytes.toHex(' '));
 }
