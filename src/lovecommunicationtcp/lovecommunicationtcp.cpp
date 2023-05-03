@@ -7,14 +7,13 @@
 
 LoveCommunicationTcp::LoveCommunicationTcp(std::function<void(QTcpSocket::SocketState state)> onStateChange)
         : onStateChange(std::move(onStateChange)) {
-
+    QObject::connect(&socket, &QTcpSocket::stateChanged, this->onStateChange);
 }
 
 
 bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
     // Connect to the server at IP address 192.168.1.100 and port 1234
     socket.connectToHost(ip, port);
-    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
 
     // Wait for the connection to be established
     if (socket.waitForConnected()) {
@@ -28,7 +27,6 @@ bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
 void LoveCommunicationTcp::connectToServerAsync(QString ip, int port) {
     // Connect to the server at IP address 192.168.1.100 and port 1234
     socket.connectToHost(ip, port);
-    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
 }
 
 void LoveCommunicationTcp::disconnectFromServer() {

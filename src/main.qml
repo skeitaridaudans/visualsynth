@@ -24,6 +24,8 @@ Window {
     visible: true
     width: 1920
 
+    Component.onCompleted: controller.runInitialSynthConnection()
+
     Timer {
         id: alertControllerUpdate
         interval: 10

@@ -30,7 +30,6 @@ public:
     QString setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount);
     QString setOperatorAmpEnvelopeValue(int operatorId, int index, bool attack, float value, float time);
 
-
 private:
     QTcpSocket socket;
     std::function<void (QTcpSocket::SocketState state)> onStateChange;

@@ -10,12 +10,12 @@
 
 const int kSynthPort = 4893;
 
-Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateChange) : loveCommunicationTcp_(
-        std::move(onConnectionStateChange)) {
+Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateChange)
+        : loveCommunicationTcp_(std::move(onConnectionStateChange)) {
 }
 
 void Api::connect(const QString &ip) {
-    loveCommunicationTcp_.connectToServer(ip, kSynthPort);
+    loveCommunicationTcp_.connectToServerAsync(ip, kSynthPort);
 }
 
 void Api::disconnect() {
