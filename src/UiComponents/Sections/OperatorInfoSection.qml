@@ -2,13 +2,14 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import OperatorWaveView
-
 import "../Core"
 
 Rectangle {
     // Operator info box
     id: operatorInfo
 
+    property bool isOperatorSelected: false
+    property var selectedOperator: null
     property bool coarseCheck: true
     property bool fineCheck: false
     property int operatorId: selectedOperator ? selectedOperator.idProp : 0
@@ -30,17 +31,15 @@ Rectangle {
             opDrag.color = color.alpha(0.5).darker(3);
         }
         function onOperatorDeselected(deselected) {
-            opContainer.enabled = false;
-            opContainer.visible = false;
+            isOperatorSelected = false;
         }
         function onOperatorSelected(operator) {
-            if (!operator) return;
-            
+            if (!operator)
+                return;
             selectedOperator = operator;
+            isOperatorSelected = true;
             freqText.text = parseFloat(operator.freqProp).toFixed(1) + "";
             ampText.text = operator.ampProp + "";
-            opContainer.enabled = true;
-            opContainer.visible = true;
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
@@ -56,11 +55,41 @@ Rectangle {
         id: opContainer
         anchors.fill: parent
         color: parent.color
-        enabled: selectedOperator ? true : false
+        enabled: isOperatorSelected || opContainerVisibleTransition.running
         height: parent.height - 4
         radius: 3
-        visible: selectedOperator ? true : false
+        visible: isOperatorSelected || opContainerVisibleTransition.running
         width: parent.width - 4
+        state: isOperatorSelected ? "visible" : "invisible"
+
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges {
+                    target: opContainer
+                    opacity: 0
+                }
+            },
+            State {
+                name: "visible"
+                PropertyChanges {
+                    target: opContainer
+                    opacity: 1
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                id: opContainerVisibleTransition
+                to: "invisible,visible"
+                NumberAnimation {
+                    properties: "opacity"
+                    easing.type: Easing.OutQuad
+                    duration: 150
+                }
+            }
+        ]
 
         Rectangle {
             id: leftColumn
@@ -227,8 +256,6 @@ Rectangle {
                 }
             }
         }
-
-
         Text {
             id: freqText
             anchors.horizontalCenter: opDrag.horizontalCenter
@@ -245,6 +272,8 @@ Rectangle {
 
             Text {
                 id: plusFreq
+                anchors.left: parent.horizontalCenter
+                anchors.leftMargin: 50
                 color: parent.color
                 font.family: "Noto Sans"
                 font.pixelSize: 16
@@ -253,8 +282,6 @@ Rectangle {
                 text: "+"
                 verticalAlignment: Text.AlignVCenter
                 width: 50
-                anchors.left: parent.horizontalCenter
-                anchors.leftMargin: 50
                 y: -3
 
                 Rectangle {
@@ -350,14 +377,14 @@ Rectangle {
         }
         Text {
             id: ampText
+            anchors.left: opDrag.right
+            anchors.leftMargin: 8
             color: "gray"
             font.family: "Noto Sans"
             font.pixelSize: 16
             horizontalAlignment: Text.AlignHCenter
             text: "0"
             verticalAlignment: Text.AlignVCenter
-            anchors.left: opDrag.right
-            anchors.leftMargin: 8
             y: 189
 
             Text {
@@ -569,7 +596,7 @@ Rectangle {
                                             selectedOperator.setFrequency(0.1);
                                         }
                                     } else {
-                                        if(xDelta > 5) {
+                                        if (xDelta > 5) {
                                             selectedOperator.setFrequency(10);
                                         }
                                     }
@@ -582,7 +609,7 @@ Rectangle {
                                             selectedOperator.setFrequency(-0.1);
                                         }
                                     } else {
-                                        if(xDelta < -5){
+                                        if (xDelta < -5) {
                                             selectedOperator.setFrequency(-10);
                                         }
                                     }

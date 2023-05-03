@@ -14,7 +14,6 @@ import "UiComponents/Core"
 Window {
     id: window
 
-    property var selectedOperator: null
     property string borderColor : "gray"
     property int borderWidth: 2
     Material.accent: Material.Purple

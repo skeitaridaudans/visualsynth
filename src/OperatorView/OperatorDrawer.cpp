@@ -184,7 +184,7 @@ void OperatorDrawer::updateOperatorDrag(Operator &operator_) {
     if (isRectInsideLine(QRectF(operatorView_->toViewCoords(operator_.position), QSizeF(kBoxSize, kBoxSize)),
                          carrierLinePoints.first, carrierLinePoints.second)) {
         controller->addCarrier(operator_.id);
-        operator_.position.setY((carrierLinePoints.first.y() - kBoxSize / 2.0) / operatorView_->height());
+        operator_.position.setY(carrierLinePoints.first.y() / operatorView_->height());
     } else {
         controller->removeCarrier(operator_.id);
     }

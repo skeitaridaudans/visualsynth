@@ -10,6 +10,7 @@
 
 const double kBorderWidth = 0.02;
 const double kBoxSize = 70.0;
+const double kDeleteAreaSize = 100.0;
 const double kLeftAnchor = 20.0;
 const double kPositionY = 60.0;
 const double kCornerRadius = 5.0;
@@ -24,7 +25,7 @@ void DeleteOperatorBox::update() {
 void DeleteOperatorBox::draw(QPainter* painter) {
     QBrush brush(QColor(0x212121));
 
-    const auto rect = QRectF(boxPos_, QSize(kBoxSize, kBoxSize));
+    const auto rect = QRectF(boxPos_, QSizeF(kBoxSize, kBoxSize));
 
     painter->setBrush(brush);
     painter->setPen(Qt::PenStyle::SolidLine);
@@ -37,7 +38,8 @@ void DeleteOperatorBox::draw(QPainter* painter) {
 }
 
 bool DeleteOperatorBox::isInsideBox(const QPointF &coords) {
-    return coords.x() >= boxPos_.x() && coords.x() < boxPos_.x() + kBoxSize
-        && coords.y() >= boxPos_.y() && coords.y() < boxPos_.y() + kBoxSize;
+    const auto halfDeleteAreaSize = kDeleteAreaSize / 2.0;
+    return coords.x() >= boxPos_.x() - halfDeleteAreaSize && coords.x() < boxPos_.x() + kDeleteAreaSize
+        && coords.y() >= boxPos_.y() - halfDeleteAreaSize && coords.y() < boxPos_.y() + kDeleteAreaSize;
 }
 
