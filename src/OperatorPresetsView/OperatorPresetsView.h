@@ -9,8 +9,8 @@
 #include <QQuickPaintedItem>
 #include "src/Controller/Operator.h"
 #include "src/Controller/Controller.h"
-#include "src/Utils/ColorTweenAnimation.h"
-#include "src/Utils/TouchPoint.h"
+#include "src/Utils/Animations/ColorTweenAnimation.h"
+#include "src/Utils/Animations/TouchPoint.h"
 #include "OperatorPresetView.h"
 
 class OperatorPresetView;

@@ -26,11 +26,11 @@ public:
     Q_INVOKABLE void removeOperator(int operatorId);
     Q_INVOKABLE void changeFrequency(int operatorId, float frequency);
     Q_INVOKABLE void changeAmplitude(int operatorId, long amplitude);
-    Q_INVOKABLE void setOperatorLfoFrequency(int operatorId, long amount);
-    Q_INVOKABLE void setOperatorLfoAmplitude(int operatorId, long amount);
+    Q_INVOKABLE void setOperatorLfoFrequency(int operatorId, double amount);
+    Q_INVOKABLE void setOperatorLfoAmplitude(int operatorId, double amount);
     Q_INVOKABLE void setLfoEnabled(bool enabled);
     Q_INVOKABLE void setLfoWaveType(LfoWaveType lfoWaveType);
-    Q_INVOKABLE void setLfoFrequency(long frequency);
+    Q_INVOKABLE void setLfoFrequency(double frequency);
     Q_INVOKABLE void addModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void removeModulator(int operatorId, int modulatorId);
     Q_INVOKABLE void noteOn(int note);
@@ -67,7 +67,7 @@ public:
     Q_PROPERTY(bool isConnecting MEMBER isConnecting_ NOTIFY isConnectingChanged);
     Q_PROPERTY(QString connectionStateText MEMBER connectionStateText_ NOTIFY connectionStateTextChanged);
     Q_PROPERTY(bool isLfoEnabled MEMBER isLfoEnabled_ NOTIFY isLfoEnabledChanged);
-    Q_PROPERTY(long lfoFrequency MEMBER lfoFrequency_ NOTIFY lfoFrequencyChanged);
+    Q_PROPERTY(double lfoFrequency MEMBER lfoFrequency_ NOTIFY lfoFrequencyChanged);
     Q_PROPERTY(Operator* selectedOperator READ getSelectedOperator NOTIFY operatorSelected);
 
 signals:
@@ -112,8 +112,7 @@ private:
     bool isConnecting_ = false;
     bool isLfoEnabled_ = false;
     LfoWaveType lfoWaveType_ = LfoWaveType::Sine;
-    // 60 is 6 Hz
-    long lfoFrequency_ = 60;
+    double lfoFrequency_ = 6.0;
     QString synthIp_;
     QString connectionStateText_ = "Not connected";
     QSettings settings_;

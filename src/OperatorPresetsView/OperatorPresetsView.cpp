@@ -23,6 +23,7 @@ const int kColumnCount = 3;
 const QColor kAddPresetBackgroundColor = QColor(0x212121);
 const QColor kAddPresetBackgroundHoverColor = QColor(0x161616);
 const double kAddPresetBackgroundAnimTime = 100.0;
+const QString kPresetDirName = "presets";
 
 OperatorPresetsView::OperatorPresetsView(QQuickItem *parent) : QQuickPaintedItem(parent),
                                                                addPresetBackgroundColor_(kAddPresetBackgroundColor),
@@ -85,12 +86,12 @@ void OperatorPresetsView::paintAddPresetButton(QPainter *painter, const QPointF 
 }
 
 void OperatorPresetsView::loadPresets() {
-    if (!QDir("presets").exists() && !QDir().mkdir("presets")) {
+    if (!QDir(kPresetDirName).exists() && !QDir().mkdir(kPresetDirName)) {
         return;
     }
 
     operatorPresetViews_ = std::vector<std::unique_ptr<OperatorPresetView>>();
-    for (const auto &entry: std::filesystem::directory_iterator("presets/")) {
+    for (const auto &entry: std::filesystem::directory_iterator(kPresetDirName.toStdString())) {
         if (!entry.is_directory()) {
             auto name = QString::fromStdString(entry.path().filename().string()).split(".").at(0);
             auto preset = loadJsonFileAsObject<Preset>(
@@ -127,6 +128,14 @@ void OperatorPresetsView::addNewPreset() {
                                 AlertController::instance->showAlert("Preset name cannot be empty", true);
                                 return false;
                             }
+                            if (presetName.length() > 10) {
+                                AlertController::instance->showAlert("Name of preset cannot be longer than 10 characters", true);
+                                return false;
+                            }
+                           if (QFile(kPresetDirName + "/" + presetName + ".json").exists()) {
+                               AlertController::instance->showAlert("Preset of the same name already exists", true);
+                               return false;
+                           }
 
                            const auto &controller = Controller::instance;
                            controller->savePreset(presetName.toStdString());

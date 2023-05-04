@@ -5,7 +5,7 @@
 #include "PointTweenAnimation.h"
 
 #include <utility>
-#include "Utils.h"
+#include "src/Utils/Utils.h"
 
 PointTweenAnimation::PointTweenAnimation(double ms, QPointF *point, QPointF from, QPointF to,
                                          std::function<double(double x)> animationCurve) : fraction_(0.0),

@@ -7,7 +7,7 @@
 
 
 #include "OperatorView.h"
-#include "src/Utils/ColorTweenAnimation.h"
+#include "src/Utils/Animations/ColorTweenAnimation.h"
 
 class OperatorView;
 

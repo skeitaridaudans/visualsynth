@@ -10,11 +10,11 @@
 #include <QQuickWindow>
 #include <QPainter>
 #include <QQuickPaintedItem>
-#include "src/Utils/TouchPoint.h"
+#include "src/Utils/Animations/TouchPoint.h"
 #include "AddOperatorBox.h"
 #include "OperatorDrawer.h"
 #include "DeleteOperatorBox.h"
-#include "src/Utils/TweenAnimation.h"
+#include "src/Utils/Animations/TweenAnimation.h"
 
 class AddOperatorBox;
 
