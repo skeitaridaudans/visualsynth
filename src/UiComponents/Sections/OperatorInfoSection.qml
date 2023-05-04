@@ -676,7 +676,7 @@ Rectangle {
                                                 selectedOperator.ampProp)
                                 } else if (yDelta > 0) {
                                     if (yDelta > 5) {
-                                        selectedOperator.setAmplitude(5)
+                                        selectedOperator.setAmplitude(-5)
                                     } else {
                                         selectedOperator.setAmplitude(-1)
                                     }
