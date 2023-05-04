@@ -22,6 +22,7 @@ public:
     bool isRunning();
     bool isAtStart();
     bool isAtEnd();
+    void setOnFinished(std::function<void()> onFinished);
 
 private:
     TweenAnimation tweenAnimation_;

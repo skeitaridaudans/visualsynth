@@ -36,10 +36,10 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
 void OperatorView::paint(QPainter *painter) {
     auto &controller = Controller::instance;
 
-    deleteOperatorBox_->update();
     for (auto &operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second);
     }
+    deleteOperatorBox_->update();
     newBox_->update();
 
     if (operatorDrawer_->draggedOperatorId().has_value()) {

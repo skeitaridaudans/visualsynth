@@ -68,3 +68,7 @@ PointTweenAnimation& PointTweenAnimation::operator=(const PointTweenAnimation& o
     }
     return *this;
 }
+
+void PointTweenAnimation::setOnFinished(std::function<void()> onFinished) {
+    tweenAnimation_.setOnFinished(std::move(onFinished));
+}

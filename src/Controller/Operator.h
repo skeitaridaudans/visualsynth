@@ -35,6 +35,7 @@ struct OperatorViewState {
     std::optional<TweenAnimation> opacityAnim;
     double connectIconOpacity = 0.3;
     std::optional<TweenAnimation> connectIconOpacityAnim;
+    bool freezeInteraction = false;
 };
 
 struct Operator : public QObject {

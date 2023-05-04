@@ -56,6 +56,7 @@ public:
     bool isAtStart();
     bool isAtEnd();
     void setValuePtr(double *value);
+    void setOnFinished(std::function<void()> onFinished);
 
 private:
     std::function<double(double x)> animationCurve_;
@@ -66,6 +67,7 @@ private:
     double toValue_;
     double* value_;
     bool loop_;
+    std::function<void()> onFinished_;
 };
 
 

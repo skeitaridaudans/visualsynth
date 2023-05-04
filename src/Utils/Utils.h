@@ -75,8 +75,9 @@ inline QColor colorLerp(const QColor& from, const QColor& to, const double fract
     const auto red = (int) ((to.red() - from.red()) * fraction + from.red());
     const auto green = (int) ((to.green() - from.green()) * fraction + from.green());
     const auto blue = (int) ((to.blue() - from.blue()) * fraction + from.blue());
+    const auto alpha = (int) ((to.alpha() - from.alpha()) * fraction + from.alpha());
 
-    return {red, green, blue};
+    return {red, green, blue, alpha};
 }
 
 inline QPointF pointLerp(const QPointF& from, const QPointF& to, const double fraction) {
