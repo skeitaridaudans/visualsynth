@@ -52,6 +52,10 @@ void Operator::setFrequency(float step) {
     }
 }
 
+void Operator::updateFrequency(float frequency){
+    this->frequency = frequency;
+}
+
 void Operator::setAmplitude(long step) {
     if(((this->amplitude + step) <= 200) && ((this->amplitude + step) >= 0)){
         this->amplitude = this->amplitude+step;

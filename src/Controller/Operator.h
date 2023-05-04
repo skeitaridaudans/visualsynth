@@ -68,6 +68,7 @@ public:
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(float step);
     Q_INVOKABLE void setAmplitude(long step);
+    Q_INVOKABLE void updateFrequency(float frequency);
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;

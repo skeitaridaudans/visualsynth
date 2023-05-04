@@ -13,40 +13,58 @@ Rectangle {
     property bool fineCheck: false
     property int operatorId: selectedOperator ? selectedOperator.idProp : 0
 
+    // Properties for coarse tuning
+    property real base_frequency: 100.0
+    property int semitones: 42
+    property int semiToneCount: 0
+    property real newFreq: 0
+
     color: "#212121"
     radius: 3
 
     Connections {
         function onAmpChanged(amp) {
-            ampText.text = amp + "";
-            var color = selectedOperator.getColorForOperator();
-            opWaveView.setColor(color);
-            opDrag.color = color.alpha(0.5).darker(3);
+            ampText.text = amp + ""
+            var color = selectedOperator.getColorForOperator()
+            opWaveView.setColor(color)
+            opDrag.color = color.alpha(0.5).darker(3)
         }
         function onFreqChanged(freq) {
-            freqText.text = parseFloat(freq).toFixed(1) + "";
-            var color = selectedOperator.getColorForOperator();
-            opWaveView.setColor(color);
-            opDrag.color = color.alpha(0.5).darker(3);
+            freqText.text = parseFloat(freq).toFixed(1) + ""
+            var color = selectedOperator.getColorForOperator()
+            opWaveView.setColor(color)
+            opDrag.color = color.alpha(0.5).darker(3)
         }
         function onOperatorDeselected(deselected) {
-            opContainer.enabled = false;
-            opContainer.visible = false;
+            opContainer.enabled = false
+            opContainer.visible = false
         }
         function onOperatorSelected(operator) {
-            selectedOperator = operator;
-            freqText.text = parseFloat(operator.freqProp).toFixed(1) + "";
-            ampText.text = operator.ampProp + "";
-            opContainer.enabled = true;
-            opContainer.visible = true;
-            var color = selectedOperator.getColorForOperator();
-            opWaveView.setColor(color);
-            opDrag.color = color.alpha(0.5).darker(3);
-            lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
-            lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+            selectedOperator = operator
+            freqText.text = parseFloat(operator.freqProp).toFixed(1) + ""
+            ampText.text = operator.ampProp + ""
+            opContainer.enabled = true
+            opContainer.visible = true
+            var color = selectedOperator.getColorForOperator()
+            opWaveView.setColor(color)
+            opDrag.color = color.alpha(0.5).darker(3)
+            lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`
+            lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`
         }
 
         target: controller
+    }
+
+    function coarseTune() {
+        var new_frequency = base_frequency * Math.pow(
+                    2, (semiToneCount / semitones))
+        if (new_frequency > 200) {
+            return 200.0
+        }
+        if (new_frequency > 0 && new_frequency < 1) {
+            return 1
+        }
+        return new_frequency
     }
 
     // Box title
@@ -103,8 +121,8 @@ Rectangle {
                         text: qsTr("Fine")
 
                         onPressed: {
-                            operatorInfo.coarseCheck = false;
-                            operatorInfo.fineCheck = true;
+                            operatorInfo.coarseCheck = false
+                            operatorInfo.fineCheck = true
                         }
                     }
                     ToggleButton {
@@ -113,8 +131,8 @@ Rectangle {
                         text: qsTr("Coarse")
 
                         onPressed: {
-                            operatorInfo.coarseCheck = true;
-                            operatorInfo.fineCheck = false;
+                            operatorInfo.coarseCheck = true
+                            operatorInfo.fineCheck = false
                         }
                     }
                 }
@@ -175,12 +193,15 @@ Rectangle {
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, lfoOperatorFreqAmountSlider.value);
+                                    controller.setOperatorLfoFrequency(
+                                                selectedOperator.idProp,
+                                                lfoOperatorFreqAmountSlider.value)
 
                                     // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
                                     // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
                                     // which will cause qt to crash if you have a signal for when the properties in Operator change
-                                    lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
+                                    lfoOperatorFreqAmountText.text
+                                            = `${selectedOperator.frequencyLfoAmount}%`
                                 }
                             }
                         }
@@ -216,8 +237,11 @@ Rectangle {
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, lfoOperatorAmpAmountSlider.value);
-                                    lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+                                    controller.setOperatorLfoAmplitude(
+                                                selectedOperator.idProp,
+                                                lfoOperatorAmpAmountSlider.value)
+                                    lfoOperatorAmpAmountText.text
+                                            = `${selectedOperator.amplitudeLfoAmount}%`
                                 }
                             }
                         }
@@ -225,7 +249,6 @@ Rectangle {
                 }
             }
         }
-
 
         Text {
             id: freqText
@@ -274,9 +297,17 @@ Rectangle {
                         repeat: true
 
                         onTriggered: {
-                            selectedOperator.setFrequency(5);
-                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                            interval = 100;
+                            if (coarseCheck) {
+                                semiToneCount = semiToneCount + 1
+                                newFreq = operatorInfo.coarseTune()
+                                selectedOperator.updateFrequency(newFreq)
+                            } else {
+                                selectedOperator.setFrequency(5)
+                            }
+                            controller.changeFrequency(
+                                        selectedOperator.idProp,
+                                        selectedOperator.freqProp)
+                            interval = 100
                         }
                     }
                     MultiPointTouchArea {
@@ -284,15 +315,24 @@ Rectangle {
                         anchors.fill: parent
 
                         onPressed: {
-                            plusFreq.color = "pink";
-                            selectedOperator.setFrequency(1);
-                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                            freqIncTimer.start();
+                            plusFreq.color = "pink"
+                            if (coarseCheck) {
+                                console.log("here");
+                                semiToneCount = semiToneCount + 1
+                                newFreq = coarseTune()
+                                selectedOperator.updateFrequency(newFreq)
+                            } else {
+                                selectedOperator.setFrequency(1)
+                            }
+                            controller.changeFrequency(
+                                        selectedOperator.idProp,
+                                        selectedOperator.freqProp)
+                            freqIncTimer.start()
                         }
                         onReleased: {
-                            plusFreq.color = plusFreq.parent.color;
-                            freqIncTimer.interval = 500;
-                            freqIncTimer.stop();
+                            plusFreq.color = plusFreq.parent.color
+                            freqIncTimer.interval = 500
+                            freqIncTimer.stop()
                         }
                     }
                 }
@@ -317,9 +357,17 @@ Rectangle {
                     repeat: true
 
                     onTriggered: {
-                        selectedOperator.setFrequency(-5);
-                        controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                        interval = 100;
+                        if (coarseCheck) {
+                            semiToneCount = semiToneCount - 1
+                            newFreq = coarseTune()
+                            selectedOperator.updateFrequency(newFreq)
+                        } else {
+                            selectedOperator.setFrequency(-5)
+                        }
+                        controller.changeFrequency(selectedOperator.idProp,
+                                                   selectedOperator.freqProp)
+
+                        interval = 100
                     }
                 }
                 Rectangle {
@@ -336,15 +384,23 @@ Rectangle {
                         anchors.fill: parent
 
                         onPressed: {
-                            minFreq.color = "pink";
-                            selectedOperator.setFrequency(-1);
-                            controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
-                            freqDecTimer.start();
+                            minFreq.color = "pink"
+                            if (coarseCheck) {
+                                semiToneCount = semiToneCount - 1
+                                newFreq = coarseTune()
+                                selectedOperator.updateFrequency(newFreq)
+                            } else {
+                                selectedOperator.setFrequency(-1)
+                            }
+                            controller.changeFrequency(
+                                        selectedOperator.idProp,
+                                        selectedOperator.freqProp)
+                            freqDecTimer.start()
                         }
                         onReleased: {
-                            minFreq.color = minFreq.parent.color;
-                            freqDecTimer.interval = 500;
-                            freqDecTimer.stop();
+                            minFreq.color = minFreq.parent.color
+                            freqDecTimer.interval = 500
+                            freqDecTimer.stop()
                         }
                     }
                 }
@@ -382,9 +438,10 @@ Rectangle {
                     repeat: true
 
                     onTriggered: {
-                        selectedOperator.setAmplitude(2);
-                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
-                        interval = 100;
+                        selectedOperator.setAmplitude(2)
+                        controller.changeAmplitude(selectedOperator.idProp,
+                                                   selectedOperator.ampProp)
+                        interval = 100
                     }
                 }
                 Rectangle {
@@ -401,15 +458,16 @@ Rectangle {
                         anchors.fill: parent
 
                         onPressed: {
-                            ampPlus.color = "pink";
-                            selectedOperator.setAmplitude(1);
-                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
-                            ampIncTimer.start();
+                            ampPlus.color = "pink"
+                            selectedOperator.setAmplitude(1)
+                            controller.changeAmplitude(selectedOperator.idProp,
+                                                       selectedOperator.ampProp)
+                            ampIncTimer.start()
                         }
                         onReleased: {
-                            ampPlus.color = ampPlus.parent.color;
-                            ampIncTimer.interval = 500;
-                            ampIncTimer.stop();
+                            ampPlus.color = ampPlus.parent.color
+                            ampIncTimer.interval = 500
+                            ampIncTimer.stop()
                         }
                     }
                 }
@@ -432,9 +490,10 @@ Rectangle {
                     repeat: true
 
                     onTriggered: {
-                        selectedOperator.setAmplitude(-2);
-                        controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
-                        interval = 100;
+                        selectedOperator.setAmplitude(-2)
+                        controller.changeAmplitude(selectedOperator.idProp,
+                                                   selectedOperator.ampProp)
+                        interval = 100
                     }
                 }
                 Rectangle {
@@ -451,15 +510,16 @@ Rectangle {
                         anchors.fill: parent
 
                         onPressed: {
-                            ampMin.color = "pink";
-                            selectedOperator.setAmplitude(-1);
-                            controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
-                            ampDecTimer.start();
+                            ampMin.color = "pink"
+                            selectedOperator.setAmplitude(-1)
+                            controller.changeAmplitude(selectedOperator.idProp,
+                                                       selectedOperator.ampProp)
+                            ampDecTimer.start()
                         }
                         onReleased: {
-                            ampMin.color = ampMin.parent.color;
-                            ampDecTimer.interval = 500;
-                            ampDecTimer.stop();
+                            ampMin.color = ampMin.parent.color
+                            ampDecTimer.interval = 500
+                            ampDecTimer.stop()
                         }
                     }
                 }
@@ -492,8 +552,6 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 2
                     height: parent.height - 3
-                    //    		        anchors.rightMargin: 20
-                    //                            anchors.bottomMargin: 10
                     width: parent.width - 3
                 }
             }
@@ -520,83 +578,111 @@ Rectangle {
                 ]
 
                 onPressed: {
-                    var point = touchPoints[0];
-                    opDrag.border.color = "pink";
-                    opDrag.border.width = 3;
-                    opDrag.width = parent.width + 1;
-                    opDrag.height = parent.height + 1;
-                    offset = Qt.point(point.x, point.y);
-                    point.startSceneX = touchPoint.sceneX;
-                    point.startSceneY = touchPoint.sceneY;
-                    lastX = point.sceneX;
-                    lastY = point.sceneY;
+                    var point = touchPoints[0]
+                    opDrag.border.color = "pink"
+                    opDrag.border.width = 3
+                    opDrag.width = parent.width + 1
+                    opDrag.height = parent.height + 1
+                    offset = Qt.point(point.x, point.y)
+                    lastX = point.sceneX
+                    lastY = point.sceneY
                 }
                 onReleased: {
-                    opDrag.border.width = 0;
-                    opDrag.width = parent.width - 1;
-                    opDrag.height = parent.height - 1;
-                    horiDrag = false;
-                    vertiDrag = false;
+                    opDrag.border.width = 0
+                    opDrag.width = parent.width - 1
+                    opDrag.height = parent.height - 1
+                    horiDrag = false
+                    vertiDrag = false
                 }
                 onTouchUpdated: {
                     if (selectedOperator) {
                         // TODO add multipliers !
-                        var freq = selectedOperator.getFreq();
-                        var amp = selectedOperator.getAmp();
+                        var freq = selectedOperator.getFreq()
+                        var amp = selectedOperator.getAmp()
                         if (touchPoints.length > 0) {
-                            var touchPoint = touchPoints[0];
-                            var xDelta = touchPoint.sceneX - lastX;
-                            var yDelta = touchPoint.sceneY - lastY;
-                            lastX = touchPoint.sceneX;
-                            lastY = touchPoint.sceneY;
+                            var touchPoint = touchPoints[0]
+                            var xDelta = touchPoint.sceneX - lastX
+                            var yDelta = touchPoint.sceneY - lastY
+                            lastX = touchPoint.sceneX
+                            lastY = touchPoint.sceneY
                             if (!horiDrag && !vertiDrag) {
                                 if (Math.abs(xDelta) > Math.abs(yDelta)) {
-                                    horiDrag = true;
-                                } else if (Math.abs(yDelta) > Math.abs(xDelta)) {
-                                    vertiDrag = true;
+                                    horiDrag = true
+                                } else if (Math.abs(yDelta) > Math.abs(
+                                               xDelta)) {
+                                    vertiDrag = true
                                 }
-                            } else if (horiDrag && Math.abs(yDelta) > Math.abs(xDelta)) {
-                                vertiDrag = true;
-                                horiDrag = false;
-                            } else if (vertiDrag && Math.abs(xDelta) > Math.abs(yDelta)) {
-                                horiDrag = true;
-                                vertiDrag = false;
+                            } else if (horiDrag && Math.abs(yDelta) > Math.abs(
+                                           xDelta)) {
+                                vertiDrag = true
+                                horiDrag = false
+                            } else if (vertiDrag && Math.abs(xDelta) > Math.abs(
+                                           yDelta)) {
+                                horiDrag = true
+                                vertiDrag = false
                             }
                             if (horiDrag) {
                                 if (xDelta > 0) {
                                     if (operatorInfo.fineCheck) {
                                         if (Math.abs(xDelta) > 10) {
-                                            selectedOperator.setFrequency(5);
+                                            selectedOperator.setFrequency(5)
                                         } else {
-                                            selectedOperator.setFrequency(0.1);
+                                            selectedOperator.setFrequency(0.1)
                                         }
+                                        base_frequency = selectedOperator.getFreq()
                                     } else {
-                                        if(xDelta > 5) {
-                                            selectedOperator.setFrequency(10);
+                                        // Coarse tuning happens here
+                                        if (xDelta > 5) {
+                                            semiToneCount = semiToneCount + 1
+                                            newFreq = coarseTune()
+                                            selectedOperator.updateFrequency(
+                                                        newFreq)
                                         }
                                     }
-                                    controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                    controller.changeFrequency(
+                                                selectedOperator.idProp,
+                                                selectedOperator.freqProp)
                                 } else if (xDelta < 0) {
                                     if (operatorInfo.fineCheck) {
                                         if (xDelta < -10) {
-                                            selectedOperator.setFrequency(-5);
+                                            selectedOperator.setFrequency(-5)
                                         } else {
-                                            selectedOperator.setFrequency(-0.1);
+                                            selectedOperator.setFrequency(-0.1)
                                         }
+                                        base_frequency = selectedOperator.getFreq()
                                     } else {
-                                        if(xDelta < -5){
-                                            selectedOperator.setFrequency(-10);
+                                        // Coarse tuning happens here
+                                        if (xDelta < -5) {
+                                            semiToneCount = semiToneCount - 1
+                                            newFreq = coarseTune()
+                                            selectedOperator.updateFrequency(
+                                                        newFreq)
                                         }
                                     }
-                                    controller.changeFrequency(selectedOperator.idProp, selectedOperator.freqProp);
+                                    controller.changeFrequency(
+                                                selectedOperator.idProp,
+                                                selectedOperator.freqProp)
                                 }
                             } else if (vertiDrag) {
+                                // TODO: Make add multiplier?
                                 if (yDelta < 0) {
-                                    selectedOperator.setAmplitude(1);
-                                    controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                    if (yDelta < -5) {
+                                        selecteOperator.setAmplitude(5)
+                                    } else {
+                                        selectedOperator.setAmplitude(1)
+                                    }
+                                    controller.changeAmplitude(
+                                                selectedOperator.idProp,
+                                                selectedOperator.ampProp)
                                 } else if (yDelta > 0) {
-                                    selectedOperator.setAmplitude(-1);
-                                    controller.changeAmplitude(selectedOperator.idProp, selectedOperator.ampProp);
+                                    if (yDelta > 5) {
+                                        selectedOperator.setAmplitude(5)
+                                    } else {
+                                        selectedOperator.setAmplitude(-1)
+                                    }
+                                    controller.changeAmplitude(
+                                                selectedOperator.idProp,
+                                                selectedOperator.ampProp)
                                 }
                             }
                         }
