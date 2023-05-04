@@ -68,7 +68,7 @@ qt_add_qml_module(appVisualSynth
     QML_FILES src/main.qml src/UiComponents/Core/ToggleButton.qml src/UiComponents/Sections/TextInputDialog.qml
 		src/UiComponents/Sections/ConnectionSection.qml src/UiComponents/Sections/BottomAlertView.qml src/UiComponents/Sections/GlobalLfoOptionsSection.qml
 		src/UiComponents/Sections/OperatorInfoSection.qml src/UiComponents/Sections/OutputWaveSection.qml src/UiComponents/Sections/OperatorViewSection.qml
-		src/UiComponents/Sections/AmpEnvSection.qml
+		src/UiComponents/Sections/AmpEnvSection.qml src/UiComponents/Core/CustomBorder.qml
 )
 
 set_target_properties(appVisualSynth PROPERTIES

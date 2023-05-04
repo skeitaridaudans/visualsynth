@@ -6,11 +6,11 @@
 #include "src/Controller/Controller.h"
 #include "src/FontAwesome.h"
 
+const double kBoxSize = 70.0;
 const int kCarrierLineTextLeftMargin = 20;
 const int kCarrierLineLeftMargin = 10;
 const int kCarrierLineRightMargin = 20;
-const int kCarrierLineBottomMargin = 40;
-const double kCarrierBoxSize = 70.0;
+const double kCarrierLinePosition = 0.9;
 const double kCarrierLinePulseAnimTime = 450.0;
 const double kCarrierLinePulseAnimMin = 0.4;
 const double kCarrierLinePulseAnimMax = 1.0;
@@ -36,10 +36,10 @@ OperatorView::OperatorView(QQuickItem *parent) : QQuickPaintedItem(parent),
 void OperatorView::paint(QPainter *painter) {
     auto &controller = Controller::instance;
 
-    deleteOperatorBox_->update();
     for (auto &operator_: controller->operators()) {
         operatorDrawer_->update(operator_.second);
     }
+    deleteOperatorBox_->update();
     newBox_->update();
 
     if (operatorDrawer_->draggedOperatorId().has_value()) {
@@ -95,7 +95,7 @@ void OperatorView::paint(QPainter *painter) {
 
 void OperatorView::drawCarrierLine(QPainter *painter) {
     // Calculate positions
-    const auto carrierLineTextStartPos = QPointF(kCarrierLineTextLeftMargin, (int) height() - 40);
+    const auto carrierLineTextStartPos = QPointF(kCarrierLineTextLeftMargin, height() * kCarrierLinePosition + 20);
 
     const auto lineEndPoints = carrierLineEndPoints();
     const auto &carrierLineLeftPoint = lineEndPoints.first;
@@ -126,9 +126,9 @@ std::pair<QPointF, QPointF> OperatorView::carrierLineEndPoints() {
     const auto textHeight = fm.height();
 
     const auto carrierLineLeftPoint = QPointF(kCarrierLineTextLeftMargin + textWidth + kCarrierLineLeftMargin,
-                                              (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
-    const auto carrierLineRightPoint = QPointF((int) width() - kCarrierLineRightMargin,
-                                               (int) height() - kCarrierLineBottomMargin - ((double) textHeight / 4));
+                                              height() * kCarrierLinePosition);
+    const auto carrierLineRightPoint = QPointF(width() - kCarrierLineRightMargin,
+                                               height() * kCarrierLinePosition);
 
     return {carrierLineLeftPoint, carrierLineRightPoint};
 }
@@ -139,12 +139,12 @@ const std::unique_ptr<DeleteOperatorBox> &OperatorView::deleteOperatorBox() {
 
 // Converts from the coords stored in Operator (0-1) to coords inside of the operator view
 QPointF OperatorView::toViewCoords(const QPointF &pos) {
-    return {pos.x() * width(), pos.y() * height()};
+    return {pos.x() * width() - kBoxSize / 2.0, pos.y() * height() - kBoxSize / 2.0};
 }
 
 // Converts from coords inside the operator view to the ones stored in operator (0-1)
 QPointF OperatorView::fromViewCoords(const QPointF &pos) {
-    return {pos.x() / width(), pos.y() / height()};
+    return {(pos.x() + kBoxSize / 2.0) / width() , (pos.y() + kBoxSize / 2.0) / height()};
 }
 
 void OperatorView::touchEvent(QTouchEvent *event) {

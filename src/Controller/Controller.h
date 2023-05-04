@@ -41,6 +41,8 @@ public:
     Q_INVOKABLE void removeCarrier(int operatorId);
     Q_INVOKABLE void setAttackAmpEnvelopePoint(int index, float value, float time);
     Q_INVOKABLE void setReleaseAmpEnvelopePoint(int index, float value, float time);
+    Q_INVOKABLE void setAttackOpEnvelopePoint(int operatorId, int index, float value, float time);
+    Q_INVOKABLE void setReleaseOpEnvelopePoint(int operatorId, int index, float value, float time);
     Q_INVOKABLE void setAmpEnvelopeSize(int size);
     void savePreset(const std::string &name);
     void loadPreset(const std::string &name);
@@ -58,6 +60,7 @@ public:
     Q_INVOKABLE void showConnectDialog();
     Q_INVOKABLE void disconnect();
     bool showPresets();
+    Q_INVOKABLE void runInitialSynthConnection();
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
     Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);
@@ -65,6 +68,7 @@ public:
     Q_PROPERTY(QString connectionStateText MEMBER connectionStateText_ NOTIFY connectionStateTextChanged);
     Q_PROPERTY(bool isLfoEnabled MEMBER isLfoEnabled_ NOTIFY isLfoEnabledChanged);
     Q_PROPERTY(long lfoFrequency MEMBER lfoFrequency_ NOTIFY lfoFrequencyChanged);
+    Q_PROPERTY(Operator* selectedOperator READ getSelectedOperator NOTIFY operatorSelected);
 
 signals:
     // Signals for operators

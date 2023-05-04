@@ -27,6 +27,8 @@ public:
     void setAmpReleaseEnvelopeSize(int size);
     void setLfoGlobalOptions(bool enabled, LfoWaveType type, float frequency);
     void setOperatorLfoValues(int operatorId, float frequencyAmount, float amplitudeAmount);
+    void setOperatorEnvelopeAttackValue(int operatorId, int index, float value, float time);
+    void setOperatorEnvelopeReleaseValue(int operatorId, int index, float value, float time);
 
 private:
     LoveCommunicationTcp loveCommunicationTcp_;

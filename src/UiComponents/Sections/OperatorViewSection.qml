@@ -45,8 +45,56 @@ Rectangle {
         color: "#323232"
         height: 450
         radius: 8
-        visible: controller.showPresets
+        visible: controller.showPresets || presetVisibleTransition.running
         width: 450
+        state: controller.showPresets ? "visible" : "invisible"
+        transform: Translate {
+            id: presetsContainerTranslate
+        }
+
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges {
+                    target: presetsContainer
+                    opacity: 0
+                    height: 400
+                }
+                PropertyChanges {
+                    target: presetsContainerTranslate
+                    y: -20
+                }
+            },
+            State {
+                name: "visible"
+                PropertyChanges {
+                    target: presetsContainer
+                    opacity: 1
+                    height: 450
+                }
+                PropertyChanges {
+                    target: presetsContainerTranslate
+                    y: 0
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                id: presetVisibleTransition
+                to: "invisible,visible"
+                NumberAnimation {
+                    properties: "opacity"
+                    easing.type: Easing.OutQuad
+                    duration: 300
+                }
+                NumberAnimation {
+                    properties: "height,y"
+                    easing.type: Easing.OutBack
+                    duration: 300
+                }
+            }
+        ]
 
         ScrollView {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -66,7 +114,7 @@ Rectangle {
                 anchors.top: parent.top
                 containerHeight: presetsContainer.height
                 containerWidth: presetsContainer.width
-                enabled: controller.showPresets
+                enabled: presetsContainer.visible
             }
         }
     }

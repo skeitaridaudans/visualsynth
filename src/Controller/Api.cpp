@@ -10,12 +10,12 @@
 
 const int kSynthPort = 4893;
 
-Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateChange) : loveCommunicationTcp_(
-        std::move(onConnectionStateChange)) {
+Api::Api(std::function<void(QTcpSocket::SocketState state)> onConnectionStateChange)
+        : loveCommunicationTcp_(std::move(onConnectionStateChange)) {
 }
 
 void Api::connect(const QString &ip) {
-    loveCommunicationTcp_.connectToServer(ip, kSynthPort);
+    loveCommunicationTcp_.connectToServerAsync(ip, kSynthPort);
 }
 
 void Api::disconnect() {
@@ -93,4 +93,16 @@ void Api::setOperatorLfoValues(int operatorId, float frequencyAmount, float ampl
     if (!loveCommunicationTcp_.isConnected()) return;
 
     loveCommunicationTcp_.setOperatorLfoValues(operatorId, frequencyAmount, amplitudeAmount);
+}
+
+void Api::setOperatorEnvelopeAttackValue(int operatorId, int index, float value, float time) {
+    if (!loveCommunicationTcp_.isConnected()) return;
+
+    loveCommunicationTcp_.setOperatorAmpEnvelopeValue(operatorId, index, true, value, time);
+}
+
+void Api::setOperatorEnvelopeReleaseValue(int operatorId, int index, float value, float time) {
+    if (!loveCommunicationTcp_.isConnected()) return;
+
+    loveCommunicationTcp_.setOperatorAmpEnvelopeValue(operatorId, index, false, value, time);
 }

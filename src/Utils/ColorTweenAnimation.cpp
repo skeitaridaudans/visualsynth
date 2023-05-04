@@ -53,3 +53,7 @@ bool ColorTweenAnimation::isAtStart() {
 bool ColorTweenAnimation::isAtEnd() {
     return tweenAnimation_.isAtEnd();
 }
+
+void ColorTweenAnimation::setOnFinished(std::function<void()> onFinished) {
+    tweenAnimation_.setOnFinished(std::move(onFinished));
+}

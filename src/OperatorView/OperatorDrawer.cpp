@@ -45,6 +45,11 @@ void OperatorDrawer::update(Operator &operator_) {
 
     updateAnimations(operator_);
 
+    // Only update animations if freezeInteraction is enabled
+    if (operator_.operatorViewState.freezeInteraction) {
+        return;
+    }
+
     // Handle adding modulator by pressing with secondary touch point
     if (currentDraggingOperatorState_ == DraggingState::Dragging) {
         auto &secondaryTouchPoint = operatorView_->secondaryTouchPoint();
@@ -184,7 +189,7 @@ void OperatorDrawer::updateOperatorDrag(Operator &operator_) {
     if (isRectInsideLine(QRectF(operatorView_->toViewCoords(operator_.position), QSizeF(kBoxSize, kBoxSize)),
                          carrierLinePoints.first, carrierLinePoints.second)) {
         controller->addCarrier(operator_.id);
-        operator_.position.setY((carrierLinePoints.first.y() - kBoxSize / 2.0) / operatorView_->height());
+        operator_.position.setY(carrierLinePoints.first.y() / operatorView_->height());
     } else {
         controller->removeCarrier(operator_.id);
     }
@@ -196,7 +201,7 @@ void OperatorDrawer::releaseOperator(Operator &operator_) {
     draggedOperatorId_ = std::nullopt;
 
     // If cursor is inside delete box
-    if (operatorView_->deleteOperatorBox()->isInsideBox(operatorView_->primaryTouchPoint().position)) {
+    if (operatorView_->deleteOperatorBox()->isInsideDeleteArea(operatorView_->primaryTouchPoint().position)) {
         operator_.scheduleForRemoval = true;
     } else {
         fixOperatorPositionAfterDrop(operator_);
