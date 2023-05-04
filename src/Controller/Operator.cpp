@@ -97,7 +97,11 @@ void to_json(json &j, const Operator &o) {
             {"position",    {
                                     {"x", o.position.x()},
                                     {"y", o.position.y()}
-                            }}
+                            }},
+            {"frequencyLfoAmount", o.frequencyLfoAmount},
+            {"amplitudeLfoAmount", o.amplitudeLfoAmount},
+            {"attackEnvValues", o.attackEnvValues},
+            {"releaseEnvValues", o.releaseEnvValues}
     };
 }
 
@@ -108,6 +112,10 @@ void from_json(const json &j, Operator &o) {
     j["isModulator"].get_to(o.isModulator);
     j["isCarrier"].get_to(o.isCarrier);
     j["modulatedBy"].get_to(o.modulatedBy);
+    j["frequencyLfoAmount"].get_to(o.frequencyLfoAmount);
+    j["amplitudeLfoAmount"].get_to(o.amplitudeLfoAmount);
+    j["attackEnvValues"].get_to(o.attackEnvValues);
+    j["releaseEnvValues"].get_to(o.releaseEnvValues);
     o.position.setX(j["position"]["x"].get<float>());
     o.position.setY(j["position"]["y"].get<float>());
 }
