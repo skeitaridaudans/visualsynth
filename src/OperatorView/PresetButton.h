@@ -49,7 +49,7 @@ private:
 
     bool pressed = false ;
     bool open_ = false;
-    QString text_ = "presets";
+    QString text_ = "Presets";
 
     double width_ = 100;
     double height_ = 25;
