@@ -505,7 +505,11 @@ void Controller::showConnectDialog() {
             "Type the IP address of the synthesizer that you want to connect to",
             synthIp_, "IP address", "Connect", "Cancel",
             [this](const auto &ip) {
-                if (ip.isEmpty()) {
+                // Allows IPv4, IPv6 and any hostname (including hostnames containing numbers)
+                // This intentionally allows some invalid addresses to make sure it doesn't ban any valid addresses
+                QRegularExpression re(R"(^(((\d{1,3}\.){3}\d{1,3})|(\w|\.)*[a-zA-Z]+|[0-9a-fA-F]*(\:[0-9a-fA-F]*){7,})$)");
+                QRegularExpressionMatch match = re.match(ip);
+                if (!match.hasMatch()) {
                     AlertController::instance->showAlert("Invalid IP address", true);
                     return false;
                 }
