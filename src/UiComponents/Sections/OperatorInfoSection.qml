@@ -15,7 +15,7 @@ Rectangle {
 
     // Properties for coarse tuning
     property real base_frequency: 100.0
-    property int semitones: 42
+    property real semitones: 42.5
     property int semiToneCount: 0
     property real newFreq: 0
 
@@ -303,6 +303,8 @@ Rectangle {
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(5)
+                                base_frequency = selectedOperator.getFreq()
+
                             }
                             controller.changeFrequency(
                                         selectedOperator.idProp,
@@ -323,6 +325,8 @@ Rectangle {
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(1)
+                                base_frequency = selectedOperator.getFreq()
+
                             }
                             controller.changeFrequency(
                                         selectedOperator.idProp,
@@ -363,6 +367,7 @@ Rectangle {
                             selectedOperator.updateFrequency(newFreq)
                         } else {
                             selectedOperator.setFrequency(-5)
+                            base_frequency = selectedOperator.getFreq()
                         }
                         controller.changeFrequency(selectedOperator.idProp,
                                                    selectedOperator.freqProp)
@@ -391,6 +396,8 @@ Rectangle {
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(-1)
+                                base_frequency = selectedOperator.getFreq()
+
                             }
                             controller.changeFrequency(
                                         selectedOperator.idProp,
