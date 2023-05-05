@@ -75,7 +75,6 @@ Rectangle {
         // This coarsely tunes the operator by semitones.
         var new_frequency = base_frequency * Math.pow(
                     2, (selectedOperator.getSemiTone() / semitones))
-        console.log(new_frequency)
         if (new_frequency > 200) {
             return 200.0
         }
@@ -701,9 +700,9 @@ Rectangle {
                                         updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
-                                        if (xDelta > 5) {
-                                            let current = selectedOperator.getSemiTone()
-                                            if ((current + 1) > semitones){
+                                        if (xDelta > 2) {
+                                            var current = selectedOperator.getSemiTone()
+                                             if ((current + 1) > semitones){
                                                selectedOperator.setSemiTone(semitones)
                                             } else {
                                                 selectedOperator.setSemiTone(current + 1)
@@ -725,7 +724,7 @@ Rectangle {
                                         updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
-                                        if (xDelta < -5) {
+                                        if (xDelta < -2) {
                                             let current = selectedOperator.getSemiTone()
                                             if ((current - 1) < minSemiTones){
                                                selectedOperator.setSemiTone(minSemiTones)
@@ -743,7 +742,7 @@ Rectangle {
                             } else if (vertiDrag) {
                                 // TODO: Make add multiplier?
                                 if (yDelta < 0) {
-                                    if (yDelta < -5) {
+                                    if (yDelta < -2) {
                                         selecteOperator.setAmplitude(5)
                                     } else {
                                         selectedOperator.setAmplitude(1)
@@ -752,7 +751,7 @@ Rectangle {
                                                 selectedOperator.idProp,
                                                 selectedOperator.ampProp)
                                 } else if (yDelta > 0) {
-                                    if (yDelta > 5) {
+                                    if (yDelta > 2) {
                                         selectedOperator.setAmplitude(-5)
                                     } else {
                                         selectedOperator.setAmplitude(-1)
