@@ -75,7 +75,6 @@ Rectangle {
         // This coarsely tunes the operator by semitones.
         var new_frequency = base_frequency * Math.pow(
                     2, (selectedOperator.getSemiTone() / semitones))
-        console.log(new_frequency)
         if (new_frequency > 200) {
             return 200.0
         }
@@ -703,7 +702,7 @@ Rectangle {
                                         // Coarse tuning happens here
                                         if (xDelta > 2) {
                                             var current = selectedOperator.getSemiTone()
-                                            if ((current + 1) > semitones){
+                                             if ((current + 1) > semitones){
                                                selectedOperator.setSemiTone(semitones)
                                             } else {
                                                 selectedOperator.setSemiTone(current + 1)
