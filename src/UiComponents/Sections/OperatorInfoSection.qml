@@ -701,7 +701,7 @@ Rectangle {
                                         updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
-                                        if (xDelta > 5) {
+                                        if (xDelta > 2) {
                                             let current = selectedOperator.getSemiTone()
                                             if ((current + 1) > semitones){
                                                selectedOperator.setSemiTone(semitones)
@@ -725,7 +725,7 @@ Rectangle {
                                         updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
-                                        if (xDelta < -5) {
+                                        if (xDelta < -2) {
                                             let current = selectedOperator.getSemiTone()
                                             if ((current - 1) < minSemiTones){
                                                selectedOperator.setSemiTone(minSemiTones)
@@ -743,7 +743,7 @@ Rectangle {
                             } else if (vertiDrag) {
                                 // TODO: Make add multiplier?
                                 if (yDelta < 0) {
-                                    if (yDelta < -5) {
+                                    if (yDelta < -2) {
                                         selecteOperator.setAmplitude(5)
                                     } else {
                                         selectedOperator.setAmplitude(1)
@@ -752,7 +752,7 @@ Rectangle {
                                                 selectedOperator.idProp,
                                                 selectedOperator.ampProp)
                                 } else if (yDelta > 0) {
-                                    if (yDelta > 5) {
+                                    if (yDelta > 2) {
                                         selectedOperator.setAmplitude(-5)
                                     } else {
                                         selectedOperator.setAmplitude(-1)
