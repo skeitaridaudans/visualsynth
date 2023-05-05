@@ -702,7 +702,7 @@ Rectangle {
                                     } else {
                                         // Coarse tuning happens here
                                         if (xDelta > 2) {
-                                            let current = selectedOperator.getSemiTone()
+                                            var current = selectedOperator.getSemiTone()
                                             if ((current + 1) > semitones){
                                                selectedOperator.setSemiTone(semitones)
                                             } else {
