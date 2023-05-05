@@ -37,7 +37,7 @@ void AddOperatorBox::update() {
 void AddOperatorBox::draw(QPainter* painter) {
     QBrush brush(QColor(0x212121));
 
-    const auto rect = QRectF(boxPos_, QSize(kBoxSize, kBoxSize));
+    const auto rect = QRectF(boxPos_, QSizeF(kBoxSize, kBoxSize));
 
     painter->setBrush(brush);
     painter->setPen(Qt::PenStyle::SolidLine);

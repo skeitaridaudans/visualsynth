@@ -7,6 +7,7 @@
 
 
 #include "OperatorView.h"
+#include "src/Utils/Animations/ColorTweenAnimation.h"
 
 class OperatorView;
 
@@ -16,12 +17,18 @@ public:
     void update();
     void draw(QPainter* qPainter);
 
-    bool isInsideBox(const QPointF& coords);
+    bool isInsideDeleteArea(const QPointF& coords);
 private:
-
     QPointF boxPos_;
     OperatorView *boxView_;
-    bool boxCreated_ = false;
+    std::optional<std::chrono::time_point<std::chrono::high_resolution_clock>> startHoldingTime_ = std::nullopt;
+    TweenAnimation scaleAnim_;
+    double scale_;
+    ColorTweenAnimation backgroundColorAnim_;
+    QColor backgroundColor_;
+
+    bool isInsideBox(const QPointF &coords);
+    void deleteALlOperators();
 };
 
 

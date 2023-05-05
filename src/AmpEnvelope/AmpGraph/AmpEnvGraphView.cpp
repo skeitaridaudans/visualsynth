@@ -14,15 +14,27 @@
 #include "AmpEnvGraphView.h"
 #include "src/Controller/Controller.h"
 
-const QColor kPointColor(128, 0, 128);
 const double kPointHeight = 20;
 const double kPointWidth = 20;
 const double kPointDragAreaSize = 40;
-const QColor kLineColor(128, 0, 128);
+const QColor kAmpEnvelopeGraphColor(128, 0, 128);
+const QColor kNoOperatorSelectedGraphColor(0x424242);
+const QColor kParamBorderColor(0x212121);
 const double kViewAttackProportion = 0.8;
 const double kViewReleaseProportion = 1.0 - kViewAttackProportion;
 const double kDraggingStartAnimTime = 300.0;
+const double kPointMargin = (kPointHeight / 2.0) + 4.0;
+const std::vector<AmpEnvValue> kPlaceholderAttackEnvelope = {
+        AmpEnvValue(0, 0.0, 0.0, true),
+        AmpEnvValue(1, 0.9, 0.1, true),
+        AmpEnvValue(2, 0.5, 0.3, true),
+        AmpEnvValue(3, 0.5, 1.0, true),
+};
 
+const std::vector<AmpEnvValue> kPlaceholderReleaseEnvelope = {
+        AmpEnvValue(0, 0.5, 0.0, false),
+        AmpEnvValue(1, 0.0, 1.0, false),
+};
 
 AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
         QQuickPaintedItem(parent),
@@ -32,20 +44,15 @@ AmpEnvGraphView::AmpEnvGraphView(QQuickItem *parent) :
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
-void AmpEnvGraphView::paintGraphContainer(QPainter *painter) {
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(borderColor, 3));
-    QRect rect = QRect(0, 0, width(), height());
-    painter->drawRect(rect);
-
-}
-
 void AmpEnvGraphView::paintParams(QPainter *painter) {
-    const auto &controller = Controller::instance;
+    for (const auto &ampEnvParam: currentAttackEnvelope()) {
+        // Skip drawing the first point in amp envelope (as it is at 0,0 and cannot be moved)
+        if (ampEnvParam.index == 0 && !operatorEnvelope_) continue;
 
-    // Only paint attack points, as they are the only ones that can be moved
-    for (const auto &ampEnvParam: controller->attackAmpEnvValues()) {
-        // Skip drawing the first amp envelope point
+        paintParam(painter, ampEnvParam);
+    }
+
+    for (const auto &ampEnvParam: currentReleaseEnvelope()) {
         if (ampEnvParam.index == 0) continue;
 
         paintParam(painter, ampEnvParam);
@@ -64,9 +71,9 @@ void AmpEnvGraphView::paintParam(QPainter *painter, const AmpEnvValue &param) {
     const auto rect = QRectF(coords.x() - (pointWidth / 2), coords.y() - (pointHeight / 2), pointWidth,
                              pointHeight);
 
-    QBrush brush(kPointColor);
+    QBrush brush(graphColor());
     painter->setBrush(brush);
-    painter->setPen(Qt::PenStyle::SolidLine);
+    painter->setPen(QPen(paramBorderColor(), 1));
     painter->setOpacity(isBeingDragged ? draggingParamOpacity_ : 1.0);
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -74,22 +81,23 @@ void AmpEnvGraphView::paintParam(QPainter *painter, const AmpEnvValue &param) {
 }
 
 void AmpEnvGraphView::paintLines(QPainter *painter) {
-    const auto &controller = Controller::instance;
-    const auto &attackAmpEnvParams = controller->attackAmpEnvValues();
-    const auto &releaseAmpEnvParams = controller->releaseAmpEnvValues();
+    const auto &attackAmpEnvParams = currentAttackEnvelope();
+    const auto &releaseAmpEnvParams = currentReleaseEnvelope();
 
     std::vector<QPointF> linePoints;
-    for (const auto &ampEnvParam : attackAmpEnvParams) {
+    for (const auto &ampEnvParam: attackAmpEnvParams) {
         const auto coords = getDrawingPosOfAmpEnvParam(ampEnvParam);
         linePoints.emplace_back(coords);
     }
 
-    // Only use the last point in the release envelope to draw the line
-    const auto &releaseEnvLastParam = releaseAmpEnvParams[releaseAmpEnvParams.size() - 1];
-    const auto coords = mapAmpEnvPointToView(QPointF(releaseEnvLastParam.time, releaseEnvLastParam.value), false);
-    linePoints.emplace_back(coords);
+    for (const auto &ampEnvParam: releaseAmpEnvParams) {
+        if (ampEnvParam.index == 0) continue;
 
-    painter->setPen(QPen(kLineColor, 5));
+        const auto coords = getDrawingPosOfAmpEnvParam(ampEnvParam);
+        linePoints.emplace_back(coords);
+    }
+
+    painter->setPen(QPen(graphColor(), 5));
     painter->drawPolyline(linePoints.data(), linePoints.size());
 }
 
@@ -100,42 +108,45 @@ void AmpEnvGraphView::paint(QPainter *painter) {
 
     painter->setRenderHint(QPainter::Antialiasing);
 
-    //Drawing Rectangle
     this->paintLines(painter);
-    this->paintGraphContainer(painter);
     this->paintParams(painter);
 
     update();
 }
 
 QPointF AmpEnvGraphView::mapAmpEnvPointToView(const QPointF &point, bool isAttack) {
+    // Calculates the position of a point inside the view based on coordinates from the amp envelope (0-1)
     return isAttack
-           ? QPointF(point.x() * width() * kViewAttackProportion, (1 - point.y()) * height())
-           : QPointF(width() * kViewAttackProportion + point.x() * width() * kViewReleaseProportion,
-                     (1 - point.y()) * height());
+           ? QPointF(kPointMargin + point.x() * draggableAreaWidth() * kViewAttackProportion,
+                     kPointMargin + (1 - point.y()) * draggableAreaHeight())
+           : QPointF(kPointMargin + draggableAreaWidth() * kViewAttackProportion +
+                     point.x() * draggableAreaWidth() * kViewReleaseProportion,
+                     kPointMargin + (1 - point.y()) * draggableAreaHeight());
 }
 
+// Calculate coordinates to use in the amp envelope (0-1) from coordinates inside the view
 QPointF AmpEnvGraphView::mapViewPointToAmpEnvPoint(const QPointF &point, bool isAttack) {
     return isAttack
-           ? QPointF(point.x() / (width() * kViewAttackProportion), 1 - (point.y() / height()))
-           : QPointF(kViewAttackProportion + (point.x() / (width() * kViewReleaseProportion)),
-                     1 - (point.y() / height()));
+           ? QPointF((point.x() - kPointMargin) / (draggableAreaWidth() * kViewAttackProportion),
+                     1 - ((point.y() - kPointMargin) / draggableAreaHeight()))
+           : QPointF(((point.x() - kPointMargin - draggableAreaWidth() * kViewAttackProportion) /
+                      (draggableAreaWidth() * kViewReleaseProportion)),
+                     1 - ((point.y() - kPointMargin) / draggableAreaHeight()));
 }
 
 // Prevents a point in the amp envelope from going in front of or behind the previous and next point
 // This is only intended to be used for attack points, as those are the only ones that can be moved
 QPointF AmpEnvGraphView::clampBetweenAdjacentPoints(const AmpEnvValue &ampEnvValue, const QPointF &desiredPos) {
-    const auto &controller = Controller::instance;
-    const auto &attackAmpEnvParams = controller->attackAmpEnvValues();
+    const auto &envParams = ampEnvValue.attack ? currentAttackEnvelope() : currentReleaseEnvelope();
 
     double minX = 0.0;
     if (ampEnvValue.index > 0) {
-        minX = attackAmpEnvParams[ampEnvValue.index - 1].time;
+        minX = envParams[ampEnvValue.index - 1].time;
     }
 
     double maxX = 1.0;
-    if (ampEnvValue.index < attackAmpEnvParams.size() - 1) {
-        maxX = attackAmpEnvParams[ampEnvValue.index + 1].time;
+    if (ampEnvValue.index < envParams.size() - 1) {
+        maxX = envParams[ampEnvValue.index + 1].time;
     }
 
     return {
@@ -145,36 +156,31 @@ QPointF AmpEnvGraphView::clampBetweenAdjacentPoints(const AmpEnvValue &ampEnvVal
 }
 
 QPointF AmpEnvGraphView::getDrawingPosOfAmpEnvParam(const AmpEnvValue &param) {
-    const auto &controller = Controller::instance;
-
-    auto coords = mapAmpEnvPointToView(QPointF(param.time, param.value), param.attack);
-
-    // The last point essentially represents both the last in attack envelope and the first in release envelope
-    // So the (X) position that we want to display it in is the sum of the positions of both the last in attack
-    // and the first in release (relative to the start of the release proportion)
-    if (param.index == controller->attackAmpEnvValues().size() - 1) {
-        const auto firstReleaseParam = controller->releaseAmpEnvValues().front();
-        const auto firstReleaseParamPos = mapAmpEnvPointToView(QPointF(firstReleaseParam.time, firstReleaseParam.value),
-                                                               firstReleaseParam.attack);
-        coords.setX(coords.x() + firstReleaseParamPos.x() - width() * kViewAttackProportion);
-    }
-
-    return coords;
+    return mapAmpEnvPointToView(QPointF(param.time, param.value), param.attack);
 }
 
 const AmpEnvValue &AmpEnvGraphView::getDraggingAmpEnvValue() {
-    const auto &controller = Controller::instance;
-
-    return controller->attackAmpEnvValues()[draggingTouchPoint_->ampEnvPointIndex];
+    return draggingTouchPoint_->isAttack
+           ? currentAttackEnvelope()[draggingTouchPoint_->ampEnvPointIndex]
+           : currentReleaseEnvelope()[draggingTouchPoint_->ampEnvPointIndex];
 }
 
 const AmpEnvValue *AmpEnvGraphView::findTouchedAmpEnvPoint(const QPointF &touchPoint) {
-    const auto &controller = Controller::instance;
-    for (auto &ampEnvValue: controller->attackAmpEnvValues()) {
+    for (const auto &ampEnvValue: currentAttackEnvelope()) {
         const auto valueCoords = getDrawingPosOfAmpEnvParam(ampEnvValue);
 
         if (vectorBetweenPoints(touchPoint, valueCoords).length() < kPointDragAreaSize) {
             return &ampEnvValue;
+        }
+    }
+
+    const auto &releaseAmpEnvParams = currentReleaseEnvelope();
+    if (!releaseAmpEnvParams.empty()) {
+        const auto &releaseEnvLastParam = releaseAmpEnvParams[releaseAmpEnvParams.size() - 1];
+        const auto valueCoords = getDrawingPosOfAmpEnvParam(releaseEnvLastParam);
+
+        if (vectorBetweenPoints(touchPoint, valueCoords).length() < kPointDragAreaSize) {
+            return &releaseEnvLastParam;
         }
     }
 
@@ -185,11 +191,15 @@ bool AmpEnvGraphView::startDragging(int touchPointId, const QPointF &pos) {
     const auto &controller = Controller::instance;
     const auto *touchedAmpEnvPoint = findTouchedAmpEnvPoint(pos);
 
-    // Only allow dragging attack points, and dragging the first point is not allowed
-    if (touchedAmpEnvPoint != nullptr && touchedAmpEnvPoint->attack && touchedAmpEnvPoint->index != 0) {
-        draggingTouchPoint_ = DraggingTouchPoint(touchPointId, touchedAmpEnvPoint->index,
-                                                 touchedAmpEnvPoint->index ==
-                                                 controller->attackAmpEnvValues().size() - 1);
+    // Dragging the first point is not allowed in amp envelope (but is allowed in operator envelope)
+    if (touchedAmpEnvPoint != nullptr &&
+        (operatorEnvelope_ || touchedAmpEnvPoint->index != 0) &&
+        (!operatorEnvelope_ || controller->selectedOperatorId().has_value())) {
+        const bool isLast = touchedAmpEnvPoint->attack
+                            ? touchedAmpEnvPoint->index == currentAttackEnvelope().size() - 1
+                            : touchedAmpEnvPoint->index == currentReleaseEnvelope().size() - 1;
+        draggingTouchPoint_ = DraggingTouchPoint(touchPointId, touchedAmpEnvPoint->index, touchedAmpEnvPoint->attack,
+                                                 isLast);
         draggingAnimParamIndex_ = touchedAmpEnvPoint->index;
         paramOpacityAnim_.setForward();
         paramScaleAnim_.setForward();
@@ -200,19 +210,28 @@ bool AmpEnvGraphView::startDragging(int touchPointId, const QPointF &pos) {
 }
 
 void AmpEnvGraphView::updateDragging(QPointF draggingPos) {
-    const auto &controller = Controller::instance;
     auto &ampEnvValue = getDraggingAmpEnvValue();
     const auto updatedPos = mapViewPointToAmpEnvPoint(draggingPos, ampEnvValue.attack);
     const auto clampedUpdatedPos = clampBetweenAdjacentPoints(ampEnvValue, updatedPos);
 
-    controller->setAttackAmpEnvelopePoint(ampEnvValue.index, clampedUpdatedPos.y(),
-                                          clampedUpdatedPos.x());
-    if (draggingTouchPoint_->isLastPoint) {
-        const auto releasePointX = std::max(
-                (updatedPos.x() - clampedUpdatedPos.x()) / kViewReleaseProportion * kViewAttackProportion,
-                0.0);
-
-        controller->setReleaseAmpEnvelopePoint(0, clampedUpdatedPos.y(), std::clamp(releasePointX, 0.0, 1.0));
+    if (ampEnvValue.attack) {
+        // Last attack point can only be moved along the y-axis, and the first release point will get the same y value
+        if (draggingTouchPoint_->isLastPoint) {
+            setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(), 1.0);
+            setReleaseEnvelopeValue(0, clampedUpdatedPos.y(), 0.0);
+        }
+        else if (ampEnvValue.index == 0) {
+            setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(), 0.0);
+        }
+        else {
+            setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(),
+                                                  clampedUpdatedPos.x());
+        }
+    } else {
+        // Only the last point can be moved, and it can only be moved on the X axis
+        if (draggingTouchPoint_->isLastPoint) {
+            setReleaseEnvelopeValue(ampEnvValue.index, ampEnvValue.value, clampedUpdatedPos.x());
+        }
     }
 }
 
@@ -266,4 +285,84 @@ void AmpEnvGraphView::mouseReleaseEvent(QMouseEvent *event) {
     draggingTouchPoint_ = std::nullopt;
     paramOpacityAnim_.setReverse();
     paramScaleAnim_.setReverse();
+}
+
+double AmpEnvGraphView::draggableAreaWidth() {
+    return width() - kPointMargin * 2.0;
+}
+
+double AmpEnvGraphView::draggableAreaHeight() {
+    return height() - kPointMargin * 2.0;
+}
+
+QColor AmpEnvGraphView::graphColor() {
+    const auto &controller = Controller::instance;
+
+    if (!operatorEnvelope_) {
+        return kAmpEnvelopeGraphColor;
+    }
+    else {
+        const auto operatorId = controller->selectedOperatorId();
+        return operatorId.has_value()
+            ? controller->getOperatorById(operatorId.value()).getColorForOperator()
+            : kNoOperatorSelectedGraphColor;
+    }
+}
+
+const std::vector<AmpEnvValue> &AmpEnvGraphView::currentAttackEnvelope() {
+    const auto& controller = Controller::instance;
+
+    if (!operatorEnvelope_) {
+        return controller->attackAmpEnvValues();
+    }
+    else {
+        return controller->selectedOperatorId().has_value()
+            ? controller->getOperatorById(controller->selectedOperatorId().value()).attackEnvValues
+            : kPlaceholderAttackEnvelope;
+    }
+}
+
+const std::vector<AmpEnvValue> &AmpEnvGraphView::currentReleaseEnvelope() {
+    const auto& controller = Controller::instance;
+
+    if (!operatorEnvelope_) {
+        return controller->releaseAmpEnvValues();
+    }
+    else {
+        return controller->selectedOperatorId().has_value()
+               ? controller->getOperatorById(controller->selectedOperatorId().value()).releaseEnvValues
+               : kPlaceholderReleaseEnvelope;
+    }
+}
+
+void AmpEnvGraphView::setAttackEnvelopeValue(int index, float value, float time) {
+    const auto& controller = Controller::instance;
+
+    if (!operatorEnvelope_) {
+        controller->setAttackAmpEnvelopePoint(index, value, time);
+    }
+    else {
+        if (!controller->selectedOperatorId().has_value()) return;
+        controller->setAttackOpEnvelopePoint(controller->selectedOperatorId().value(), index, value, time);
+    }
+}
+
+void AmpEnvGraphView::setReleaseEnvelopeValue(int index, float value, float time) {
+    const auto& controller = Controller::instance;
+
+    if (!operatorEnvelope_) {
+        controller->setReleaseAmpEnvelopePoint(index, value, time);
+    }
+    else {
+        if (!controller->selectedOperatorId().has_value()) return;
+        controller->setReleaseOpEnvelopePoint(controller->selectedOperatorId().value(), index, value, time);
+    }
+}
+
+QColor AmpEnvGraphView::paramBorderColor() {
+    if (operatorEnvelope_ && !Controller::instance->selectedOperatorId().has_value()) {
+        return {0, 0, 0, 0};
+    }
+
+    return kParamBorderColor;
 }

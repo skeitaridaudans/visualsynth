@@ -2,13 +2,14 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import OperatorWaveView
-
 import "../Core"
 
 Rectangle {
     // Operator info box
     id: operatorInfo
 
+    property bool isOperatorSelected: false
+    property var selectedOperator: null
     property bool coarseCheck: true
     property bool fineCheck: false
     property int operatorId: selectedOperator ? selectedOperator.idProp : 0
@@ -16,7 +17,7 @@ Rectangle {
     // Properties for coarse tuning
     property real base_frequency: 100.0
     property real semitones: 42.5
-    property int semiToneCount: 0
+    property real minSemiTones: -42.5
     property real newFreq: 0
 
     color: "#212121"
@@ -36,32 +37,49 @@ Rectangle {
             opDrag.color = color.alpha(0.5).darker(3)
         }
         function onOperatorDeselected(deselected) {
-            opContainer.enabled = false
-            opContainer.visible = false
+            isOperatorSelected = false;
         }
         function onOperatorSelected(operator) {
-            selectedOperator = operator
-            freqText.text = parseFloat(operator.freqProp).toFixed(1) + ""
-            ampText.text = operator.ampProp + ""
-            opContainer.enabled = true
-            opContainer.visible = true
-            var color = selectedOperator.getColorForOperator()
-            opWaveView.setColor(color)
-            opDrag.color = color.alpha(0.5).darker(3)
-            lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`
-            lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`
+            if (!operator)
+                return;
+            selectedOperator = operator;
+            isOperatorSelected = true;
+            freqText.text = parseFloat(operator.freqProp).toFixed(1) + "";
+            ampText.text = operator.ampProp + "";
+            var color = selectedOperator.getColorForOperator();
+            opWaveView.setColor(color);
+            opDrag.color = color.alpha(0.5).darker(3);
+            lfoOperatorFreqAmountText.text = `${parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0)}%`;
+            lfoOperatorAmpAmountText.text = `${parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0)}%`;
         }
 
         target: controller
     }
+    function updateSemitone(){
+        //         // ln(x/100)/ln(2) * semitones = currentSemitone
+        // Math.log(x/100)/Math.log(2) * 42
+        // This function is used to update the current semitone of the operator
+        // whenever fine tuning is happening.
+        var check = Math.log(selectedOperator.getFreq()/100)/Math.log(2) * semitones
+        if (check > semitones) {
+            selectedOperator.setSemiTone(semitones)
+        } else if (check < minSemiTones) {
+            selectedOperator.setSemiTone(minSemiTones)
+        }
+        else {
+            selectedOperator.setSemiTone(check)
+        }
+    }
 
     function coarseTune() {
+        // This coarsely tunes the operator by semitones.
         var new_frequency = base_frequency * Math.pow(
-                    2, (semiToneCount / semitones))
+                    2, (selectedOperator.getSemiTone() / semitones))
+        console.log(new_frequency)
         if (new_frequency > 200) {
             return 200.0
         }
-        if (new_frequency > 0 && new_frequency < 1) {
+        else if (new_frequency > 0 && new_frequency < 1) {
             return 1
         }
         return new_frequency
@@ -72,11 +90,41 @@ Rectangle {
         id: opContainer
         anchors.fill: parent
         color: parent.color
-        enabled: selectedOperator ? true : false
+        enabled: isOperatorSelected || opContainerVisibleTransition.running
         height: parent.height - 4
         radius: 3
-        visible: selectedOperator ? true : false
+        visible: isOperatorSelected || opContainerVisibleTransition.running
         width: parent.width - 4
+        state: isOperatorSelected ? "visible" : "invisible"
+
+        states: [
+            State {
+                name: "invisible"
+                PropertyChanges {
+                    target: opContainer
+                    opacity: 0
+                }
+            },
+            State {
+                name: "visible"
+                PropertyChanges {
+                    target: opContainer
+                    opacity: 1
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                id: opContainerVisibleTransition
+                to: "invisible,visible"
+                NumberAnimation {
+                    properties: "opacity"
+                    easing.type: Easing.OutQuad
+                    duration: 150
+                }
+            }
+        ]
 
         Rectangle {
             id: leftColumn
@@ -180,7 +228,7 @@ Rectangle {
                                 anchors.topMargin: 8
                                 color: "#616161"
                                 height: 40
-                                text: `${selectedOperator ? selectedOperator.frequencyLfoAmount : 0}%`
+                                text: `${selectedOperator ? parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0) : 0}%`
                                 verticalAlignment: Text.AlignVCenter
                                 width: 32
                             }
@@ -188,20 +236,19 @@ Rectangle {
                                 id: lfoOperatorFreqAmountSlider
                                 from: 0
                                 height: 40
-                                to: 100
-                                value: selectedOperator ? selectedOperator.frequencyLfoAmount : 0
+                                to: Math.log2(100)
+                                value: selectedOperator ? Math.log2(selectedOperator.frequencyLfoAmount) : 0
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoFrequency(
-                                                selectedOperator.idProp,
-                                                lfoOperatorFreqAmountSlider.value)
+                                    const value = Math.pow(2, lfoOperatorFreqAmountSlider.value) / 100;
+                                    // Make sure it's actually possible to set the value to zero
+                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, value <= 0.01 ? 0 : value);
 
                                     // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
                                     // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
                                     // which will cause qt to crash if you have a signal for when the properties in Operator change
-                                    lfoOperatorFreqAmountText.text
-                                            = `${selectedOperator.frequencyLfoAmount}%`
+                                    lfoOperatorFreqAmountText.text = `${parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0)}%`;
                                 }
                             }
                         }
@@ -224,7 +271,7 @@ Rectangle {
                                 anchors.topMargin: 8
                                 color: "#616161"
                                 height: 40
-                                text: `${selectedOperator ? selectedOperator.amplitudeLfoAmount : 0}%`
+                                text: `${selectedOperator ? parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0) : 0}%`
                                 verticalAlignment: Text.AlignVCenter
                                 width: 32
                             }
@@ -232,16 +279,16 @@ Rectangle {
                                 id: lfoOperatorAmpAmountSlider
                                 from: 0
                                 height: 40
-                                to: 100
-                                value: selectedOperator ? selectedOperator.amplitudeLfoAmount : 0
+                                to: Math.log2(100)
+                                value: selectedOperator ? Math.log2(selectedOperator.amplitudeLfoAmount) : 0
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoAmplitude(
-                                                selectedOperator.idProp,
-                                                lfoOperatorAmpAmountSlider.value)
-                                    lfoOperatorAmpAmountText.text
-                                            = `${selectedOperator.amplitudeLfoAmount}%`
+                                    const value = Math.pow(2, lfoOperatorAmpAmountSlider.value) / 100;
+                                    // Make sure it's actually possible to set the value to zero
+                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, value <= 0.01 ? 0 : value);
+
+                                    lfoOperatorAmpAmountText.text = `${parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0)}%`;
                                 }
                             }
                         }
@@ -253,10 +300,6 @@ Rectangle {
         Text {
             id: freqText
             anchors.horizontalCenter: opDrag.horizontalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 510
-            anchors.right: parent.right
-            anchors.rightMargin: 319
             color: "gray"
             font.family: "Noto Sans"
             font.pixelSize: 16
@@ -270,6 +313,8 @@ Rectangle {
 
             Text {
                 id: plusFreq
+                anchors.left: parent.horizontalCenter
+                anchors.leftMargin: 50
                 color: parent.color
                 font.family: "Noto Sans"
                 font.pixelSize: 16
@@ -278,8 +323,6 @@ Rectangle {
                 text: "+"
                 verticalAlignment: Text.AlignVCenter
                 width: 50
-                anchors.left: parent.horizontalCenter
-                anchors.leftMargin: 50
                 y: -3
 
                 Rectangle {
@@ -298,12 +341,17 @@ Rectangle {
 
                         onTriggered: {
                             if (coarseCheck) {
-                                semiToneCount = semiToneCount + 1
+                                let current = selectedOperator.getSemiTone()
+                                if ((current + 1) > semitones){
+                                   selectedOperator.setSemiTone(semitones)
+                                } else {
+                                    selectedOperator.setSemiTone(current + 1)
+                                }
                                 newFreq = operatorInfo.coarseTune()
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(5)
-                                base_frequency = selectedOperator.getFreq()
+                                updateSemitone()
 
                             }
                             controller.changeFrequency(
@@ -318,14 +366,18 @@ Rectangle {
 
                         onPressed: {
                             plusFreq.color = "pink"
-                            if (coarseCheck) {
-                                console.log("here");
-                                semiToneCount = semiToneCount + 1
-                                newFreq = coarseTune()
+                            if (coarseCheck) {          
+                                let current = selectedOperator.getSemiTone()
+                                if ((current + 1) > semitones){
+                                   selectedOperator.setSemiTone(semitones)
+                                } else {
+                                    selectedOperator.setSemiTone(current + 1)
+                                }
+                                newFreq = operatorInfo.coarseTune()
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(1)
-                                base_frequency = selectedOperator.getFreq()
+                                updateSemitone()
 
                             }
                             controller.changeFrequency(
@@ -362,12 +414,17 @@ Rectangle {
 
                     onTriggered: {
                         if (coarseCheck) {
-                            semiToneCount = semiToneCount - 1
-                            newFreq = coarseTune()
+                            let current = selectedOperator.getSemiTone()
+                            if ((current - 1) < minSemiTones){
+                               selectedOperator.setSemiTone(minSemiTones)
+                            } else {
+                                selectedOperator.setSemiTone(current - 1)
+                            }
+                            newFreq = operatorInfo.coarseTune()
                             selectedOperator.updateFrequency(newFreq)
                         } else {
                             selectedOperator.setFrequency(-5)
-                            base_frequency = selectedOperator.getFreq()
+                            updateSemitone()
                         }
                         controller.changeFrequency(selectedOperator.idProp,
                                                    selectedOperator.freqProp)
@@ -391,12 +448,17 @@ Rectangle {
                         onPressed: {
                             minFreq.color = "pink"
                             if (coarseCheck) {
-                                semiToneCount = semiToneCount - 1
-                                newFreq = coarseTune()
+                                let current = selectedOperator.getSemiTone()
+                                if ((current - 1) < minSemiTones){
+                                   selectedOperator.setSemiTone(minSemiTones)
+                                } else {
+                                    selectedOperator.setSemiTone(current - 1)
+                                }
+                                newFreq = operatorInfo.coarseTune()
                                 selectedOperator.updateFrequency(newFreq)
                             } else {
                                 selectedOperator.setFrequency(-1)
-                                base_frequency = selectedOperator.getFreq()
+                                updateSemitone()
 
                             }
                             controller.changeFrequency(
@@ -415,14 +477,14 @@ Rectangle {
         }
         Text {
             id: ampText
+            anchors.left: opDrag.right
+            anchors.leftMargin: 8
             color: "gray"
             font.family: "Noto Sans"
             font.pixelSize: 16
             horizontalAlignment: Text.AlignHCenter
             text: "0"
             verticalAlignment: Text.AlignVCenter
-            anchors.left: opDrag.right
-            anchors.leftMargin: 8
             y: 189
 
             Text {
@@ -636,14 +698,18 @@ Rectangle {
                                         } else {
                                             selectedOperator.setFrequency(0.1)
                                         }
-                                        base_frequency = selectedOperator.getFreq()
+                                        updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
                                         if (xDelta > 5) {
-                                            semiToneCount = semiToneCount + 1
+                                            let current = selectedOperator.getSemiTone()
+                                            if ((current + 1) > semitones){
+                                               selectedOperator.setSemiTone(semitones)
+                                            } else {
+                                                selectedOperator.setSemiTone(current + 1)
+                                            }
                                             newFreq = coarseTune()
-                                            selectedOperator.updateFrequency(
-                                                        newFreq)
+                                            selectedOperator.updateFrequency(newFreq)
                                         }
                                     }
                                     controller.changeFrequency(
@@ -656,14 +722,18 @@ Rectangle {
                                         } else {
                                             selectedOperator.setFrequency(-0.1)
                                         }
-                                        base_frequency = selectedOperator.getFreq()
+                                        updateSemitone()
                                     } else {
                                         // Coarse tuning happens here
                                         if (xDelta < -5) {
-                                            semiToneCount = semiToneCount - 1
+                                            let current = selectedOperator.getSemiTone()
+                                            if ((current - 1) < minSemiTones){
+                                               selectedOperator.setSemiTone(minSemiTones)
+                                            } else {
+                                                selectedOperator.setSemiTone(current - 1)
+                                            }
                                             newFreq = coarseTune()
-                                            selectedOperator.updateFrequency(
-                                                        newFreq)
+                                            selectedOperator.updateFrequency(newFreq)
                                         }
                                     }
                                     controller.changeFrequency(

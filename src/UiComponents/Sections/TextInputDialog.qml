@@ -4,8 +4,8 @@ import QtQuick.Controls.Material 2.15
 
 Rectangle {
     id: dialogBackground
-    visible: dialogController.isVisible
-    enabled: dialogController.isVisible
+    visible: dialogController.isVisible || visibleTransition.running || invisibleTransition.running
+    enabled: dialogController.isVisible || visibleTransition.running || invisibleTransition.running
     state: dialogController.isVisible ? "visible" : "invisible"
 
     color: "#8C000000"
@@ -19,7 +19,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: dialog
-                scale: 0.6
+                scale: 1
                 opacity: 0
             }
         },
@@ -39,6 +39,7 @@ Rectangle {
 
     transitions: [
         Transition {
+            id: visibleTransition
             to: "visible"
             ColorAnimation {
                 easing.type: Easing.OutQuad
@@ -46,6 +47,7 @@ Rectangle {
             }
             NumberAnimation {
                 properties: "scale"
+                from: 0.6
                 easing.type: Easing.OutBack
                 duration: 300
             }
@@ -53,6 +55,19 @@ Rectangle {
                 properties: "opacity"
                 easing.type: Easing.OutQuad
                 duration: 300
+            }
+        },
+        Transition {
+            id: invisibleTransition
+            to: "invisible"
+            ColorAnimation {
+                easing.type: Easing.OutQuad
+                duration: 200
+            }
+            NumberAnimation {
+                properties: "opacity"
+                easing.type: Easing.OutQuad
+                duration: 200
             }
         }
     ]

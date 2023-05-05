@@ -6,7 +6,7 @@
 #define MAIN_QML_OPERATORPRESETVIEW_H
 
 #include "OperatorPresetsView.h"
-#include "src/Utils/ColorTweenAnimation.h"
+#include "src/Utils/Animations/ColorTweenAnimation.h"
 
 class OperatorPresetsView;
 

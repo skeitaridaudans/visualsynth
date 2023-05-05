@@ -9,11 +9,11 @@ import OutputWaveView
 import OperatorWaveView
 import "UiComponents"
 import "UiComponents/Sections"
+import "UiComponents/Core"
 
 Window {
     id: window
 
-    property var selectedOperator: null
     property string borderColor : "gray"
     property int borderWidth: 2
     Material.accent: Material.Purple
@@ -23,6 +23,8 @@ Window {
     title: qsTr("VisualSynth")
     visible: true
     width: 1920
+
+    Component.onCompleted: controller.runInitialSynthConnection()
 
     Timer {
         id: alertControllerUpdate
@@ -47,50 +49,17 @@ Window {
                 height: 80
                 width: parent.width
 
-                Item {
-                    width: parent.width
-                    height: parent.height
-                    Rectangle {
-                        width: parent.width
-                        height: borderWidth
-                        color: borderColor
-                        anchors.top: parent.top
-                    }
-                    Rectangle {
-                        height: parent.height
-                        width: borderWidth
-                        color: borderColor
-                        anchors.left: parent.left
-                    }
-                    Rectangle {
-                        width: parent.width
-                        height: borderWidth
-                        color: borderColor
-                        anchors.bottom: parent.bottom
-                    }
+                CustomBorder {
+                    sides: ["top", "left", "bottom"]
                 }
-
             }
             OperatorViewSection {
                 id: operatorViewSection
                 height: parent.height - 80
                 width: parent.width
 
-                Item {
-                    width: parent.width
-                    height: parent.height
-                    Rectangle {
-                        width: parent.width
-                        height: borderWidth
-                        color: borderColor
-                        anchors.bottom: parent.bottom
-                    }
-                    Rectangle {
-                        height: parent.height
-                        width: borderWidth
-                        color: borderColor
-                        anchors.left: parent.left
-                    }
+                CustomBorder {
+                    sides: ["bottom", "left"]
                 }
             }
         }
@@ -106,37 +75,17 @@ Window {
                 height: 400
                 width: parent.width
 
-                Item {
-                    width: parent.width
-                    height: parent.height
+                CustomBorder {
+                    sides: ["top", "right", "left"]
+                }
+            }
+            AmpEnvSection {
+                id: ampEnvGraphViewSection
+                height: parent.height * (8 / 9) - 500
+                width: parent.width
 
-                    Rectangle {
-                        width: parent.width
-                        height: borderWidth
-                        color: borderColor
-                        anchors.top: parent.top
-                    }
-
-                    Rectangle {
-                        height: parent.height
-                        width: borderWidth
-                        color: borderColor
-                        anchors.right: parent.right
-                    }
-
-                    Rectangle {
-                        height: parent.height
-                        width: borderWidth
-                        color: borderColor
-                        anchors.left: parent.left
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: borderWidth
-                        color: borderColor
-                        anchors.bottom: parent.bottom
-                    }
+                CustomBorder {
+                    sides: ["top", "right", "left", "bottom"]
                 }
             }
             GlobalLfoOptionsSection {
@@ -144,50 +93,17 @@ Window {
                 height: 100
                 width: parent.width
 
-                Item {
-                    width: parent.width
-                    height: parent.height
-                    Rectangle {
-                        width: borderWidth
-                        height: parent.height
-                        color: borderColor
-                        anchors.left: parent.left
-                    }
-                    Rectangle {
-                        width: borderWidth
-                        height: parent.height
-                        color: borderColor
-                        anchors.right: parent.right
-                    }
-
+                CustomBorder {
+                    sides: ["right", "left", "bottom"]
                 }
-            }
-            AmpEnvSection {
-                id: ampEnvGraphViewSection
-                height: parent.height * (6 / 7) - 500
-                width: parent.width
             }
             OutputWaveSection {
                 id: outputWaveSection
-                height: parent.height / 7
+                height: parent.height / 9
                 width: parent.width
 
-                Item{
-                    width: parent.width
-                    height: parent.height
-
-                    Rectangle {
-                        width: borderWidth
-                        height: parent.height
-                        color: borderColor
-                        anchors.right: parent.right
-                    }
-                    Rectangle {
-                        width: borderWidth
-                        height: parent.height
-                        color: borderColor
-                        anchors.left: parent.left
-                    }
+                CustomBorder {
+                    sides: ["right", "left"]
                 }
             }
         }

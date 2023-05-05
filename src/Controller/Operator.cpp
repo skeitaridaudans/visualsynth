@@ -23,15 +23,17 @@ OperatorViewState::OperatorViewState(const OperatorViewState &operatorViewState)
 // Operator
 
 Operator::Operator(int id, QObject *parent)
-        : id(id), QObject(parent), frequency(100), amplitude(60), isCarrier(false), isModulator(false) {}
+        : id(id), QObject(parent), frequency(100), amplitude(60), isCarrier(false), isModulator(false), currentSemiTone(0) {}
 
 Operator::Operator()
-        : id(0), QObject(), frequency(100), amplitude(60), isCarrier(false), isModulator(false) {}
+        : id(0), QObject(), frequency(100), amplitude(60), isCarrier(false), isModulator(false), currentSemiTone(0) {}
 
 Operator::Operator(const Operator &operator_)
         : id(operator_.id), frequency(operator_.frequency), amplitude(operator_.amplitude),
           isModulator(operator_.isModulator), isCarrier(operator_.isCarrier), modulatedBy(operator_.modulatedBy),
-          position(operator_.position), operatorViewState(operator_.operatorViewState) {}
+          position(operator_.position), operatorViewState(operator_.operatorViewState),
+          frequencyLfoAmount(operator_.frequencyLfoAmount), amplitudeLfoAmount(operator_.amplitudeLfoAmount),
+          attackEnvValues(operator_.attackEnvValues), releaseEnvValues(operator_.releaseEnvValues), currentSemiTone(operator_.currentSemiTone) {}
 
 Operator &Operator::operator=(const Operator &operator_) {
     this->id = operator_.id;
@@ -42,6 +44,10 @@ Operator &Operator::operator=(const Operator &operator_) {
     this->modulatedBy = operator_.modulatedBy;
     this->position = operator_.position;
     this->operatorViewState = operator_.operatorViewState;
+    this->frequencyLfoAmount = operator_.frequencyLfoAmount;
+    this->amplitudeLfoAmount = operator_.amplitudeLfoAmount;
+    this->attackEnvValues = operator_.attackEnvValues;
+    this->releaseEnvValues = operator_.releaseEnvValues;
 
     return *this;
 }
@@ -50,6 +56,14 @@ void Operator::setFrequency(float step) {
     if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0.9)) {
         this->frequency = this->frequency + step;
     }
+}
+
+void Operator::setSemiTone(float value){
+    this->currentSemiTone = value;
+}
+
+float Operator::getSemiTone() {
+    return this->currentSemiTone;
 }
 
 void Operator::updateFrequency(float frequency){
@@ -77,9 +91,10 @@ QColor Operator::getColorForOperator() const {
 }
 
 Operator::Operator(int id, float frequency, long amplitude, bool isModulator, bool isCarrier,
-                   std::vector<int> modulatedBy, QPointF position, QObject *parent)
+                   std::vector<int> modulatedBy, QPointF position, std::vector<AmpEnvValue> attackEnvValues,
+                   std::vector<AmpEnvValue> releaseEnvValues, QObject *parent)
         : id(id), frequency(frequency), amplitude(amplitude), isModulator(isModulator), isCarrier(isCarrier),
-          modulatedBy(std::move(modulatedBy)), position(position) {
+          modulatedBy(std::move(modulatedBy)), position(position), attackEnvValues(attackEnvValues), releaseEnvValues(releaseEnvValues), currentSemiTone(0) {
 
 }
 
@@ -94,7 +109,11 @@ void to_json(json &j, const Operator &o) {
             {"position",    {
                                     {"x", o.position.x()},
                                     {"y", o.position.y()}
-                            }}
+                            }},
+            {"frequencyLfoAmount", o.frequencyLfoAmount},
+            {"amplitudeLfoAmount", o.amplitudeLfoAmount},
+            {"attackEnvValues", o.attackEnvValues},
+            {"releaseEnvValues", o.releaseEnvValues}
     };
 }
 
@@ -105,6 +124,10 @@ void from_json(const json &j, Operator &o) {
     j["isModulator"].get_to(o.isModulator);
     j["isCarrier"].get_to(o.isCarrier);
     j["modulatedBy"].get_to(o.modulatedBy);
+    j["frequencyLfoAmount"].get_to(o.frequencyLfoAmount);
+    j["amplitudeLfoAmount"].get_to(o.amplitudeLfoAmount);
+    j["attackEnvValues"].get_to(o.attackEnvValues);
+    j["releaseEnvValues"].get_to(o.releaseEnvValues);
     o.position.setX(j["position"]["x"].get<float>());
     o.position.setY(j["position"]["y"].get<float>());
 }

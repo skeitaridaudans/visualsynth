@@ -84,6 +84,9 @@ void TweenAnimation::update() {
                 setForward();
             }
         }
+        else if (onFinished_ != nullptr) {
+            onFinished_();
+        }
         return;
     }
 
@@ -108,4 +111,8 @@ bool TweenAnimation::isAtEnd() {
 
 void TweenAnimation::setValuePtr(double *value) {
     value_ = value;
+}
+
+void TweenAnimation::setOnFinished(std::function<void()> onFinished) {
+    onFinished_ = std::move(onFinished);
 }

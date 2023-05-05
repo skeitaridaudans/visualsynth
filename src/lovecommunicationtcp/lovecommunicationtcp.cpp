@@ -7,14 +7,13 @@
 
 LoveCommunicationTcp::LoveCommunicationTcp(std::function<void(QTcpSocket::SocketState state)> onStateChange)
         : onStateChange(std::move(onStateChange)) {
-
+    QObject::connect(&socket, &QTcpSocket::stateChanged, this->onStateChange);
 }
 
 
 bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
     // Connect to the server at IP address 192.168.1.100 and port 1234
     socket.connectToHost(ip, port);
-    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
 
     // Wait for the connection to be established
     if (socket.waitForConnected()) {
@@ -28,7 +27,6 @@ bool LoveCommunicationTcp::connectToServer(QString ip, int port) {
 void LoveCommunicationTcp::connectToServerAsync(QString ip, int port) {
     // Connect to the server at IP address 192.168.1.100 and port 1234
     socket.connectToHost(ip, port);
-    QObject::connect(&socket, &QTcpSocket::stateChanged, onStateChange);
 }
 
 void LoveCommunicationTcp::disconnectFromServer() {
@@ -181,6 +179,20 @@ QString LoveCommunicationTcp::setOperatorLfoValues(int operatorId, float frequen
     store_float_in_buffer(buf, frequencyAmount);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
     store_float_in_buffer(buf, amplitudeAmount);
+    bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    sendMessageBytes(bytes);
+    return QString::fromUtf8(bytes.toHex(' '));
+}
+QString LoveCommunicationTcp::setOperatorAmpEnvelopeValue(int operatorId, int index, bool attack, float value, float time) {
+    QByteArray bytes;
+    // Operator amp envelope message tag is 0x0, so we only have to send the index (the other bytes will be zero automatically)
+    bytes.append(0x01);
+    bytes.append((operatorId << 4) | (attack ? 0x1 : 0x2));
+    bytes.append(index);
+    unsigned char buf[5];
+    store_float_in_buffer(buf, value);
+    bytes.append(QByteArray::fromRawData((char *) buf, 5));
+    store_float_in_buffer(buf, time);
     bytes.append(QByteArray::fromRawData((char *) buf, 5));
     sendMessageBytes(bytes);
     return QString::fromUtf8(bytes.toHex(' '));

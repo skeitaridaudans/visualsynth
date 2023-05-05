@@ -43,7 +43,7 @@ void OutputWaveView::paint(QPainter *painter) {
     // This needs to be done every frame in case the height of the view changed (while resizing the window)
     std::vector<QPointF> renderWavePoints;
     for (const auto& waveValue : waveValues_) {
-        renderWavePoints.emplace_back(waveValue.x(), waveValue.y() * (height() / 3.5) + (height() / 2.0));
+        renderWavePoints.emplace_back(waveValue.x(), waveValue.y() * (height() / 6.0) + (height() / 2.0));
     }
 
     painter->drawPolyline(renderWavePoints.data(), renderWavePoints.size());

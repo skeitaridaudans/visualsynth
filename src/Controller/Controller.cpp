@@ -1,12 +1,8 @@
 #include "Controller.h"
 #include <iostream>
 #include "src/Alert/AlertController.h"
-#include <QDebug>
-#include <QTimer>
 #include <fstream>
 #include <utility>
-#include <QQmlEngine>
-#include <QQmlContext>
 #include "src/Utils/Utils.h"
 #include "src/Dialog/DialogController.h"
 
@@ -25,40 +21,42 @@ Controller::Controller(QObject *parent) : QObject(parent), settings_(kCompanyNam
 
     resetAvailableOperatorIds();
     loadInitialPreset();
-
-    if (settings_.contains(kSynthIpSettingsKey)) {
-        synthIp_ = settings_.value(kSynthIpSettingsKey).toString();
-        api->connect(synthIp_);
-    }
-    else {
-        // TODO: Fix crash here (at least on Android)
-        // showConnectDialog();
-    }
 }
 
 void Controller::loadInitialPreset() {
-    Operators defaultOperators;
-    defaultOperators.insert(
-            std::make_pair<int, Operator>(1, Operator(1, 100, 60, false, true, {0}, QPointF(0.4696, 0.894))));
-    defaultOperators.insert(
-            std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075))));
-
-    QString defaultname = "default";
-
-    // TODO: Configure these values better
-    const std::vector<AmpEnvValue> defaultAttackAmpEnv = {
-            AmpEnvValue(0, 0.0, 0.0, true),
-            AmpEnvValue(1, 0.8, 0.25, true),
-            AmpEnvValue(2, 0.5, 0.5, true),
-            AmpEnvValue(3, 0.5, 1.0, true),
+    // Operator amp envelope
+    const std::vector<AmpEnvValue> defaultOpAttackEnvelope = {
+            AmpEnvValue(0, 1.0, 0.0, true),
+            AmpEnvValue(1, 1.0, 0.2, true),
+            AmpEnvValue(2, 1.0, 0.5, true),
+            AmpEnvValue(3, 1.0, 1.0, true),
+    };
+    const std::vector<AmpEnvValue> defaultOpReleaseEnvelope = {
+            AmpEnvValue(0, 1.0, 0.0, false),
+            AmpEnvValue(1, 0.0, 0.0, false),
     };
 
+    // Operators
+    Operators defaultOperators;
+    defaultOperators.insert(
+            std::make_pair<int, Operator>(1, Operator(1, 100, 60, false, true, {0}, QPointF(0.4696, 0.9), defaultOpAttackEnvelope, defaultOpReleaseEnvelope)));
+    defaultOperators.insert(
+            std::make_pair<int, Operator>(0, Operator(0, 70, 30, true, false, {}, QPointF(0.3251, 0.6075), defaultOpAttackEnvelope, defaultOpReleaseEnvelope)));
+
+    // Global amp envelope
+    const std::vector<AmpEnvValue> defaultAttackAmpEnv = {
+            AmpEnvValue(0, 0.0, 0.0, true),
+            AmpEnvValue(1, 1.0, 0.1, true),
+            AmpEnvValue(2, 1.0, 0.5, true),
+            AmpEnvValue(3, 1.0, 1.0, true),
+    };
     const std::vector<AmpEnvValue> defaultReleaseAmpEnv {
-            AmpEnvValue(0, 0.5, 0.0, false),
+            AmpEnvValue(0, 1.0, 0.0, false),
             AmpEnvValue(1, 0, 1, false),
     };
 
-    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultname);
+    const QString defaultName = "default";
+    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultName);
     changeToPreset(defaultPreset);
 }
 
@@ -73,6 +71,15 @@ std::optional<int> Controller::addOperator() {
 
     auto op = Operator(id);
     operators_.insert(std::make_pair<int, Operator>((int) id, std::move(op)));
+
+    // Set the default operator envelope
+    setAttackOpEnvelopePoint(id, 0, 1.0, 0.0);
+    setAttackOpEnvelopePoint(id, 1, 1.0, 0.2);
+    setAttackOpEnvelopePoint(id, 2, 1.0, 0.5);
+    setAttackOpEnvelopePoint(id, 3, 1.0, 1.0);
+
+    setReleaseOpEnvelopePoint(id, 0, 1.0, 0.0);
+    setReleaseOpEnvelopePoint(id, 1, 0.0, 0.0);
 
     return id;
 }
@@ -109,7 +116,7 @@ void Controller::setAmpEnvelopeSize(int size) {
 }
 
 void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
-    // It doesn't make sense to add a amp envelope point that is more than 2 spots ahead of any current point
+    // It doesn't make sense to add an amp envelope point that is more than 2 spots ahead of any current point
     if (attackAmpEnvValues_.size() < index) {
         return;
     }
@@ -126,7 +133,7 @@ void Controller::setAttackAmpEnvelopePoint(int index, float value, float time) {
 }
 
 void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) {
-    // It doesn't make sense to add a amp envelope point that is more than 2 spots ahead of any current point
+    // It doesn't make sense to add an amp envelope point that is more than 2 spots ahead of any current point
     if (releaseAmpEnvValues_.size() < index) {
         return;
     }
@@ -143,6 +150,40 @@ void Controller::setReleaseAmpEnvelopePoint(int index, float value, float time) 
 
 }
 
+void Controller::setAttackOpEnvelopePoint(int operatorId, int index, float value, float time) {
+    auto& operator_ = getOperatorById(operatorId);
+    if (operator_.attackEnvValues.size() < index) {
+        return;
+    }
+
+    api->setOperatorEnvelopeAttackValue(operatorId, index, value, time);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, true);
+    if (operator_.attackEnvValues.size() == index) {
+        operator_.attackEnvValues.emplace_back(ampEnvValue);
+    }
+    else {
+        operator_.attackEnvValues[index] = ampEnvValue;
+    }
+}
+
+void Controller::setReleaseOpEnvelopePoint(int operatorId, int index, float value, float time) {
+    auto& operator_ = getOperatorById(operatorId);
+    if (operator_.releaseEnvValues.size() < index) {
+        return;
+    }
+
+    api->setOperatorEnvelopeReleaseValue(operatorId, index, value, time);
+
+    const auto ampEnvValue = AmpEnvValue(index, value, time, false);
+    if (operator_.releaseEnvValues.size() == index) {
+        operator_.releaseEnvValues.emplace_back(ampEnvValue);
+    }
+    else {
+        operator_.releaseEnvValues[index] = ampEnvValue;
+    }
+}
+
 void Controller::changeFrequency(int operatorId, float frequency) {
     operators_[operatorId].frequency = frequency;
     emit freqChanged(frequency);
@@ -155,14 +196,14 @@ void Controller::changeAmplitude(int operatorId, long amplitude) {
     sendOperator(operatorId);
 }
 
-void Controller::setOperatorLfoFrequency(int operatorId, long amount) {
+void Controller::setOperatorLfoFrequency(int operatorId, double amount) {
     auto &operator_ = getOperatorById(operatorId);
     operator_.frequencyLfoAmount = amount;
 
     sendOperatorLfoValuesToSynth(operatorId);
 }
 
-void Controller::setOperatorLfoAmplitude(int operatorId, long amount) {
+void Controller::setOperatorLfoAmplitude(int operatorId, double amount) {
     auto &operator_ = getOperatorById(operatorId);
     operator_.amplitudeLfoAmount = amount;
 
@@ -172,8 +213,8 @@ void Controller::setOperatorLfoAmplitude(int operatorId, long amount) {
 void Controller::sendOperatorLfoValuesToSynth(int operatorId) {
     const auto &operator_ = getOperatorById(operatorId);
 
-    const auto frequencyAmount = static_cast<float>(operator_.frequencyLfoAmount) / 100.0f;
-    const auto amplitudeAmount = static_cast<float>(operator_.amplitudeLfoAmount) / 100.0f;
+    const auto frequencyAmount = static_cast<float>(operator_.frequencyLfoAmount);
+    const auto amplitudeAmount = static_cast<float>(operator_.amplitudeLfoAmount);
     api->setOperatorLfoValues(operatorId, frequencyAmount, amplitudeAmount);
 }
 
@@ -189,15 +230,14 @@ void Controller::setLfoWaveType(LfoWaveType lfoWaveType) {
     sendLfoGlobalOptionsToSynth();
 }
 
-void Controller::setLfoFrequency(long frequency) {
+void Controller::setLfoFrequency(double frequency) {
     lfoFrequency_ = frequency;
     lfoFrequencyChanged(frequency);
     sendLfoGlobalOptionsToSynth();
 }
 
 void Controller::sendLfoGlobalOptionsToSynth() {
-    const float frequency = static_cast<float>(lfoFrequency_) / 10.0f;
-    api->setLfoGlobalOptions(isLfoEnabled_, lfoWaveType_, frequency);
+    api->setLfoGlobalOptions(isLfoEnabled_, lfoWaveType_, static_cast<float>(lfoFrequency_));
 }
 
 void Controller::addModulator(int operatorId, int modulatorId) {
@@ -243,13 +283,16 @@ void Controller::removeCarrier(int operatorId) {
 
 void Controller::sendOperator(int operatorId) {
     const auto &op = operators_[operatorId];
-    // Núverandi range 0 - 200 20 er lægsta nóta sem heyrist hæsta er 175 þá er 100 byrjunar nóta.
 
+    // Current range 0 - 200, 20 is the lowest audible note, 175 is the highest, and 100 the default
     float freq = std::pow(1.90366, (float) (op.frequency - 100) / 20.0);
     float amp = std::pow(1.6, (float) (op.amplitude - 50) / 20.0) - 0.3;
     api->sendOperatorValue(op.id, 0, 1, freq, amp);
 }
 
+// Sends everything related to the operator to the synth (freq/amp, carrier, all modulators, lfo, etc.)
+// This also does the same for all operators that are modulating the operator
+// Calling this on all carriers will result in everything related to all active operators being sent to the synth
 void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *visited) {
     auto visited_ = visited == nullptr ? new std::unordered_set<int>() : visited;
 
@@ -265,6 +308,15 @@ void Controller::sendAllOperatorInfo(int operatorId, std::unordered_set<int> *vi
     }
 
     sendOperator(operatorId);
+    sendOperatorLfoValuesToSynth(operatorId);
+
+    for (const auto& ampEnvValue : operator_.attackEnvValues) {
+        api->setOperatorEnvelopeAttackValue(operatorId, ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
+
+    for (const auto& ampEnvValue : operator_.releaseEnvValues) {
+        api->setOperatorEnvelopeReleaseValue(operatorId, ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
+    }
 
     for (const auto &modulatorId: operator_.modulatedBy) {
         api->addModulator(operatorId, modulatorId);
@@ -286,6 +338,7 @@ void Controller::selectOperator(int id) {
 
 void Controller::deselectOperator() {
     selectedOperatorId_ = std::nullopt;
+    emit operatorSelected(nullptr);
     emit operatorDeselected(true);
 }
 
@@ -329,17 +382,13 @@ void Controller::savePreset(const std::string &name) {
 
 
     //Alert that a preset has been saved
-    QString str = QString("the preset '%1' has been saved to presets ").arg(QString::fromStdString(name));
+    QString str = QString("The preset '%1' has been saved to presets ").arg(QString::fromStdString(name));
     AlertController::instance->showAlert(str, 0);
 }
 
 void Controller::loadPreset(const std::string &name) {
     auto preset = loadJsonFileAsObject<Preset>("presets/" + name + ".json");
-
-    resetAvailableOperatorIds();
-    for (const auto &operator_: operators_) {
-        availableOperatorIds_.erase(operator_.first);
-    }
+    changeToPreset(preset);
 }
 
 void Controller::changeToPreset(const Preset &preset) {
@@ -365,8 +414,7 @@ void Controller::changeToPreset(const Preset &preset) {
 
     // This is to avoid the program crashing when loading the first preset.
     if (!isFirst_) {
-        //Alert that a preset has been loaded
-        QString str = QString("the preset '%1' has been loaded!").arg(preset.name);
+        QString str = QString("The preset '%1' has been loaded!").arg(preset.name);
         AlertController::instance->showAlert(str, 0);
     } else {
         isFirst_ = false;
@@ -407,12 +455,13 @@ void Controller::resetAvailableOperatorIds() {
 }
 
 void Controller::hidePresets() {
-    if(showPresets_ == true){
+    if(showPresets_){
         showPresets_ = false;
         emit showPresetsChanged(false);
     }
 }
 
+// Gets the value of the operator while ignoring all modulators
 double Controller::getSingleOperatorValue(int operatorId, double offset) {
     auto &operator_ = getOperatorById(operatorId);
 
@@ -525,7 +574,7 @@ void Controller::sendAmpEnvelopeToSynth() {
         api->setAmpEnvelopeAttackValue(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
 
-    api->setAmpReleaseEnvelopeSize(releaseAmpEnvValues_.size());
+    api->setAmpReleaseEnvelopeSize(releaseAmpEnvValues_.size() - 1);
     for (const auto &ampEnvValue : releaseAmpEnvValues_) {
         api->setAmpReleaseEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
@@ -533,4 +582,14 @@ void Controller::sendAmpEnvelopeToSynth() {
 
 bool Controller::showPresets() {
     return showPresets_;
+}
+
+void Controller::runInitialSynthConnection() {
+    if (settings_.contains(kSynthIpSettingsKey)) {
+        synthIp_ = settings_.value(kSynthIpSettingsKey).toString();
+        api->connect(synthIp_);
+    }
+    else {
+        showConnectDialog();
+    }
 }

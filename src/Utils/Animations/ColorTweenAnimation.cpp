@@ -3,7 +3,7 @@
 //
 
 #include "ColorTweenAnimation.h"
-#include "Utils.h"
+#include "src/Utils/Utils.h"
 
 ColorTweenAnimation::ColorTweenAnimation(double ms, QColor* color, QColor from, QColor to,
                                          std::function<double(double x)> animationCurve) : tweenAnimation_(ms, &fraction_,
@@ -52,4 +52,8 @@ bool ColorTweenAnimation::isAtStart() {
 
 bool ColorTweenAnimation::isAtEnd() {
     return tweenAnimation_.isAtEnd();
+}
+
+void ColorTweenAnimation::setOnFinished(std::function<void()> onFinished) {
+    tweenAnimation_.setOnFinished(std::move(onFinished));
 }
