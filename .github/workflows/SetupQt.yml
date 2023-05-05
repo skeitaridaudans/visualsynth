@@ -8,8 +8,6 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.
-  QT_DIR: /opt/Qt/5.15.2/gcc_64/
-  CMAKE_PREFIX_PATH: /opt/Qt/5.15.2/gcc_64/
   BUILD_TYPE: Release
 
 jobs:
@@ -22,11 +20,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set up Qt
+      uses: jurplel/setup-qt@v2
+      with:
+        qr-version: '5.15.2'
+        
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
+      env:
+        CMAKE_PREFIX_PATH: /opt/qt/5.15.2/gcc_64
+        
+        
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}} --config ${{env.BUILD_TYPE}}
