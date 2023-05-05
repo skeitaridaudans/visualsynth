@@ -23,17 +23,17 @@ OperatorViewState::OperatorViewState(const OperatorViewState &operatorViewState)
 // Operator
 
 Operator::Operator(int id, QObject *parent)
-        : id(id), QObject(parent), frequency(100), amplitude(60), isCarrier(false), isModulator(false) {}
+        : id(id), QObject(parent), frequency(100), amplitude(60), isCarrier(false), isModulator(false), currentSemiTone(0) {}
 
 Operator::Operator()
-        : id(0), QObject(), frequency(100), amplitude(60), isCarrier(false), isModulator(false) {}
+        : id(0), QObject(), frequency(100), amplitude(60), isCarrier(false), isModulator(false), currentSemiTone(0) {}
 
 Operator::Operator(const Operator &operator_)
         : id(operator_.id), frequency(operator_.frequency), amplitude(operator_.amplitude),
           isModulator(operator_.isModulator), isCarrier(operator_.isCarrier), modulatedBy(operator_.modulatedBy),
           position(operator_.position), operatorViewState(operator_.operatorViewState),
           frequencyLfoAmount(operator_.frequencyLfoAmount), amplitudeLfoAmount(operator_.amplitudeLfoAmount),
-          attackEnvValues(operator_.attackEnvValues), releaseEnvValues(operator_.releaseEnvValues) {}
+          attackEnvValues(operator_.attackEnvValues), releaseEnvValues(operator_.releaseEnvValues), currentSemiTone(operator_.currentSemiTone) {}
 
 Operator &Operator::operator=(const Operator &operator_) {
     this->id = operator_.id;
@@ -56,6 +56,18 @@ void Operator::setFrequency(float step) {
     if (((this->frequency + step) <= 200) && ((this->frequency + step) > 0.9)) {
         this->frequency = this->frequency + step;
     }
+}
+
+void Operator::setSemiTone(float value){
+    this->currentSemiTone = value;
+}
+
+float Operator::getSemiTone() {
+    return this->currentSemiTone;
+}
+
+void Operator::updateFrequency(float frequency){
+    this->frequency = frequency;
 }
 
 void Operator::setAmplitude(long step) {
@@ -82,7 +94,7 @@ Operator::Operator(int id, float frequency, long amplitude, bool isModulator, bo
                    std::vector<int> modulatedBy, QPointF position, std::vector<AmpEnvValue> attackEnvValues,
                    std::vector<AmpEnvValue> releaseEnvValues, QObject *parent)
         : id(id), frequency(frequency), amplitude(amplitude), isModulator(isModulator), isCarrier(isCarrier),
-          modulatedBy(std::move(modulatedBy)), position(position), attackEnvValues(attackEnvValues), releaseEnvValues(releaseEnvValues) {
+          modulatedBy(std::move(modulatedBy)), position(position), attackEnvValues(attackEnvValues), releaseEnvValues(releaseEnvValues), currentSemiTone(0) {
 
 }
 

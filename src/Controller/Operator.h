@@ -55,6 +55,7 @@ public:
     long amplitude;
     bool isModulator;
     bool isCarrier;
+    float currentSemiTone;
 
     // Fraction, 0-1
     double frequencyLfoAmount = 0;
@@ -72,11 +73,14 @@ public:
     Q_PROPERTY(long ampProp MEMBER amplitude)
     Q_PROPERTY(double frequencyLfoAmount MEMBER frequencyLfoAmount)
     Q_PROPERTY(double amplitudeLfoAmount MEMBER amplitudeLfoAmount)
-
+    Q_PROPERTY(float semiTone MEMBER currentSemiTone)
     Q_INVOKABLE float getFreq();
     Q_INVOKABLE long getAmp();
     Q_INVOKABLE void setFrequency(float step);
     Q_INVOKABLE void setAmplitude(long step);
+    Q_INVOKABLE void updateFrequency(float frequency);
+    Q_INVOKABLE void setSemiTone(float value);
+    Q_INVOKABLE float getSemiTone();
 
     // Schedule the operator to be deleted since deleting it is not possible while iterating over the operators
     bool scheduleForRemoval = false;
