@@ -53,8 +53,6 @@ void AmpEnvGraphView::paintParams(QPainter *painter) {
     }
 
     for (const auto &ampEnvParam: currentReleaseEnvelope()) {
-        if (ampEnvParam.index == 0) continue;
-
         paintParam(painter, ampEnvParam);
     }
 
@@ -91,8 +89,6 @@ void AmpEnvGraphView::paintLines(QPainter *painter) {
     }
 
     for (const auto &ampEnvParam: releaseAmpEnvParams) {
-        if (ampEnvParam.index == 0) continue;
-
         const auto coords = getDrawingPosOfAmpEnvParam(ampEnvParam);
         linePoints.emplace_back(coords);
     }
@@ -191,9 +187,9 @@ bool AmpEnvGraphView::startDragging(int touchPointId, const QPointF &pos) {
     const auto &controller = Controller::instance;
     const auto *touchedAmpEnvPoint = findTouchedAmpEnvPoint(pos);
 
-    // Dragging the first point is not allowed in amp envelope (but is allowed in operator envelope)
+    // Dragging the first point is not allowed in attack amp envelope (but is allowed in operator envelope)
     if (touchedAmpEnvPoint != nullptr &&
-        (operatorEnvelope_ || touchedAmpEnvPoint->index != 0) &&
+        (operatorEnvelope_ || touchedAmpEnvPoint->index != 0 || !touchedAmpEnvPoint->attack) &&
         (!operatorEnvelope_ || controller->selectedOperatorId().has_value())) {
         const bool isLast = touchedAmpEnvPoint->attack
                             ? touchedAmpEnvPoint->index == currentAttackEnvelope().size() - 1
@@ -210,15 +206,22 @@ bool AmpEnvGraphView::startDragging(int touchPointId, const QPointF &pos) {
 }
 
 void AmpEnvGraphView::updateDragging(QPointF draggingPos) {
+    const auto &attackEnvelope = currentAttackEnvelope();
     auto &ampEnvValue = getDraggingAmpEnvValue();
     const auto updatedPos = mapViewPointToAmpEnvPoint(draggingPos, ampEnvValue.attack);
     const auto clampedUpdatedPos = clampBetweenAdjacentPoints(ampEnvValue, updatedPos);
 
     if (ampEnvValue.attack) {
-        // Last attack point can only be moved along the y-axis, and the first release point will get the same y value
+        // Last attack point can only be moved along the y-axis
         if (draggingTouchPoint_->isLastPoint) {
             setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(), 1.0);
-            setReleaseEnvelopeValue(0, clampedUpdatedPos.y(), 0.0);
+            setAttackEnvelopeValue(ampEnvValue.index-1, clampedUpdatedPos.y(), attackEnvelope[ampEnvValue.index-1].time);
+        }
+        // Move y value of last point with the second last point
+        else if (ampEnvValue.index == attackEnvelope.size() - 2) {
+            setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(),
+                                                  clampedUpdatedPos.x());
+            setAttackEnvelopeValue(attackEnvelope.size()-1, clampedUpdatedPos.y(), 1.0);
         }
         else if (ampEnvValue.index == 0) {
             setAttackEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(), 0.0);
@@ -229,8 +232,11 @@ void AmpEnvGraphView::updateDragging(QPointF draggingPos) {
         }
     } else {
         // Only the last point can be moved, and it can only be moved on the X axis
-        if (draggingTouchPoint_->isLastPoint) {
+        if (draggingTouchPoint_->isLastPoint && !operatorEnvelope_) {
             setReleaseEnvelopeValue(ampEnvValue.index, ampEnvValue.value, clampedUpdatedPos.x());
+        }
+        else if (draggingTouchPoint_->isLastPoint ) {
+            setReleaseEnvelopeValue(ampEnvValue.index, clampedUpdatedPos.y(), clampedUpdatedPos.x());
         }
     }
 }

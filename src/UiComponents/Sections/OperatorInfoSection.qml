@@ -202,7 +202,7 @@ Rectangle {
                                 from: 0
                                 height: 40
                                 to: Math.log2(100)
-                                value: selectedOperator ? Math.log2(selectedOperator.frequencyLfoAmount) : 0
+                                value: selectedOperator ? Math.log2(selectedOperator.frequencyLfoAmount * 100) : 0
                                 width: 96
 
                                 onMoved: {
@@ -245,7 +245,7 @@ Rectangle {
                                 from: 0
                                 height: 40
                                 to: Math.log2(100)
-                                value: selectedOperator ? Math.log2(selectedOperator.amplitudeLfoAmount) : 0
+                                value: selectedOperator ? Math.log2(selectedOperator.amplitudeLfoAmount * 100) : 0
                                 width: 96
 
                                 onMoved: {

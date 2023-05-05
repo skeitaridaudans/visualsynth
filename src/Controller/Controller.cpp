@@ -32,8 +32,7 @@ void Controller::loadInitialPreset() {
             AmpEnvValue(3, 1.0, 1.0, true),
     };
     const std::vector<AmpEnvValue> defaultOpReleaseEnvelope = {
-            AmpEnvValue(0, 1.0, 0.0, false),
-            AmpEnvValue(1, 0.0, 0.0, false),
+            AmpEnvValue(0, 1.0, 1.0, false),
     };
 
     // Operators
@@ -51,8 +50,7 @@ void Controller::loadInitialPreset() {
             AmpEnvValue(3, 1.0, 1.0, true),
     };
     const std::vector<AmpEnvValue> defaultReleaseAmpEnv {
-            AmpEnvValue(0, 1.0, 0.0, false),
-            AmpEnvValue(1, 0, 1, false),
+            AmpEnvValue(0, 0, 1, false),
     };
 
     const QString defaultName = "default";

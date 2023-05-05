@@ -79,6 +79,15 @@ Window {
                     sides: ["top", "right", "left"]
                 }
             }
+            GlobalLfoOptionsSection {
+                id: globalLfoOptionsSection
+                height: 100
+                width: parent.width
+
+                CustomBorder {
+                    sides: ["top", "right", "left"]
+                }
+            }
             AmpEnvSection {
                 id: ampEnvGraphViewSection
                 height: parent.height * (8 / 9) - 500
@@ -86,15 +95,6 @@ Window {
 
                 CustomBorder {
                     sides: ["top", "right", "left", "bottom"]
-                }
-            }
-            GlobalLfoOptionsSection {
-                id: globalLfoOptionsSection
-                height: 100
-                width: parent.width
-
-                CustomBorder {
-                    sides: ["right", "left", "bottom"]
                 }
             }
             OutputWaveSection {
