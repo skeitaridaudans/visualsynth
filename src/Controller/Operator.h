@@ -5,7 +5,7 @@
 #ifndef QTQUICKTEST_OPERATOR_H
 #define QTQUICKTEST_OPERATOR_H
 
-#include "src/Utils/PointTweenAnimation.h"
+#include "src/Utils/Animations/PointTweenAnimation.h"
 #include <vector>
 #include <QPoint>
 #include <chrono>
@@ -56,9 +56,9 @@ public:
     bool isModulator;
     bool isCarrier;
 
-    // Percentage, 0-100%
-    long frequencyLfoAmount = 0;
-    long amplitudeLfoAmount = 0;
+    // Fraction, 0-1
+    double frequencyLfoAmount = 0;
+    double amplitudeLfoAmount = 0;
 
     std::vector<int> modulatedBy;
     QPointF position;
@@ -70,8 +70,8 @@ public:
     Q_PROPERTY(int idProp MEMBER id)
     Q_PROPERTY(float freqProp MEMBER frequency)
     Q_PROPERTY(long ampProp MEMBER amplitude)
-    Q_PROPERTY(long frequencyLfoAmount MEMBER frequencyLfoAmount)
-    Q_PROPERTY(long amplitudeLfoAmount MEMBER amplitudeLfoAmount)
+    Q_PROPERTY(double frequencyLfoAmount MEMBER frequencyLfoAmount)
+    Q_PROPERTY(double amplitudeLfoAmount MEMBER amplitudeLfoAmount)
 
     Q_INVOKABLE float getFreq();
     Q_INVOKABLE long getAmp();

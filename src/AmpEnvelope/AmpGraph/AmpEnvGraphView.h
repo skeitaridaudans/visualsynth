@@ -10,7 +10,7 @@
 #include <QQuickPaintedItem>
 #include "src/Controller/AmpEnvValue.h"
 #include "DraggingTouchPoint.h"
-#include "src/Utils/TweenAnimation.h"
+#include "src/Utils/Animations/TweenAnimation.h"
 
 class AmpEnvGraphView : public QQuickPaintedItem {
 Q_OBJECT

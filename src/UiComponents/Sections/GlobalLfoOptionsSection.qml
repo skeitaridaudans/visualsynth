@@ -58,7 +58,7 @@ Rectangle {
         color: "#757575"
         height: 40
         horizontalAlignment: Text.AlignLeft
-        text: `${controller.lfoFrequency / 10} Hz`
+        text: `${parseFloat(controller.lfoFrequency).toFixed(2)} Hz`
         verticalAlignment: Text.AlignVCenter
         width: 32
     }
@@ -68,15 +68,14 @@ Rectangle {
         anchors.leftMargin: 16
         anchors.top: lfoRateTitle.bottom
         anchors.topMargin: 8
-        from: 1
+        from: Math.log2(1)
         height: 40
-        stepSize: 1
-        to: 200
-        value: controller.lfoFrequency
+        to: Math.log2(20)
+        value: Math.log2(controller.lfoFrequency)
         width: 400
 
         onMoved: {
-            controller.setLfoFrequency(lfoSlider.value);
+            controller.setLfoFrequency(Math.pow(2, lfoSlider.value));
         }
     }
 }

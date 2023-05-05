@@ -43,8 +43,8 @@ Rectangle {
             var color = selectedOperator.getColorForOperator();
             opWaveView.setColor(color);
             opDrag.color = color.alpha(0.5).darker(3);
-            lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
-            lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+            lfoOperatorFreqAmountText.text = `${parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0)}%`;
+            lfoOperatorAmpAmountText.text = `${parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0)}%`;
         }
 
         target: controller
@@ -193,7 +193,7 @@ Rectangle {
                                 anchors.topMargin: 8
                                 color: "#616161"
                                 height: 40
-                                text: `${selectedOperator ? selectedOperator.frequencyLfoAmount : 0}%`
+                                text: `${selectedOperator ? parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0) : 0}%`
                                 verticalAlignment: Text.AlignVCenter
                                 width: 32
                             }
@@ -201,17 +201,19 @@ Rectangle {
                                 id: lfoOperatorFreqAmountSlider
                                 from: 0
                                 height: 40
-                                to: 100
-                                value: selectedOperator ? selectedOperator.frequencyLfoAmount : 0
+                                to: Math.log2(100)
+                                value: selectedOperator ? Math.log2(selectedOperator.frequencyLfoAmount) : 0
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, lfoOperatorFreqAmountSlider.value);
+                                    const value = Math.pow(2, lfoOperatorFreqAmountSlider.value) / 100;
+                                    // Make sure it's actually possible to set the value to zero
+                                    controller.setOperatorLfoFrequency(selectedOperator.idProp, value <= 0.01 ? 0 : value);
 
                                     // It would make more sense to add a signal for when frequencyLfoAmount changes, so the text would update automatically,
                                     // however, for some reason the Operator is created on another thread (event though it's just being created inside paint() of operatorView)
                                     // which will cause qt to crash if you have a signal for when the properties in Operator change
-                                    lfoOperatorFreqAmountText.text = `${selectedOperator.frequencyLfoAmount}%`;
+                                    lfoOperatorFreqAmountText.text = `${parseFloat(selectedOperator.frequencyLfoAmount * 100).toFixed(0)}%`;
                                 }
                             }
                         }
@@ -234,7 +236,7 @@ Rectangle {
                                 anchors.topMargin: 8
                                 color: "#616161"
                                 height: 40
-                                text: `${selectedOperator ? selectedOperator.amplitudeLfoAmount : 0}%`
+                                text: `${selectedOperator ? parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0) : 0}%`
                                 verticalAlignment: Text.AlignVCenter
                                 width: 32
                             }
@@ -242,13 +244,16 @@ Rectangle {
                                 id: lfoOperatorAmpAmountSlider
                                 from: 0
                                 height: 40
-                                to: 100
-                                value: selectedOperator ? selectedOperator.amplitudeLfoAmount : 0
+                                to: Math.log2(100)
+                                value: selectedOperator ? Math.log2(selectedOperator.amplitudeLfoAmount) : 0
                                 width: 96
 
                                 onMoved: {
-                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, lfoOperatorAmpAmountSlider.value);
-                                    lfoOperatorAmpAmountText.text = `${selectedOperator.amplitudeLfoAmount}%`;
+                                    const value = Math.pow(2, lfoOperatorAmpAmountSlider.value) / 100;
+                                    // Make sure it's actually possible to set the value to zero
+                                    controller.setOperatorLfoAmplitude(selectedOperator.idProp, value <= 0.01 ? 0 : value);
+
+                                    lfoOperatorAmpAmountText.text = `${parseFloat(selectedOperator.amplitudeLfoAmount * 100).toFixed(0)}%`;
                                 }
                             }
                         }
