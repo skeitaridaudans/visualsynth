@@ -742,7 +742,7 @@ Rectangle {
                             } else if (vertiDrag) {
                                 // TODO: Make add multiplier?
                                 if (yDelta < 0) {
-                                    if (yDelta < -2) {
+                                    if (Math.abs(yDelta) < -2) {
                                         selecteOperator.setAmplitude(5)
                                     } else {
                                         selectedOperator.setAmplitude(1)
@@ -751,6 +751,7 @@ Rectangle {
                                                 selectedOperator.idProp,
                                                 selectedOperator.ampProp)
                                 } else if (yDelta > 0) {
+
                                     if (yDelta > 2) {
                                         selectedOperator.setAmplitude(-5)
                                     } else {
