@@ -76,7 +76,7 @@ std::optional<int> Controller::addOperator() {
     setAttackOpEnvelopePoint(id, 2, 1.0, 0.5);
     setAttackOpEnvelopePoint(id, 3, 1.0, 1.0);
 
-    setReleaseOpEnvelopePoint(id, 0, 0.0, 1.0);
+    setReleaseOpEnvelopePoint(id, 0, 1.0, 1.0);
 
     return id;
 }
