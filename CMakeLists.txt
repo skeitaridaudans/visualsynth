@@ -5,12 +5,6 @@ project(VisualSynth VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Intersynth
-set(ENABLE_INTERSYNTH FALSE)
-if (ENABLE_INTERSYNTH)
-	add_definitions(-DUSE_INTERSYNTH)
-endif()
-
 if (ANDROID)
 	add_definitions(-DANDROID)
 endif ()
@@ -39,14 +33,6 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
 		set(CMAKE_PREFIX_PATH "/opt/Qt/6.4.2/gcc_64")
 	endif()
 
-	# To build with intersynth
-	if (ENABLE_INTERSYNTH)
-		SET(GCC_COVERAGE_LINK_FLAGS    "-lrtmidi")
-		set(CMAKE_HAVE_THREADS_LIBRARY 1)
-		set(CMAKE_USE_WIN32_THREADS_INIT 0)
-		set(CMAKE_USE_PTHREADS_INIT 1)
-		set(THREADS_PREFER_PTHREAD_FLAG ON)
-	endif()
 else()
 	set(CMAKE_PREFIX_PATH "C:\\Qt\\6.4.2\\mingw_64")
 endif()
@@ -60,7 +46,19 @@ find_package(Qt6 REQUIRED COMPONENTS Network)
 
 qt_add_executable(appVisualSynth
 		src/main.cpp
-		src/main.h src/OperatorView/OperatorView.cpp src/OperatorView/OperatorView.h src/OperatorView/OperatorDrawer.cpp src/OperatorView/OperatorDrawer.h src/OperatorView/AddOperatorBox.h src/OperatorView/AddOperatorBox.cpp src/Controller/Controller.h src/Controller/Controller.cpp src/Controller/Operator.cpp src/Controller/Operator.h src/Controller/Api.cpp src/Controller/Api.h src/Controller/Intersynth/floating_fix.h src/Controller/Intersynth/floating_fix.cpp src/Controller/Intersynth/intersynth.h src/Controller/Intersynth/intersynth.cpp src/Utils/Utils.h src/Alert/AlertController.cpp src/Alert/AlertController.h src/FontAwesome.h src/OperatorView/DeleteOperatorBox.h src/OperatorView/DeleteOperatorBox.cpp src/FontAwesome.cpp src/AmpEnvelope/AmpGraph/AmpEnvGraphView.h src/AmpEnvelope/AmpGraph/AmpEnvGraphView.cpp src/lovecommunicationtcp/lovecommunicationtcp.cpp src/lovecommunicationtcp/lovecommunicationtcp.h lib/json/json.hpp src/OperatorPresetsView/OperatorPresetsView.cpp src/OperatorPresetsView/OperatorPresetsView.h src/OperatorPresetsView/OperatorPresetView.cpp src/OperatorPresetsView/OperatorPresetView.h src/Utils/Animations/TweenAnimation.cpp src/Utils/Animations/TweenAnimation.h src/Utils/Animations/ColorTweenAnimation.cpp src/Utils/Animations/ColorTweenAnimation.h src/Dialog/DialogController.cpp src/Dialog/DialogController.h src/Utils/Animations/TouchPoint.h src/Utils/Animations/PointTweenAnimation.cpp src/Utils/Animations/PointTweenAnimation.h src/Controller/Preset.h src/Controller/AmpEnvValue.h src/OutputWaveView/OutputWaveView.cpp src/OutputWaveView/OutputWaveView.h src/Controller/LfoWaveType.h src/OperatorWaveView/OperatorWaveView.h src/OperatorWaveView/OperatorWaveView.cpp src/AmpEnvelope/AmpGraph/DraggingTouchPoint.h src/OperatorView/PresetButton.cpp src/OperatorView/PresetButton.h)
+		src/main.h src/Views/OperatorView/OperatorView.cpp src/Views/OperatorView/OperatorView.h src/Views/OperatorView/OperatorDrawer.cpp src/Views/OperatorView/OperatorDrawer.h
+		src/Views/OperatorView/AddOperatorBox.h src/Views/OperatorView/AddOperatorBox.cpp src/Controllers/Controller/Controller.h src/Controllers/Controller/Controller.cpp src/Controllers/Controller/Operator.cpp
+		src/Controllers/Controller/Operator.h src/Controllers/Controller/Api.cpp src/Controllers/Controller/Api.h src/Utils/Utils.h src/Controllers/Alert/AlertController.cpp src/Controllers/Alert/AlertController.h
+		src/Utils/FontAwesome.h src/Views/OperatorView/DeleteOperatorBox.h src/Views/OperatorView/DeleteOperatorBox.cpp src/Utils/FontAwesome.cpp
+		src/Views/AmpEnvelope/AmpGraph/AmpEnvGraphView.h src/Views/AmpEnvelope/AmpGraph/AmpEnvGraphView.cpp lib/LoveCommunicationTcp/LoveCommunicationTcp.cpp lib/LoveCommunicationTcp/LoveCommunicationTcp.h
+		lib/LoveCommunicationTcp/floating_fix.cpp lib/LoveCommunicationTcp/floating_fix.h lib/json/json.hpp src/Views/OperatorPresetsView/OperatorPresetsView.cpp
+		src/Views/OperatorPresetsView/OperatorPresetsView.h src/Views/OperatorPresetsView/OperatorPresetView.cpp src/Views/OperatorPresetsView/OperatorPresetView.h
+		src/Utils/Animations/TweenAnimation.cpp src/Utils/Animations/TweenAnimation.h src/Utils/Animations/ColorTweenAnimation.cpp
+		src/Utils/Animations/ColorTweenAnimation.h src/Controllers/Dialog/DialogController.cpp src/Controllers/Dialog/DialogController.h src/Utils/TouchPoint.h
+		src/Utils/Animations/PointTweenAnimation.cpp src/Utils/Animations/PointTweenAnimation.h src/Controllers/Controller/Preset.h src/Controllers/Controller/AmpEnvValue.h
+		src/Views/OutputWaveView/OutputWaveView.cpp src/Views/OutputWaveView/OutputWaveView.h src/Controllers/Controller/LfoWaveType.h src/Views/OperatorWaveView/OperatorWaveView.h src/Views/OperatorWaveView/OperatorWaveView.cpp
+		src/Views/AmpEnvelope/AmpGraph/DraggingTouchPoint.h src/Views/OperatorView/PresetButton.cpp src/Views/OperatorView/PresetButton.h
+)
 
 qt_add_qml_module(appVisualSynth
     URI VisualSynth
@@ -84,10 +82,6 @@ target_link_libraries(appVisualSynth
 
 target_link_libraries(appVisualSynth PRIVATE QtAwesome)
 target_link_libraries(appVisualSynth PRIVATE Qt6::Network)
-
-if(ENABLE_INTERSYNTH)
-target_link_libraries(appVisualSynth PRIVATE rtmidi)
-endif()
 
 install(TARGETS appVisualSynth
     BUNDLE DESTINATION ${dir}

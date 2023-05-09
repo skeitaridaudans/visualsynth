@@ -62,7 +62,7 @@ Rectangle {
                 id: connectButtonBackground
                 color: "#3F51B5"
                 radius: 4
-                state: connectButton.pressed ? "pressed" : connectButton.hovered ? "hovered" : "none"
+                state: connectButton.pressed ? "pressed_" : connectButton.hovered ? "hovered" : "none"
 
                 states: [
                     State {
@@ -82,7 +82,7 @@ Rectangle {
                         }
                     },
                     State {
-                        name: "pressed"
+                        name: "pressed_"
 
                         PropertyChanges {
                             color: controller.isConnected ? "#B71C1C" : "#55006b"
@@ -92,7 +92,7 @@ Rectangle {
                 ]
                 transitions: [
                     Transition {
-                        to: "none,hovered,pressed"
+                        to: "none,hovered,pressed_"
 
                         ColorAnimation {
                             duration: 260

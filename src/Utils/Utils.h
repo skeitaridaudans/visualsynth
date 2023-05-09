@@ -17,13 +17,13 @@
 
 using json = nlohmann::json;
 
-inline QPointF closestPointInBox(const QPointF& point, const QPointF& boxPosition, const double width, const double height) {
-    const auto minX = boxPosition.x();
-    const auto maxX = boxPosition.x() + width;
-    const auto minY = boxPosition.y();
-    const auto maxY = boxPosition.y() + height;
+inline QPointF closestPointInRect(const QPointF& point, const QRectF rect) {
+    const auto minX = rect.x();
+    const auto maxX = rect.x() + rect.width();
+    const auto minY = rect.y();
+    const auto maxY = rect.y() + rect.height();
 
-    return QPointF(std::clamp(point.x(), minX, maxX), std::clamp(point.y(), minY, maxY));
+    return {std::clamp(point.x(), minX, maxX), std::clamp(point.y(), minY, maxY)};
 }
 
 inline bool isRectInsideLine(const QRectF& rect, const QPointF& lineStart, const QPointF& lineEnd) {
@@ -39,6 +39,8 @@ inline bool isPointInsideRect(const QPointF& point, const QRectF& rect) {
             point.y() <= rect.y() + rect.height(); // point.y is within y range of rect
 }
 
+// Moves a point inside the rect 'from', such that it has the position
+// relative to the size of hte rect inside 'to'
 inline QPointF moveBetweenRects(const QPointF& point, const QRectF& from, const QRectF& to) {
     const auto x = ((point.x() - from.x()) / from.width()) * to.width() + to.x();
     const auto y = ((point.y() - from.y()) / from.height()) * to.height() + to.y();

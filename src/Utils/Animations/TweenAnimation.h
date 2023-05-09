@@ -32,7 +32,9 @@ namespace AnimationCurves {
     }
 
     inline double easeInOut(double x) {
-        return x < 0.5 ? 2 * std::pow(x, 2.0) : 1 - std::pow(-2 * x + 2, 2) / 2;
+        return x < 0.5
+            ? 2 * std::pow(x, 2.0)
+            : 1 - std::pow(-2 * x + 2, 2) / 2;
     }
 
     inline double easeOutBack(double x) {
@@ -43,6 +45,9 @@ namespace AnimationCurves {
     }
 }
 
+// Animation between two double values,
+// this takes a pointer to a variable that is then updated every time update() is called
+// This means that to use the animation, update() needs to be called every frame
 class TweenAnimation {
 public:
     TweenAnimation(double ms, double* value, std::function<double(double x)> animationCurve = AnimationCurves::linear,

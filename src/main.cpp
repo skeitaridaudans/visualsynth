@@ -1,6 +1,6 @@
 #include "main.h"
-#include "src/OperatorView/OperatorView.h"
-#include "src/AmpEnvelope/AmpGraph/AmpEnvGraphView.h"
+#include "src/Views/OperatorView/OperatorView.h"
+#include "src/Views/AmpEnvelope/AmpGraph/AmpEnvGraphView.h"
 
 #include <QQmlContext>
 
@@ -8,13 +8,13 @@
 #include <QtCore/private/qandroidextras_p.h>
 #endif
 
-#include "Controller/Controller.h"
-#include "src/Alert/AlertController.h"
-#include "src/Dialog/DialogController.h"
-#include "src/OperatorPresetsView/OperatorPresetsView.h"
-#include "src/OutputWaveView/OutputWaveView.h"
-#include "src/OperatorView/PresetButton.h"
-#include "src/OperatorWaveView/OperatorWaveView.h"
+#include "src/Controllers/Controller/Controller.h"
+#include "src/Controllers/Alert/AlertController.h"
+#include "src/Controllers/Dialog/DialogController.h"
+#include "src/Views/OperatorPresetsView/OperatorPresetsView.h"
+#include "src/Views/OutputWaveView/OutputWaveView.h"
+#include "src/Views/OperatorView/PresetButton.h"
+#include "src/Views/OperatorWaveView/OperatorWaveView.h"
 
 int main(int argc, char *argv[])
 {
@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     engine.load(url);
 
 #ifdef ANDROID
+    // Ask for storage permission on android so that presets work
     const auto res = QtAndroidPrivate::checkPermission(QtAndroidPrivate::Storage).result();
     if (res == QtAndroidPrivate::Denied) {
         const auto res = QtAndroidPrivate::requestPermission(QtAndroidPrivate::Storage).result();

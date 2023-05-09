@@ -198,7 +198,7 @@ Rectangle {
                     id: okButtonBackground
                     color: "#3F51B5"
                     radius: 4
-                    state: okButton.pressed ? "pressed" : okButton.hovered ? "hovered" : "none"
+                    state: okButton.pressed ? "pressed_" : okButton.hovered ? "hovered" : "none"
 
                     states: [
                         State {
@@ -216,7 +216,7 @@ Rectangle {
                             }
                         },
                         State {
-                            name: "pressed"
+                            name: "pressed_"
                             PropertyChanges {
                                 target: okButtonBackground
                                 color: "#55006b"
@@ -226,7 +226,7 @@ Rectangle {
 
                     transitions: [
                         Transition {
-                            to: "none,hovered,pressed"
+                            to: "none,hovered,pressed_"
                             ColorAnimation {
                                 easing.type: Easing.OutQuad
                                 duration: 260
@@ -255,7 +255,7 @@ Rectangle {
                     id: cancelButtonBackground
                     color: "#FAFAFA"
                     radius: 4
-                    state: cancelButton.pressed ? "pressed" : cancelButton.hovered ? "hovered" : "none"
+                    state: cancelButton.pressed ? "pressed_" : cancelButton.hovered ? "hovered" : "none"
 
                     states: [
                         State {
@@ -273,7 +273,7 @@ Rectangle {
                             }
                         },
                         State {
-                            name: "pressed"
+                            name: "pressed_"
                             PropertyChanges {
                                 target: cancelButtonBackground
                                 opacity: 0.4
@@ -283,7 +283,7 @@ Rectangle {
 
                     transitions: [
                         Transition {
-                            to: "none,hovered,pressed"
+                            to: "none,hovered,pressed_"
                             NumberAnimation {
                                 properties: "opacity"
                                 easing.type: Easing.OutQuad
