@@ -140,7 +140,9 @@ void OperatorPresetsView::addNewPreset() {
                            controller->savePreset(presetName.toStdString());
 
                            auto presetView = std::make_unique<OperatorPresetView>(const_cast<OperatorPresetsView *>(this), presetName,
-                                                                Preset(controller->operators(), controller->attackAmpEnvValues(), controller->releaseAmpEnvValues(),presetName));
+                                                                Preset(controller->operators(), controller->attackAmpEnvValues(),
+                                                                       controller->releaseAmpEnvValues(),presetName,
+                                                                       controller->isLfoEnabled(), controller->lfoFrequency()));
                            operatorPresetViews_->push_back(std::move(presetView));
 
                            return true;

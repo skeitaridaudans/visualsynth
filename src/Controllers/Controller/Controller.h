@@ -61,6 +61,8 @@ public:
     Q_INVOKABLE void disconnect();
     bool showPresets();
     Q_INVOKABLE void runInitialSynthConnection();
+    Q_INVOKABLE bool isLfoEnabled() const;
+    Q_INVOKABLE double lfoFrequency() const;
 
     Q_PROPERTY(bool showPresets MEMBER showPresets_ NOTIFY showPresetsChanged);
     Q_PROPERTY(bool isConnected MEMBER isConnected_ NOTIFY isConnectedChanged);

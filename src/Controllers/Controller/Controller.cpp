@@ -54,7 +54,7 @@ void Controller::loadInitialPreset() {
     };
 
     const QString defaultName = "default";
-    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultName);
+    const Preset defaultPreset = Preset(defaultOperators, defaultAttackAmpEnv, defaultReleaseAmpEnv, defaultName, false, 6.0);
     changeToPreset(defaultPreset);
 }
 
@@ -371,7 +371,7 @@ Operator *Controller::getSelectedOperator() {
 void Controller::savePreset(const std::string &name) {
     const auto attackAmpEnvValues = attackAmpEnvValues_;
     const auto releaseAmpEnvValues = releaseAmpEnvValues_;
-    json json(Preset(operators_, attackAmpEnvValues, releaseAmpEnvValues, QString::fromStdString(name)));
+    json json(Preset(operators_, attackAmpEnvValues, releaseAmpEnvValues, QString::fromStdString(name), isLfoEnabled_, lfoFrequency_));
 
     std::ofstream file("presets/" + name + ".json");
     file << json.dump();
@@ -408,6 +408,9 @@ void Controller::changeToPreset(const Preset &preset) {
     for (const auto &ampEnvValue : preset.releaseAmpEnvValues) {
         setReleaseAmpEnvelopePoint(ampEnvValue.index, ampEnvValue.value, ampEnvValue.time);
     }
+
+    setLfoEnabled(preset.lfoEnabled);
+    setLfoFrequency(preset.lfoFrequency);
 
     // This is to avoid the program crashing when loading the first preset.
     if (!isFirst_) {
@@ -593,4 +596,12 @@ void Controller::runInitialSynthConnection() {
     else {
         showConnectDialog();
     }
+}
+
+bool Controller::isLfoEnabled() const {
+    return isLfoEnabled_;
+}
+
+double Controller::lfoFrequency() const {
+    return lfoFrequency_;
 }
